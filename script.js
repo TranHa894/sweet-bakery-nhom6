@@ -126,4 +126,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gọi hàm cập nhật icon lần đầu tiên khi load mọi trang
     updateCartIcon();
-});
+
+    // ==========================================
+    // TÍNH NĂNG 3: SẮP XẾP SẢN PHẨM TRONG DANH MỤC
+    // ==========================================
+    const sortSelect = document.getElementById('sort');
+    const productGrid = document.querySelector('.collection-grid') || document.querySelector('.product-grid');
+
+    if (sortSelect && productGrid) {
+        // Mảng lưu lại thứ tự sản phẩm ban đầu để dùng khi chọn lại "Tùy chọn"
+        const originalCards = Array.from(productGrid.querySelectorAll('.product-card'));
+
+        sortSelect.addEventListener('change', (e) => {
+            const selectedOption = e.target.value;
+            let cards = Array.from(productGrid.querySelectorAll('.product-card'));
+
+            // Hàm hỗ trợ trích xuất giá tiền dạng số từ chuỗi "320.000 ₫" -> 320000
+            const getPrice = (card) => {
+                const priceText = card.querySelector('.price')?.textContent || '0';
+                return parseInt(priceText.replace(/\D/g, ''), 10) || 0;
+            };
+
+            // Hàm hỗ trợ lấy tên sản phẩm
+            const getName = (card) => {
+                return card.querySelector('.product-info h3')?.textContent.trim() || '';
+            };
+
+            // Tiến hành sắp xếp theo lựa chọn
+            if (selectedOption === 'Tên A-Z') {
+                cards.sort((a, b) => getName(a).localeCompare(getName(b), 'vi'));
+            } else if (selectedOption === 'Tên Z-A') {
+                cards.sort((a, b) => getName(b).localeCompare(getName(a), 'vi'));
+            } else if (selectedOption === 'Giá tăng dần') {
+                cards.sort((a, b) => getPrice(a) - getPrice(b));
+            } else if (selectedOption === 'Giá giảm dần') {
+                cards.sort((a, b) => getPrice(b) - getPrice(a));
+            } else {
+                // Trở về thứ tự mặc định ban đầu
+                cards = [...originalCards];
+            }
+
+            // Vẽ lại thứ tự sản phẩm lên giao diện
+            cards.forEach(card => productGrid.appendChild(card));
+        });
+    }
+
+}); // <-- Kết thúc khối DOMContentLoaded ở đây mới đúng
