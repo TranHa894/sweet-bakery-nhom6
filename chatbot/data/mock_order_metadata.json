@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "is_mock": true,
+  "note": "Giới hạn và phụ phí giả lập cho bài tập đặt bánh; không phải chính sách cửa hàng thật. Không lấy các giá trị này từ sample_policies.",
+  "products": {
+    "mock-001": {
+      "toppings": {"kẹo cốm": 10000}, "max_cake_text_length": 20, "cake_text_price_vnd": 0,
+      "fulfillment_modes": ["pickup", "delivery"], "delivery_fee_vnd": 25000,
+      "stock_quantity": {"mock-001-16": 10, "mock-001-20": null}
+    },
+    "mock-002": {
+      "toppings": {"dâu tươi": 15000}, "max_cake_text_length": 20, "cake_text_price_vnd": 0,
+      "fulfillment_modes": ["pickup", "delivery"], "delivery_fee_vnd": 25000,
+      "stock_quantity": {"mock-002-16": 8, "mock-002-20": 0}
+    },
+    "mock-003": {
+      "toppings": {}, "max_cake_text_length": 15, "cake_text_price_vnd": 0,
+      "fulfillment_modes": ["pickup"], "delivery_fee_vnd": null,
+      "stock_quantity": {"mock-003-16": 6, "mock-003-20": 4}
+    },
+    "mock-004": {
+      "toppings": null, "max_cake_text_length": null, "cake_text_price_vnd": null,
+      "fulfillment_modes": null, "delivery_fee_vnd": null,
+      "stock_quantity": {"mock-004-16": 0, "mock-004-20": null}
+    },
+    "mock-005": {
+      "toppings": null, "max_cake_text_length": null, "cake_text_price_vnd": null,
+      "fulfillment_modes": null, "delivery_fee_vnd": null,
+      "stock_quantity": {"mock-005-18": null}
+    }
+  }
+}

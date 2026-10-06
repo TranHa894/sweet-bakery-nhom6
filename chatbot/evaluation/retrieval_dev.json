@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "is_mock": true,
+  "cases": [
+    {"id": "dev-001", "question": "Phí giao hàng là bao nhiêu?", "answerable": true, "expected_source_ids": ["sample-policy-001"]},
+    {"id": "dev-002", "question": "Có ship trong phạm vi nào?", "answerable": true, "expected_source_ids": ["sample-policy-001"]},
+    {"id": "dev-003", "question": "Bán kính giao hàng là mấy km?", "answerable": true, "expected_source_ids": ["sample-policy-001"]},
+    {"id": "dev-004", "question": "phi van chuyen bao nhieu", "answerable": true, "expected_source_ids": ["sample-policy-001"]},
+    {"id": "dev-005", "question": "Thanh toán bằng cách nào?", "answerable": true, "expected_source_ids": ["sample-policy-002"]},
+    {"id": "dev-006", "question": "Có nhận COD không?", "answerable": true, "expected_source_ids": ["sample-policy-002"]},
+    {"id": "dev-007", "question": "Tôi có thể chuyển khoản không?", "answerable": true, "expected_source_ids": ["sample-policy-002"]},
+    {"id": "dev-008", "question": "Thanh toán bằng tiền mặt khi nhận bánh được không?", "answerable": true, "expected_source_ids": ["sample-policy-002"]},
+    {"id": "dev-009", "question": "Thời hạn đổi trả là bao lâu?", "answerable": true, "expected_source_ids": ["sample-policy-003"]},
+    {"id": "dev-010", "question": "Bánh bị hỏng lúc vận chuyển thì có đổi trả được không?", "answerable": true, "expected_source_ids": ["sample-policy-003"]},
+    {"id": "dev-011", "question": "Sai nội dung đã xác nhận thì được đổi không?", "answerable": true, "expected_source_ids": ["sample-policy-003"]},
+    {"id": "dev-012", "question": "Đổi ý sau khi nhận thì có trả lại được không?", "answerable": true, "expected_source_ids": ["sample-policy-003"]},
+    {"id": "dev-013", "question": "Bảo quản bánh ở nhiệt độ nào?", "answerable": true, "expected_source_ids": ["sample-policy-004"]},
+    {"id": "dev-014", "question": "Bánh nên để ngăn mát hay ngăn đá?", "answerable": true, "expected_source_ids": ["sample-policy-004"]},
+    {"id": "dev-015", "question": "Bánh dùng trong bao lâu sau khi nhận?", "answerable": true, "expected_source_ids": ["sample-policy-004"]},
+    {"id": "dev-016", "question": "Hướng dẫn bao quan trong bài tập là gì?", "answerable": true, "expected_source_ids": ["sample-policy-004"]},
+    {"id": "dev-017", "question": "Có thể viết chữ lên bánh không?", "answerable": true, "expected_source_ids": ["sample-policy-005"]},
+    {"id": "dev-018", "question": "Thay đổi trang trí cần báo trước bao lâu?", "answerable": true, "expected_source_ids": ["sample-policy-005"]},
+    {"id": "dev-019", "question": "Yêu cầu tùy chỉnh phải đặt trước mấy giờ?", "answerable": true, "expected_source_ids": ["sample-policy-005"]},
+    {"id": "dev-020", "question": "Có ghi nhận yêu cầu trang trí trong bài tập không?", "answerable": true, "expected_source_ids": ["sample-policy-005"]},
+    {"id": "dev-021", "question": "Phí giao hàng bao nhiêu và có COD không?", "answerable": true, "expected_source_ids": ["sample-policy-001", "sample-policy-002"]},
+    {"id": "dev-022", "question": "Giá bánh socola là bao nhiêu?", "answerable": false, "expected_source_ids": []},
+    {"id": "dev-023", "question": "Bánh socola còn hàng không?", "answerable": false, "expected_source_ids": []},
+    {"id": "dev-024", "question": "Bánh có đậu phộng gây dị ứng không?", "answerable": false, "expected_source_ids": []},
+    {"id": "dev-025", "question": "Cửa hàng mở cửa lúc mấy giờ?", "answerable": false, "expected_source_ids": []},
+    {"id": "dev-026", "question": "Có chính sách bảo hành ba năm không?", "answerable": false, "expected_source_ids": []},
+    {"id": "dev-027", "question": "Có giao hàng quốc tế không?", "answerable": false, "expected_source_ids": []}
+  ]
+}

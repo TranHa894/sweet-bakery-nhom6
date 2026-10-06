@@ -1,0 +1,1777 @@
+{
+  "kind": "real_ollama_smoke",
+  "model": "qwen3.5:4b",
+  "created_at": "2026-10-04T14:10:43.607746+00:00",
+  "database_path": "runtime\\model-smoke-3e8917d8.sqlite3",
+  "steps": [
+    {
+      "question": "Giá và size bánh socola?",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 14.0,
+      "state": "BROWSING",
+      "revision": 0,
+      "products": [
+        "demo-001"
+      ],
+      "policy_sources": [],
+      "orders_count": 0,
+      "proposal": {
+        "intents": [
+          "price",
+          "size"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "socola"
+        ],
+        "reference": "last",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+    },
+    {
+      "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 43.14,
+      "state": "REVIEW",
+      "revision": 9,
+      "products": [],
+      "policy_sources": [],
+      "orders_count": 0,
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "product_mentions": [
+          "socola"
+        ],
+        "reference": "none",
+        "updates": {
+          "size": "16 cm",
+          "quantity": 2,
+          "toppings": [],
+          "cake_text": "Chúc vui",
+          "pickup_at": "2099-01-04 10:00",
+          "fulfillment": "pickup",
+          "name": "DEMO Khách A",
+          "phone": "TEST-0001"
+        },
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nREVIEW bản 9 — nguồn local_demo; CHƯA xác nhận đơn.\nBánh đã đối chiếu: Bánh kem socola\n- mã bánh: demo-001 [verified]\n- size: 16 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 250.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 500.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+    },
+    {
+      "question": "Đồng ý nhưng đổi sang size 20 cm.",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 16.0,
+      "state": "REVIEW",
+      "revision": 10,
+      "products": [],
+      "policy_sources": [],
+      "orders_count": 0,
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "confirm",
+        "product_mentions": [],
+        "reference": "order",
+        "updates": {
+          "size": "20 cm"
+        },
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nREVIEW bản 10 — nguồn local_demo; CHƯA xác nhận đơn.\nBánh đã đối chiếu: Bánh kem socola\n- mã bánh: demo-001 [verified]\n- size: 20 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 350.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 700.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+    },
+    {
+      "question": "Xác nhận",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 12.38,
+      "state": "DEMO_CONFIRMED",
+      "revision": 10,
+      "products": [],
+      "policy_sources": [],
+      "orders_count": 1,
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "confirm",
+        "product_mentions": [],
+        "reference": "order",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐã lưu ĐƠN MÔ PHỎNG DEMO-11D9AF9E [11d9af9e-3378-43b8-a00b-c127b0725df0]. Tổng mẫu 700.000 đ; payment_status=unpaid. Không thanh toán/giao hàng thật."
+    },
+    {
+      "question": "Xác nhận",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 14.72,
+      "state": "DEMO_CONFIRMED",
+      "revision": 10,
+      "products": [],
+      "policy_sources": [],
+      "orders_count": 1,
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "confirm",
+        "product_mentions": [],
+        "reference": "order",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nBản này đã lưu trước đó [11d9af9e-3378-43b8-a00b-c127b0725df0]: demo_order. Không tạo bản ghi thứ hai; mọi dữ liệu đều là thử nghiệm."
+    },
+    {
+      "question": "Giờ mở cửa của cửa hàng?",
+      "engine": "ollama",
+      "llm_error": null,
+      "source_error": null,
+      "attempts": 1,
+      "seconds": 12.95,
+      "state": "DEMO_CONFIRMED",
+      "revision": 10,
+      "products": [
+        "demo-001"
+      ],
+      "policy_sources": [],
+      "orders_count": 1,
+      "proposal": {
+        "intents": [
+          "availability"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+    }
+  ],
+  "passed": false,
+  "conversation_id": "d6a661f9-1908-42b3-9667-500ab208363b",
+  "order": {
+    "draft_id": "b22afb2d-c5dd-4fe2-a1f1-daf723e5fb34",
+    "revision": 10,
+    "kind": "demo_order",
+    "slots": {
+      "cake_need": null,
+      "product_id": "demo-001",
+      "size": "20 cm",
+      "toppings": [],
+      "quantity": 2,
+      "cake_text": "Chúc vui",
+      "pickup_at": "2099-01-04T03:00:00+00:00",
+      "fulfillment": "pickup",
+      "name": "DEMO Khách A",
+      "phone": "TEST-0001",
+      "address": null
+    },
+    "verification": {
+      "cake_need": "unverified",
+      "product_id": "verified",
+      "size": "verified",
+      "toppings": "not_applicable",
+      "quantity": "verified",
+      "cake_text": "verified",
+      "pickup_at": "verified",
+      "fulfillment": "verified",
+      "name": "verified",
+      "phone": "verified",
+      "address": "verified",
+      "opening_hours": "verified",
+      "lead_time": "verified"
+    },
+    "issues": [],
+    "quote": {
+      "variant_id": "demo-001-v2",
+      "base_price_vnd": 350000,
+      "toppings_vnd": 0,
+      "cake_text_vnd": 0,
+      "unit_price_vnd": 350000,
+      "quantity": 2,
+      "delivery_fee_vnd": 0,
+      "total_vnd": 700000,
+      "is_mock": true
+    },
+    "data_mode": "local_demo",
+    "is_mock": true,
+    "is_demo": true,
+    "source": "local_demo",
+    "confirmed": true,
+    "payment_status": "unpaid",
+    "snapshot": {
+      "name": "Bánh kem socola",
+      "product_id": "demo-001",
+      "variant_id": "demo-001-v2",
+      "size": "20 cm",
+      "toppings": [],
+      "topping_prices": {},
+      "cake_text": "Chúc vui",
+      "price": {
+        "variant_id": "demo-001-v2",
+        "base_price_vnd": 350000,
+        "toppings_vnd": 0,
+        "cake_text_vnd": 0,
+        "unit_price_vnd": 350000,
+        "quantity": 2,
+        "delivery_fee_vnd": 0,
+        "total_vnd": 700000,
+        "is_mock": true
+      },
+      "source": "local_demo",
+      "is_demo": true
+    },
+    "id": "11d9af9e-3378-43b8-a00b-c127b0725df0",
+    "conversation_id": "d6a661f9-1908-42b3-9667-500ab208363b",
+    "order_code": "DEMO-11D9AF9E",
+    "created_at": "2026-10-04T14:12:09.166133+00:00"
+  },
+  "database_check": {
+    "schema_version": 2,
+    "foreign_keys_enabled": true,
+    "foreign_key_errors": 0,
+    "integrity": "ok",
+    "counts": {
+      "products": 25,
+      "product_variants": 35,
+      "toppings": 3,
+      "product_toppings": 20,
+      "policies": 13,
+      "conversations": 1,
+      "messages": 12,
+      "drafts": 1,
+      "orders": 1,
+      "order_items": 1,
+      "tickets": 0
+    }
+  },
+  "wire_responses": [
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [\n    \"socola\"\n  ],\n  \"reference\": \"last\",\n  \"updates\": [],\n  \"clear_slots\": [],\"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    },
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"start_order\",\n  \"product_mentions\": [\n    \"socola\"\n  ],\n  \"reference\": \"none\",\n  \"updates\": [\n    {\n      \"field\": \"quantity\",\n      \"value\": 2\n    },\n    {\n      \"field\": \"size\",\n      \"value\": \"16 cm\"\n    },\n    {\n      \"field\": \"toppings\",\n      \"value\": []\n    },\n    {\n      \"field\": \"cake_text\",\n      \"value\": \"Chúc vui\"\n    },\n    {\n      \"field\": \"pickup_at\",\n      \"value\": \"2099-01-04 10:00\"\n    },\n    {\n      \"field\": \"fulfillment\",\n      \"value\": \"pickup\"\n    },\n    {\n      \"field\": \"name\",\n      \"value\": \"DEMO Khách A\"\n    },\n    {\n      \"field\": \"phone\",\n      \"value\": \"TEST-0001\"\n    }\n  ],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    },
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"order\",\n  \"updates\": [\n    {\n      \"field\": \"size\",\n      \"value\": \"20 cm\"\n    }\n  ],\n  \"clear_slots\": [],\"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    },
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"order\",\n  \"updates\": [],\n  \"clear_slots\": [],\"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    },
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"order\",\n  \"updates\": [],\n  \"clear_slots\": [],\"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    },
+    {
+      "ok": true,
+      "content": "{\n  \"intents\": [\n    \"availability\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+      "error": null,
+      "model": "qwen3.5:4b",
+      "http_status": 200
+    }
+  ],
+  "previous_runs": [
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:25:53.839129+00:00",
+      "database_path": "runtime\\model-smoke-ba480f28.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 22.12,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh mì baguette [demo-018], vị lúa mì:\n  • ổ 400 g: 30.000 đ; khoảng 4 người; còn hàng.\n- Cupcake vani [demo-013], vị vani:\n  • hộp 4 chiếc: 35.000 đ; khoảng 4 người; còn hàng.\n- Muffin chuối [demo-014], vị chuối:\n  • hộp 4 chiếc: 40.000 đ; khoảng 4 người; còn hàng.\n- Brownie socola [demo-012], vị socola:\n  • hộp 4 chiếc: 45.000 đ; khoảng 4 người; còn hàng.\n- Bánh su kem [demo-015], vị vani:\n  • hộp 4 chiếc: 60.000 đ; khoảng 4 người; còn hàng.\nBánh mì baguette thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nCupcake vani thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nMuffin chuối thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nBrownie socola thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nBánh su kem thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nHiển thị 5/25 sản phẩm phù hợp; bạn có thể lọc thêm.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 10.67,
+          "state": "COLLECTING",
+          "revision": 5,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "question": "Đồng ý nhưng đổi sang size 20 cm.",
+          "engine": "llm_error",
+          "llm_error": "invalid_turn_mention",
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.42,
+          "state": "COLLECTING",
+          "revision": 5,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\nChưa xử lý được lượt này (invalid_turn_mention). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "46cb03aa-b7d4-4fe4-b836-68e1fa5f8e5f",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 4,
+          "drafts": 1,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      }
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:31:02.096672+00:00",
+      "database_path": "runtime\\model-smoke-f4941c67.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.48,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-001"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "llm_error",
+          "llm_error": "invalid_turn_json",
+          "source_error": null,
+          "attempts": 2,
+          "seconds": 34.5,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": null,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\nChưa xử lý được lượt này (invalid_turn_json). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "3c93a1f4-d1f6-4aef-b4ed-b4fbed82d703",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 2,
+          "drafts": 1,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      }
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:33:22.397945+00:00",
+      "database_path": "runtime\\model-smoke-7482ec82.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.2,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-001"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "llm_error",
+          "llm_error": "invalid_turn_json",
+          "source_error": null,
+          "attempts": 2,
+          "seconds": 33.64,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": null,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\nChưa xử lý được lượt này (invalid_turn_json). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "306d587c-3da0-40b1-be07-5daf1551b323",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 2,
+          "drafts": 1,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"price\",\"size\"],\"action\":\"none\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"start_order\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[{\"field\":\"quantity\",\"value\":\"2\"},{\"field\":\"size\",\"value\":\"16 cm\"},{\"field\":\"toppings\",\"value\":\"không topping\"},{\"field\":\"cake_text\",\"value\":\"Chúc vui\"},{\"field\":\"pickup_at\",\"value\":\"2099-01-04 10:00\"},{\"field\":\"fulfillment\",\"value\":\"pickup\"},{\"field\":\"name\",\"value\":\"DEMO Khách A\"},{\"field\":\"phone\",\"value\":\"TEST-0001\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"start_order\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[{\"field\":\"quantity\",\"value\":\"2\"},{\"field\":\"size\",\"value\":\"16 cm\"},{\"field\":\"toppings\",\"value\":\"không topping\"},{\"field\":\"cake_text\",\"value\":\"Chúc vui\"},{\"field\":\"pickup_at\",\"value\":\"2099-01-04 10:00\"},{\"field\":\"fulfillment\",\"value\":\"pickup\"},{\"field\":\"name\",\"value\":\"DEMO Khách A\"},{\"field\":\"phone\",\"value\":\"TEST-0001\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:35:10.285954+00:00",
+      "database_path": "runtime\\model-smoke-c65a7224.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.19,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-001"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 16.74,
+          "state": "REVIEW",
+          "revision": 9,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "size": "16 cm",
+              "quantity": 2,
+              "toppings": [],
+              "cake_text": "Chúc vui",
+              "pickup_at": "2099-01-04 10:00",
+              "fulfillment": "pickup",
+              "name": "DEMO Khách A",
+              "phone": "TEST-0001"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nREVIEW bản 9 — nguồn local_demo; CHƯA xác nhận đơn.\n- mã bánh: demo-001 [verified]\n- size: 16 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 250.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 500.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+        },
+        {
+          "question": "Đồng ý nhưng đổi sang size 20 cm.",
+          "engine": "llm_error",
+          "llm_error": "ungrounded_cake_text",
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 14.01,
+          "state": "REVIEW",
+          "revision": 9,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "review",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "20 cm",
+              "quantity": 2,
+              "cake_text": "Chúc vui",
+              "pickup_at": "2099-01-04T03:00:00+00:00",
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\nChưa xử lý được lượt này (ungrounded_cake_text). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "60675051-b8dd-4554-a344-922039d0a21e",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 4,
+          "drafts": 1,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"price\",\"size\"],\"action\":\"none\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"start_order\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[{\"field\":\"quantity\",\"value\":2},{\"field\":\"size\",\"value\":\"16 cm\"},{\"field\":\"toppings\",\"value\":[]},{\"field\":\"cake_text\",\"value\":\"Chúc vui\"},{\"field\":\"pickup_at\",\"value\":\"2099-01-04 10:00\"},{\"field\":\"fulfillment\",\"value\":\"pickup\"},{\"field\":\"name\",\"value\":\"DEMO Khách A\"},{\"field\":\"phone\",\"value\":\"TEST-0001\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"review\",\"product_mentions\":[],\"reference\":\"none\",\"updates\":[{\"field\":\"size\",\"value\":\"20 cm\"},{\"field\":\"quantity\",\"value\":2},{\"field\":\"cake_text\",\"value\":\"Chúc vui\"},{\"field\":\"pickup_at\",\"value\":\"2099-01-04T03:00:00+00:00\"},{\"field\":\"fulfillment\",\"value\":\"pickup\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:38:59.300071+00:00",
+      "database_path": "runtime\\model-smoke-979e8282.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.2,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-001"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 14.12,
+          "state": "COLLECTING",
+          "revision": 7,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "size": "16 cm",
+              "quantity": 2,
+              "toppings": [],
+              "cake_text": "Chúc vui",
+              "pickup_at": "2099-01-04 10:00",
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn cho tên giả bắt đầu DEMO, ví dụ tên: DEMO Khách A nhé."
+        },
+        {
+          "question": "Đồng ý nhưng đổi sang size 20 cm.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 7.42,
+          "state": "COLLECTING",
+          "revision": 8,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "review",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "20 cm"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn cho tên giả bắt đầu DEMO, ví dụ tên: DEMO Khách A nhé."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 6.38,
+          "state": "COLLECTING",
+          "revision": 8,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "greeting"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nChào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 6.47,
+          "state": "COLLECTING",
+          "revision": 8,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "greeting"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nChào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO."
+        },
+        {
+          "question": "Giờ mở cửa của cửa hàng?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 6.5,
+          "state": "COLLECTING",
+          "revision": 8,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "greeting"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nChào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "b552a2b2-bf1a-4315-98da-b0cdb1c7813c",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 12,
+          "drafts": 1,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"price\",\"size\"],\"action\":\"none\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"start_order\",\"product_mentions\":[\"bánh socola\"],\"reference\":\"none\",\"updates\":[{\"field\":\"quantity\",\"value\":2},{\"field\":\"size\",\"value\":\"16 cm\"},{\"field\":\"toppings\",\"value\":[]},{\"field\":\"cake_text\",\"value\":\"Chúc vui\"},{\"field\":\"pickup_at\",\"value\":\"2099-01-04 10:00\"},{\"field\":\"fulfillment\",\"value\":\"pickup\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"order_request\"],\"action\":\"review\",\"product_mentions\":[],\"reference\":\"none\",\"updates\":[{\"field\":\"size\",\"value\":\"20 cm\"}],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":true}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"greeting\"],\"action\":\"none\",\"product_mentions\":[],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"greeting\"],\"action\":\"none\",\"product_mentions\":[],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\"intents\":[\"greeting\"],\"action\":\"none\",\"product_mentions\":[],\"reference\":\"none\",\"updates\":[],\"clear_slots\":[],\"ambiguous\":false,\"handoff_reason\":\"none\",\"order_update\":false}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:41:52.043792+00:00",
+      "database_path": "runtime\\model-smoke-0bcb648d.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 10.56,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n- Bánh mì baguette [demo-018], vị lúa mì:\n  • ổ 400 g: 30.000 đ; khoảng 4 người; còn hàng.\n- Cupcake vani [demo-013], vị vani:\n  • hộp 4 chiếc: 35.000 đ; khoảng 4 người; còn hàng.\n- Muffin chuối [demo-014], vị chuối:\n  • hộp 4 chiếc: 40.000 đ; khoảng 4 người; còn hàng.\n- Brownie socola [demo-012], vị socola:\n  • hộp 4 chiếc: 45.000 đ; khoảng 4 người; còn hàng.\n- Bánh su kem [demo-015], vị vani:\n  • hộp 4 chiếc: 60.000 đ; khoảng 4 người; còn hàng.\nHiển thị 5/25 sản phẩm phù hợp; bạn có thể lọc thêm.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 33.12,
+          "state": "REVIEW",
+          "revision": 9,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "size": "16 cm",
+              "quantity": 2,
+              "toppings": [],
+              "cake_text": "Chúc vui",
+              "pickup_at": "2099-01-04 10:00",
+              "fulfillment": "pickup",
+              "name": "DEMO Khách A",
+              "phone": "TEST-0001"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nREVIEW bản 9 — nguồn local_demo; CHƯA xác nhận đơn.\n- mã bánh: demo-001 [verified]\n- size: 16 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 250.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 500.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+        },
+        {
+          "question": "Đồng ý nhưng đổi sang size 20 cm.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 12.45,
+          "state": "REVIEW",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "20 cm"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nREVIEW bản 10 — nguồn local_demo; CHƯA xác nhận đơn.\n- mã bánh: demo-001 [verified]\n- size: 20 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 350.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 700.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 9.89,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nĐã lưu ĐƠN MÔ PHỎNG DEMO-66EE5A71 [66ee5a71-800a-48bc-a6db-0d1be37990f9]. Tổng mẫu 700.000 đ; payment_status=unpaid. Không thanh toán/giao hàng thật."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 9.94,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\nBản này đã lưu trước đó [66ee5a71-800a-48bc-a6db-0d1be37990f9]: demo_order. Không tạo bản ghi thứ hai; mọi dữ liệu đều là thử nghiệm."
+        },
+        {
+          "question": "Giờ mở cửa của cửa hàng?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 14.26,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "policy"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU mock — chỉ học và kiểm thử]\n\n[Kiến thức: local_demo] [ĐIỀU KHOẢN MÔ PHỎNG — không áp dụng cho đơn thật]\nCác đoạn truy xuất chưa đủ thông tin để trả lời câu hỏi này; mình chưa thể xác nhận nội dung bạn hỏi."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "3891523a-d238-4f32-8d70-d6e3f83d1d7c",
+      "order": {
+        "draft_id": "474b25ad-21f1-467b-a415-a50bbf06eefe",
+        "revision": 10,
+        "kind": "demo_order",
+        "slots": {
+          "cake_need": null,
+          "product_id": "demo-001",
+          "size": "20 cm",
+          "toppings": [],
+          "quantity": 2,
+          "cake_text": "Chúc vui",
+          "pickup_at": "2099-01-04T03:00:00+00:00",
+          "fulfillment": "pickup",
+          "name": "DEMO Khách A",
+          "phone": "TEST-0001",
+          "address": null
+        },
+        "verification": {
+          "cake_need": "unverified",
+          "product_id": "verified",
+          "size": "verified",
+          "toppings": "not_applicable",
+          "quantity": "verified",
+          "cake_text": "verified",
+          "pickup_at": "verified",
+          "fulfillment": "verified",
+          "name": "verified",
+          "phone": "verified",
+          "address": "verified",
+          "opening_hours": "verified",
+          "lead_time": "verified"
+        },
+        "issues": [],
+        "quote": {
+          "variant_id": "demo-001-v2",
+          "base_price_vnd": 350000,
+          "toppings_vnd": 0,
+          "cake_text_vnd": 0,
+          "unit_price_vnd": 350000,
+          "quantity": 2,
+          "delivery_fee_vnd": 0,
+          "total_vnd": 700000,
+          "is_mock": true
+        },
+        "data_mode": "local_demo",
+        "is_mock": true,
+        "is_demo": true,
+        "source": "local_demo",
+        "confirmed": true,
+        "payment_status": "unpaid",
+        "snapshot": {
+          "name": "Bánh kem socola",
+          "product_id": "demo-001",
+          "variant_id": "demo-001-v2",
+          "size": "20 cm",
+          "toppings": [],
+          "topping_prices": {},
+          "cake_text": "Chúc vui",
+          "price": {
+            "variant_id": "demo-001-v2",
+            "base_price_vnd": 350000,
+            "toppings_vnd": 0,
+            "cake_text_vnd": 0,
+            "unit_price_vnd": 350000,
+            "quantity": 2,
+            "delivery_fee_vnd": 0,
+            "total_vnd": 700000,
+            "is_mock": true
+          },
+          "source": "local_demo",
+          "is_demo": true
+        },
+        "id": "66ee5a71-800a-48bc-a6db-0d1be37990f9",
+        "conversation_id": "3891523a-d238-4f32-8d70-d6e3f83d1d7c",
+        "order_code": "DEMO-66EE5A71",
+        "created_at": "2026-10-04T12:42:58.084369+00:00"
+      },
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 12,
+          "drafts": 1,
+          "orders": 1,
+          "order_items": 1,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"start_order\",\n  \"product_mentions\": [\n    \"bánh socola\"\n  ],\n  \"reference\": \"none\",\n  \"updates\": [\n    {\n      \"field\": \"quantity\",\n      \"value\": 2\n    },\n    {\n      \"field\": \"size\",\n      \"value\": \"16 cm\"\n    },\n    {\n      \"field\": \"toppings\",\n      \"value\": []\n    },\n    {\n      \"field\": \"cake_text\",\n      \"value\": \"Chúc vui\"\n    },\n    {\n      \"field\": \"pickup_at\",\n      \"value\": \"2099-01-04 10:00\"\n    },\n    {\n      \"field\": \"fulfillment\",\n      \"value\": \"pickup\"\n    },\n    {\n      \"field\": \"name\",\n      \"value\": \"DEMO Khách A\"\n    },\n    {\n      \"field\": \"phone\",\n      \"value\": \"TEST-0001\"\n    }\n  ],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [\n    {\n      \"field\": \"size\",\n      \"value\": \"20 cm\"\n    }\n  ],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"policy\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:45:09.936842+00:00",
+      "database_path": "runtime\\model-smoke-f8bd9fe4.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "llm_error",
+          "llm_error": "missing_catalog_mention",
+          "source_error": null,
+          "attempts": 2,
+          "seconds": 19.3,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": null,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\nChưa xử lý được lượt này (missing_catalog_mention). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "dbb29520-a29d-43c4-be5d-b247af10f644",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 0,
+          "messages": 0,
+          "drafts": 0,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:47:26.745931+00:00",
+      "database_path": "runtime\\model-smoke-744f85b8.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "llm_error",
+          "llm_error": "missing_catalog_mention",
+          "source_error": null,
+          "attempts": 2,
+          "seconds": 19.05,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": null,
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\nChưa xử lý được lượt này (missing_catalog_mention). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+        }
+      ],
+      "passed": false,
+      "conversation_id": "790a3739-d1ea-42d2-85e2-272d8da226ba",
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 0,
+          "messages": 0,
+          "drafts": 0,
+          "orders": 0,
+          "order_items": 0,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    },
+    {
+      "kind": "real_ollama_smoke",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T12:56:46.329750+00:00",
+      "database_path": "runtime\\model-smoke-0aff76f4.sqlite3",
+      "steps": [
+        {
+          "question": "Giá và size bánh socola?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 27.28,
+          "state": "BROWSING",
+          "revision": 0,
+          "products": [
+            "demo-001"
+          ],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "question": "Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui', nhận tại cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 34.08,
+          "state": "REVIEW",
+          "revision": 9,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "size": "16 cm",
+              "quantity": 2,
+              "toppings": [],
+              "cake_text": "Chúc vui",
+              "pickup_at": "2099-01-04 10:00",
+              "fulfillment": "pickup",
+              "name": "DEMO Khách A",
+              "phone": "TEST-0001"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nREVIEW bản 9 — nguồn local_demo; CHƯA xác nhận đơn.\nBánh đã đối chiếu: Bánh kem socola\n- mã bánh: demo-001 [verified]\n- size: 16 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 250.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 500.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+        },
+        {
+          "question": "Đồng ý nhưng đổi sang size 20 cm.",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 14.89,
+          "state": "REVIEW",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 0,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "20 cm"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nREVIEW bản 10 — nguồn local_demo; CHƯA xác nhận đơn.\nBánh đã đối chiếu: Bánh kem socola\n- mã bánh: demo-001 [verified]\n- size: 20 cm [verified]\n- topping: [] [not_applicable]\n- số lượng: 2 [verified]\n- chữ trên bánh: Chúc vui [verified]\n- ngày giờ nhận: 2099-01-04 10:00 (giờ Việt Nam) [verified]\n- hình thức nhận: nhận tại cửa hàng (mô phỏng) [verified]\n- tên giả: DEMO Khách A [verified]\n- điện thoại giả: TEST-0001 [verified]\nGiá/chiếc: 350.000 đ; topping/chiếc: 0 đ; viết chữ/chiếc: 0 đ; số lượng: 2; giao demo: 0 đ.\nBáo giá MÔ PHỎNG: 700.000 đ; không thanh toán thật.\nKhả dụng: available; cần xác minh: không có mục thiếu trong dữ liệu demo\nGõ 'xác nhận' để gửi bản REVIEW này. Empty chỉ lưu yêu cầu chờ tư vấn; mock đủ điều kiện mới tạo đơn DEMO. Sửa trường bất kỳ phải xem lại.\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 10.66,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐã lưu ĐƠN MÔ PHỎNG DEMO-0DDFA15A [0ddfa15a-5fd8-4bc2-87b3-2c1c9b8f4ce2]. Tổng mẫu 700.000 đ; payment_status=unpaid. Không thanh toán/giao hàng thật."
+        },
+        {
+          "question": "Xác nhận",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 10.56,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nBản này đã lưu trước đó [0ddfa15a-5fd8-4bc2-87b3-2c1c9b8f4ce2]: demo_order. Không tạo bản ghi thứ hai; mọi dữ liệu đều là thử nghiệm."
+        },
+        {
+          "question": "Giờ mở cửa của cửa hàng?",
+          "engine": "ollama",
+          "llm_error": null,
+          "source_error": null,
+          "attempts": 1,
+          "seconds": 26.61,
+          "state": "DEMO_CONFIRMED",
+          "revision": 10,
+          "products": [],
+          "policy_sources": [
+            "demo-policy-001",
+            "demo-policy-010"
+          ],
+          "orders_count": 1,
+          "proposal": {
+            "intents": [
+              "policy"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\n[Kiến thức: local_demo] [ĐIỀU KHOẢN MÔ PHỎNG — không áp dụng cho đơn thật]\nTrích đoạn tài liệu liên quan để đối chiếu (không phải xác nhận đơn):\nNguồn [demo-policy-001] — Giờ mở cửa — phiên bản demo-1:\n> MÔ PHỎNG: cửa hàng mở 08:00–20:00 mỗi ngày theo Asia/Ho_Chi_Minh. Chỉ nhận lịch tại cửa hàng hoặc giao demo trong khoảng 08:00 đến trước 20:00.\nNguồn [demo-policy-010] — Xử lý ngoài giờ — phiên bản demo-1:\n> MÔ PHỎNG: ngoài 08:00–20:00 vẫn lưu yêu cầu tư vấn local. Chỉ thông báo chờ xử lý, không cam kết nhân viên đã nhận."
+        }
+      ],
+      "passed": true,
+      "conversation_id": "ee05620e-cd18-41b7-bab4-7afc5ccfe808",
+      "order": {
+        "draft_id": "be7d86be-8744-4a7f-9e93-f499f130d7e0",
+        "revision": 10,
+        "kind": "demo_order",
+        "slots": {
+          "cake_need": null,
+          "product_id": "demo-001",
+          "size": "20 cm",
+          "toppings": [],
+          "quantity": 2,
+          "cake_text": "Chúc vui",
+          "pickup_at": "2099-01-04T03:00:00+00:00",
+          "fulfillment": "pickup",
+          "name": "DEMO Khách A",
+          "phone": "TEST-0001",
+          "address": null
+        },
+        "verification": {
+          "cake_need": "unverified",
+          "product_id": "verified",
+          "size": "verified",
+          "toppings": "not_applicable",
+          "quantity": "verified",
+          "cake_text": "verified",
+          "pickup_at": "verified",
+          "fulfillment": "verified",
+          "name": "verified",
+          "phone": "verified",
+          "address": "verified",
+          "opening_hours": "verified",
+          "lead_time": "verified"
+        },
+        "issues": [],
+        "quote": {
+          "variant_id": "demo-001-v2",
+          "base_price_vnd": 350000,
+          "toppings_vnd": 0,
+          "cake_text_vnd": 0,
+          "unit_price_vnd": 350000,
+          "quantity": 2,
+          "delivery_fee_vnd": 0,
+          "total_vnd": 700000,
+          "is_mock": true
+        },
+        "data_mode": "local_demo",
+        "is_mock": true,
+        "is_demo": true,
+        "source": "local_demo",
+        "confirmed": true,
+        "payment_status": "unpaid",
+        "snapshot": {
+          "name": "Bánh kem socola",
+          "product_id": "demo-001",
+          "variant_id": "demo-001-v2",
+          "size": "20 cm",
+          "toppings": [],
+          "topping_prices": {},
+          "cake_text": "Chúc vui",
+          "price": {
+            "variant_id": "demo-001-v2",
+            "base_price_vnd": 350000,
+            "toppings_vnd": 0,
+            "cake_text_vnd": 0,
+            "unit_price_vnd": 350000,
+            "quantity": 2,
+            "delivery_fee_vnd": 0,
+            "total_vnd": 700000,
+            "is_mock": true
+          },
+          "source": "local_demo",
+          "is_demo": true
+        },
+        "id": "0ddfa15a-5fd8-4bc2-87b3-2c1c9b8f4ce2",
+        "conversation_id": "ee05620e-cd18-41b7-bab4-7afc5ccfe808",
+        "order_code": "DEMO-0DDFA15A",
+        "created_at": "2026-10-04T12:58:13.257501+00:00"
+      },
+      "database_check": {
+        "schema_version": 2,
+        "foreign_keys_enabled": true,
+        "foreign_key_errors": 0,
+        "integrity": "ok",
+        "counts": {
+          "products": 25,
+          "product_variants": 35,
+          "toppings": 3,
+          "product_toppings": 20,
+          "policies": 13,
+          "conversations": 1,
+          "messages": 12,
+          "drafts": 1,
+          "orders": 1,
+          "order_items": 1,
+          "tickets": 0
+        }
+      },
+      "wire_responses": [
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"price\",\n    \"size\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [\n    \"bánh socola\"\n  ],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"start_order\",\n  \"product_mentions\": [\n    \"bánh socola\"\n  ],\n  \"reference\": \"none\",\n  \"updates\": [\n    {\n      \"field\": \"quantity\",\n      \"value\": 2\n    },\n    {\n      \"field\": \"size\",\n      \"value\": \"16 cm\"\n    },\n    {\n      \"field\": \"toppings\",\n      \"value\": []\n    },\n    {\n      \"field\": \"cake_text\",\n      \"value\": \"Chúc vui\"\n    },\n    {\n      \"field\": \"pickup_at\",\n      \"value\": \"2099-01-04 10:00\"\n    },\n    {\n      \"field\": \"fulfillment\",\n      \"value\": \"pickup\"\n    },\n    {\n      \"field\": \"name\",\n      \"value\": \"DEMO Khách A\"\n    },\n    {\n      \"field\": \"phone\",\n      \"value\": \"TEST-0001\"\n    }\n  ],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\",\n  \"order_update\": true\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [\n    {\n      \"field\": \"size\",\n      \"value\": \"20 cm\"\n    }\n  ],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\",\n  \"order_update\": true\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"order_request\"\n  ],\n  \"action\": \"confirm\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        },
+        {
+          "ok": true,
+          "content": "{\n  \"intents\": [\n    \"policy\"\n  ],\n  \"action\": \"none\",\n  \"product_mentions\": [],\n  \"reference\": \"none\",\n  \"updates\": [],\n  \"clear_slots\": [],\n  \"ambiguous\": false,\n  \"handoff_reason\": \"none\"\n}",
+          "error": null,
+          "model": "qwen3.5:4b",
+          "http_status": 200
+        }
+      ]
+    }
+  ]
+}

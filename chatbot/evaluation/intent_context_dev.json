@@ -1,0 +1,1527 @@
+{
+  "version": "intent-context-v1",
+  "annotation_revision": 2,
+  "split": "dev",
+  "sample_count": 48,
+  "source": "manually_labelled_synthetic",
+  "is_mock": true,
+  "scope": "Qwen NLU and controller, not overall/production evaluation",
+  "dialogues": [
+    {
+      "id": "dev_basics",
+      "mode": "local_demo",
+      "tags": [
+        "price",
+        "size",
+        "flavor",
+        "availability",
+        "multi_intent"
+      ],
+      "turns": [
+        {
+          "message": "Xin chào",
+          "label": {
+            "intents": [
+              "greeting"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "draft_unchanged": true
+          },
+          "id": "dev-001",
+          "turn_index": 1
+        },
+        {
+          "message": "Bánh socola giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-002",
+          "turn_index": 2
+        },
+        {
+          "message": "Bánh dâu có những size nào?",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-003",
+          "turn_index": 3
+        },
+        {
+          "message": "Bánh vani có vị gì?",
+          "label": {
+            "intents": [
+              "flavor"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-004",
+          "turn_index": 4
+        },
+        {
+          "message": "Bánh trà xanh còn hàng không?",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "trà xanh"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-004"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-005",
+          "turn_index": 5
+        },
+        {
+          "message": "Giá và size bánh dâu?",
+          "label": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-006",
+          "turn_index": 6
+        },
+        {
+          "message": "Bánh socola có thành phần gây dị ứng nào?",
+          "label": {
+            "intents": [
+              "allergen"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-007",
+          "turn_index": 7
+        }
+      ]
+    },
+    {
+      "id": "dev_scope",
+      "mode": "local_demo",
+      "tags": [
+        "topic_switch",
+        "draft_isolation",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "message": "Tôi muốn đặt bánh socola",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-001",
+            "state": "COLLECTING"
+          },
+          "id": "dev-008",
+          "turn_index": 1
+        },
+        {
+          "message": "Bánh dâu giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "order_product_id": "demo-001",
+            "draft_unchanged": true
+          },
+          "id": "dev-009",
+          "turn_index": 2
+        },
+        {
+          "message": "Bánh trong đơn giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "order",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "order_product_id": "demo-001",
+            "draft_unchanged": true
+          },
+          "id": "dev-010",
+          "turn_index": 3
+        },
+        {
+          "message": "Bảo quản bánh dâu thế nào?",
+          "label": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "order_product_id": "demo-001",
+            "draft_unchanged": true
+          },
+          "id": "dev-011",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "dev_reference",
+      "mode": "local_demo",
+      "tags": [
+        "reference",
+        "order_edit"
+      ],
+      "turns": [
+        {
+          "message": "Mình muốn đặt socola",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-001",
+            "state": "COLLECTING"
+          },
+          "id": "dev-012",
+          "turn_index": 1
+        },
+        {
+          "message": "Bánh đó giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-013",
+          "turn_index": 2
+        },
+        {
+          "message": "Đổi sang bánh dâu",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "dâu"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-002",
+            "state": "COLLECTING"
+          },
+          "id": "dev-014",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_multiple",
+      "mode": "local_demo",
+      "tags": [
+        "multi_product",
+        "attribute_linking",
+        "ambiguity"
+      ],
+      "turns": [
+        {
+          "message": "Giá bánh dâu và socola?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001",
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-015",
+          "turn_index": 1
+        },
+        {
+          "message": "Giá dâu và hương vị socola?",
+          "label": {
+            "intents": [
+              "price",
+              "flavor"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "dâu"
+                ],
+                "reference": "none",
+                "size": null
+              },
+              {
+                "intents": [
+                  "flavor"
+                ],
+                "product_mentions": [
+                  "socola"
+                ],
+                "reference": "none",
+                "size": null
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001",
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-016",
+          "turn_index": 2
+        },
+        {
+          "message": "Giá dâu size 16 cm và socola size 20 cm?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "dâu"
+                ],
+                "reference": "none",
+                "size": "16 cm"
+              },
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "socola"
+                ],
+                "reference": "none",
+                "size": "20 cm"
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001",
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-017",
+          "turn_index": 3
+        },
+        {
+          "message": "Bánh đó giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": true,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "clarification": true,
+            "draft_unchanged": true
+          },
+          "id": "dev-018",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "dev_spelling",
+      "mode": "local_demo",
+      "tags": [
+        "no_accents",
+        "abbreviation",
+        "negation"
+      ],
+      "turns": [
+        {
+          "message": "gia dau bn?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dau"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-019",
+          "turn_index": 1
+        },
+        {
+          "message": "sz socola la bao nhieu?",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-020",
+          "turn_index": 2
+        },
+        {
+          "message": "banh tra xanh con ko?",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "tra xanh"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-004"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-021",
+          "turn_index": 3
+        },
+        {
+          "message": "tu van socola duoi 300k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "budget_vnd": 300000,
+              "price_inclusive": false
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-022",
+          "turn_index": 4
+        },
+        {
+          "message": "Tôi chưa muốn đặt, chỉ hỏi giá socola",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-023",
+          "turn_index": 5
+        },
+        {
+          "message": "Không cần socola, xem giá vani thôi",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola",
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "vani"
+                ],
+                "reference": "none",
+                "size": null
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-024",
+          "turn_index": 6
+        }
+      ]
+    },
+    {
+      "id": "dev_slots",
+      "mode": "local_demo",
+      "tags": [
+        "slot_filling",
+        "slot_clear",
+        "multi_turn",
+        "policy"
+      ],
+      "turns": [
+        {
+          "message": "Tôi đặt bánh socola",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-001",
+            "state": "COLLECTING"
+          },
+          "id": "dev-025",
+          "turn_index": 1
+        },
+        {
+          "message": "Size 16 cm nhé",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "16 cm"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "size": "16 cm"
+            },
+            "state": "COLLECTING"
+          },
+          "id": "dev-026",
+          "turn_index": 2
+        },
+        {
+          "message": "Hai chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "quantity": 2
+            },
+            "state": "COLLECTING"
+          },
+          "id": "dev-027",
+          "turn_index": 3
+        },
+        {
+          "message": "Không topping",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "toppings": []
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "toppings": []
+            },
+            "state": "COLLECTING"
+          },
+          "id": "dev-028",
+          "turn_index": 4
+        },
+        {
+          "message": "Ghi chữ 'Chúc vui'",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "cake_text": "Chúc vui"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "cake_text": "Chúc vui"
+            },
+            "state": "COLLECTING"
+          },
+          "id": "dev-029",
+          "turn_index": 5
+        },
+        {
+          "message": "Giờ mở cửa của cửa hàng?",
+          "label": {
+            "intents": [
+              "policy"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_product_id": "demo-001"
+          },
+          "id": "dev-030",
+          "turn_index": 6
+        },
+        {
+          "message": "Bỏ size đã chọn",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [
+              "size"
+            ],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "size": null
+            },
+            "state": "COLLECTING"
+          },
+          "id": "dev-031",
+          "turn_index": 7
+        }
+      ]
+    },
+    {
+      "id": "dev_review",
+      "mode": "local_demo",
+      "tags": [
+        "review_revision",
+        "negated_confirmation"
+      ],
+      "turns": [
+        {
+          "message": "Tôi muốn đặt một bánh socola size 16 cm, không topping, không viết chữ, nhận cửa hàng 2099-01-04 10:00, tên DEMO Khách A, sđt TEST-0001.",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 1,
+              "size": "16 cm",
+              "toppings": [],
+              "cake_text": "",
+              "pickup_at": "2099-01-04 10:00",
+              "fulfillment": "pickup",
+              "name": "DEMO Khách A",
+              "phone": "TEST-0001"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "state": "REVIEW",
+            "order_count": 0,
+            "order_product_id": "demo-001"
+          },
+          "id": "dev-032",
+          "turn_index": 1
+        },
+        {
+          "message": "Đồng ý nhưng đổi size 20 cm",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "size": "20 cm"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "REVIEW",
+            "slots": {
+              "size": "20 cm"
+            },
+            "order_count": 0
+          },
+          "id": "dev-033",
+          "turn_index": 2
+        },
+        {
+          "message": "Chưa xác nhận, cho tôi xem lại",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "review",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "REVIEW",
+            "order_count": 0
+          },
+          "id": "dev-034",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_empty",
+      "mode": "empty",
+      "tags": [
+        "empty",
+        "cancel",
+        "handoff"
+      ],
+      "turns": [
+        {
+          "message": "Tôi muốn đặt socola",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "order_product_id": null,
+            "state": "COLLECTING"
+          },
+          "id": "dev-035",
+          "turn_index": 1
+        },
+        {
+          "message": "Giá bánh dâu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [],
+            "catalog_status": "unconfigured",
+            "order_product_id": null,
+            "draft_unchanged": true
+          },
+          "id": "dev-036",
+          "turn_index": 2
+        },
+        {
+          "message": "Hủy yêu cầu này",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "cancel",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "CANCELLED",
+            "order_count": 0
+          },
+          "id": "dev-037",
+          "turn_index": 3
+        },
+        {
+          "message": "Nhờ nhân viên tư vấn",
+          "label": {
+            "intents": [
+              "fallback"
+            ],
+            "action": "handoff",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "HANDOFF",
+            "order_count": 0
+          },
+          "id": "dev-038",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "dev_unknown",
+      "mode": "local_demo",
+      "tags": [
+        "unknown_product",
+        "ambiguity",
+        "negation"
+      ],
+      "turns": [
+        {
+          "message": "Giá bánh thiên hà?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh thiên hà"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [],
+            "catalog_status": "no_results",
+            "draft_unchanged": true
+          },
+          "id": "dev-039",
+          "turn_index": 1
+        },
+        {
+          "message": "Tôi muốn đặt dâu và socola",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "dâu",
+              "socola"
+            ]
+          },
+          "expected": {
+            "clarification": true,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-040",
+          "turn_index": 2
+        },
+        {
+          "message": "Giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": true,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "clarification": true,
+            "draft_unchanged": true
+          },
+          "id": "dev-041",
+          "turn_index": 3
+        },
+        {
+          "message": "Tôi không muốn đặt nữa",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "cancel",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "CANCELLED",
+            "order_count": 0
+          },
+          "id": "dev-042",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "dev_empty_save",
+      "mode": "empty",
+      "tags": [
+        "waiting_consultation",
+        "no_real_order"
+      ],
+      "turns": [
+        {
+          "message": "Tôi muốn đặt một bánh socola, size 16 cm, không topping, không viết chữ, nhận cửa hàng 2099-01-05 10:00, tên DEMO Khách A, sđt TEST-0002.",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 1,
+              "size": "16 cm",
+              "toppings": [],
+              "cake_text": "",
+              "pickup_at": "2099-01-05 10:00",
+              "fulfillment": "pickup",
+              "name": "DEMO Khách A",
+              "phone": "TEST-0002"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "socola"
+            ]
+          },
+          "expected": {
+            "state": "REVIEW",
+            "order_count": 0,
+            "order_product_id": null
+          },
+          "id": "dev-043",
+          "turn_index": 1
+        },
+        {
+          "message": "Xác nhận",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "HANDOFF",
+            "order_count": 0,
+            "confirmed": false
+          },
+          "id": "dev-044",
+          "turn_index": 2
+        },
+        {
+          "message": "Bánh vani giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [],
+            "catalog_status": "unconfigured",
+            "draft_unchanged": true
+          },
+          "id": "dev-045",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_mock",
+      "mode": "mock",
+      "tags": [
+        "mock",
+        "draft_isolation"
+      ],
+      "turns": [
+        {
+          "message": "Giá và size bánh socola?",
+          "label": {
+            "intents": [
+              "price",
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-046",
+          "turn_index": 1
+        },
+        {
+          "message": "Tôi muốn đặt bánh dâu",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "dâu"
+            ]
+          },
+          "expected": {
+            "order_product_id": "mock-002",
+            "state": "COLLECTING"
+          },
+          "id": "dev-047",
+          "turn_index": 2
+        },
+        {
+          "message": "Giá bánh socola?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001"
+            ],
+            "order_product_id": "mock-002",
+            "draft_unchanged": true
+          },
+          "id": "dev-048",
+          "turn_index": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# Validation JSON của LLM ở giai đoạn 3; không phải framework agent.
+pydantic==2.11.9
+fastapi==0.142.2
+starlette==1.7.0
+uvicorn==0.53.0
+tzdata==2026.4

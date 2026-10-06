@@ -1,0 +1,103 @@
+{
+  "model": "qwen3.5:4b",
+  "database": "runtime\\context-before-7aae36b8.sqlite3",
+  "steps": [
+    {
+      "message": "Tôi muốn đặt bánh socola",
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "product_mentions": [
+          "bánh socola"
+        ],
+        "reference": "none",
+        "updates": {
+          "cake_text": "bánh socola"
+        },
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [],
+      "draft": {
+        "id": "9caebfa2-acf3-4004-aee4-6e7dc972bcfc",
+        "conversation_id": "ed4f1fb6-258f-4511-a0b2-743156e9a7dd",
+        "state": "COLLECTING",
+        "revision": 2,
+        "slots": {
+          "cake_need": null,
+          "product_id": "demo-001",
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": "bánh socola",
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+    },
+    {
+      "message": "Bánh dâu giá bao nhiêu?",
+      "proposal": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "Bánh dâu"
+        ],
+        "reference": "last",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [
+        "demo-001",
+        "demo-002"
+      ],
+      "draft": {
+        "id": "9caebfa2-acf3-4004-aee4-6e7dc972bcfc",
+        "conversation_id": "ed4f1fb6-258f-4511-a0b2-743156e9a7dd",
+        "state": "COLLECTING",
+        "revision": 2,
+        "slots": {
+          "cake_need": null,
+          "product_id": "demo-001",
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": "bánh socola",
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+    }
+  ]
+}

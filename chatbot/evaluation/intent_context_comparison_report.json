@@ -1,0 +1,252 @@
+{
+  "scope": "Combined prompt/schema/controller change, not isolated prompt effect",
+  "samples": 48,
+  "split": "dev",
+  "dataset_sha256": "ec65f49ef1e2c3c25636f087fb2120dc2df9e9515d9ee7f236e49f459415f07d",
+  "intent_micro_f1": {
+    "before": 0.75,
+    "after": 0.8842
+  },
+  "extraction_exact": {
+    "before": 14,
+    "after": 23
+  },
+  "behavior_exact": {
+    "before": 30,
+    "after": 32
+  },
+  "model_errors": {
+    "before": 2,
+    "after": 7
+  },
+  "metrics": {
+    "action_exact": {
+      "before": {
+        "passed": 43,
+        "total": 48,
+        "rate": 0.8958
+      },
+      "after": {
+        "passed": 40,
+        "total": 48,
+        "rate": 0.8333
+      }
+    },
+    "catalog_status": {
+      "before": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "after": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1.0
+      }
+    },
+    "clarification": {
+      "before": {
+        "passed": 2,
+        "total": 3,
+        "rate": 0.6667
+      },
+      "after": {
+        "passed": 2,
+        "total": 3,
+        "rate": 0.6667
+      }
+    },
+    "clear_slots_exact": {
+      "before": {
+        "passed": 45,
+        "total": 48,
+        "rate": 0.9375
+      },
+      "after": {
+        "passed": 47,
+        "total": 48,
+        "rate": 0.9792
+      }
+    },
+    "confirmed": {
+      "before": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1.0
+      },
+      "after": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1.0
+      }
+    },
+    "draft_target": {
+      "before": {
+        "passed": 14,
+        "total": 14,
+        "rate": 1.0
+      },
+      "after": {
+        "passed": 13,
+        "total": 14,
+        "rate": 0.9286
+      }
+    },
+    "draft_unchanged": {
+      "before": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1.0
+      },
+      "after": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1.0
+      }
+    },
+    "intents_exact": {
+      "before": {
+        "passed": 33,
+        "total": 48,
+        "rate": 0.6875
+      },
+      "after": {
+        "passed": 39,
+        "total": 48,
+        "rate": 0.8125
+      }
+    },
+    "order_count": {
+      "before": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1.0
+      },
+      "after": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1.0
+      }
+    },
+    "query_products_exact": {
+      "before": {
+        "passed": 16,
+        "total": 24,
+        "rate": 0.6667
+      },
+      "after": {
+        "passed": 17,
+        "total": 24,
+        "rate": 0.7083
+      }
+    },
+    "reference_exact": {
+      "before": {
+        "passed": 29,
+        "total": 48,
+        "rate": 0.6042
+      },
+      "after": {
+        "passed": 36,
+        "total": 48,
+        "rate": 0.75
+      }
+    },
+    "request_links_exact": {
+      "before": {
+        "passed": 0,
+        "total": 3,
+        "rate": 0.0
+      },
+      "after": {
+        "passed": 1,
+        "total": 3,
+        "rate": 0.3333
+      }
+    },
+    "schema_grounding_ok": {
+      "before": {
+        "passed": 46,
+        "total": 48,
+        "rate": 0.9583
+      },
+      "after": {
+        "passed": 41,
+        "total": 48,
+        "rate": 0.8542
+      }
+    },
+    "slot_cake_text": {
+      "before": {
+        "passed": 0,
+        "total": 1,
+        "rate": 0.0
+      },
+      "after": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1.0
+      }
+    },
+    "slot_quantity": {
+      "before": {
+        "passed": 0,
+        "total": 1,
+        "rate": 0.0
+      },
+      "after": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1.0
+      }
+    },
+    "slot_size": {
+      "before": {
+        "passed": 2,
+        "total": 3,
+        "rate": 0.6667
+      },
+      "after": {
+        "passed": 2,
+        "total": 3,
+        "rate": 0.6667
+      }
+    },
+    "slot_toppings": {
+      "before": {
+        "passed": 0,
+        "total": 1,
+        "rate": 0.0
+      },
+      "after": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1.0
+      }
+    },
+    "state": {
+      "before": {
+        "passed": 14,
+        "total": 19,
+        "rate": 0.7368
+      },
+      "after": {
+        "passed": 13,
+        "total": 19,
+        "rate": 0.6842
+      }
+    },
+    "updates_exact": {
+      "before": {
+        "passed": 38,
+        "total": 48,
+        "rate": 0.7917
+      },
+      "after": {
+        "passed": 38,
+        "total": 48,
+        "rate": 0.7917
+      }
+    }
+  }
+}

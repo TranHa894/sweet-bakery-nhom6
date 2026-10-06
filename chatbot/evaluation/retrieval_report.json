@@ -1,0 +1,530 @@
+{
+  "generated_at_utc": "2026-10-03T08:39:44.329425+00:00",
+  "retriever_version": "keyword-v1",
+  "corpus_sha256": "9e8c8f5f479e70bfd6ba651334ddc91d8384240c69081c20e614dccd80c07950",
+  "top_k": 3,
+  "min_score": 0.15,
+  "counts": {
+    "total": 27,
+    "answerable": 21,
+    "unanswerable": 6
+  },
+  "metrics": {
+    "recall_at_k": 1.0,
+    "hit_at_1": 0.952381,
+    "mrr_at_k": 0.97619,
+    "unanswerable_abstention_rate": 0.5,
+    "exact_source_set_accuracy": 0.37037,
+    "mean_elapsed_ms": 0.680889
+  },
+  "cases": [
+    {
+      "id": "dev-001",
+      "question": "Phí giao hàng là bao nhiêu?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-001"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-001"
+      ],
+      "scores": [
+        0.858263
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.973
+    },
+    {
+      "id": "dev-002",
+      "question": "Có ship trong phạm vi nào?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-001"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-001",
+        "sample-policy-004"
+      ],
+      "scores": [
+        0.600549,
+        0.300274
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.714
+    },
+    {
+      "id": "dev-003",
+      "question": "Bán kính giao hàng là mấy km?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-001"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-001",
+        "sample-policy-003"
+      ],
+      "scores": [
+        0.920164,
+        0.195015
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.684
+    },
+    {
+      "id": "dev-004",
+      "question": "phi van chuyen bao nhieu",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-001"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-001",
+        "sample-policy-003"
+      ],
+      "scores": [
+        0.765846,
+        0.228301
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.703
+    },
+    {
+      "id": "dev-005",
+      "question": "Thanh toán bằng cách nào?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-002"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-002"
+      ],
+      "scores": [
+        1.154658
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.733
+    },
+    {
+      "id": "dev-006",
+      "question": "Có nhận COD không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-002"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-002",
+        "sample-policy-003",
+        "sample-policy-004"
+      ],
+      "scores": [
+        1.0,
+        0.360361,
+        0.360361
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.674
+    },
+    {
+      "id": "dev-007",
+      "question": "Tôi có thể chuyển khoản không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-002"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-002",
+        "sample-policy-003",
+        "sample-policy-001"
+      ],
+      "scores": [
+        1.0,
+        1.0,
+        0.907158
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.643
+    },
+    {
+      "id": "dev-008",
+      "question": "Thanh toán bằng tiền mặt khi nhận bánh được không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-002"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-002",
+        "sample-policy-004"
+      ],
+      "scores": [
+        1.372427,
+        0.255145
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.63
+    },
+    {
+      "id": "dev-009",
+      "question": "Thời hạn đổi trả là bao lâu?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-003"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-003"
+      ],
+      "scores": [
+        0.623284
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.662
+    },
+    {
+      "id": "dev-010",
+      "question": "Bánh bị hỏng lúc vận chuyển thì có đổi trả được không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-003"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-003",
+        "sample-policy-001"
+      ],
+      "scores": [
+        1.287555,
+        0.469978
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.637
+    },
+    {
+      "id": "dev-011",
+      "question": "Sai nội dung đã xác nhận thì được đổi không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-003"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-003",
+        "sample-policy-005"
+      ],
+      "scores": [
+        1.155843,
+        0.42051
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.627
+    },
+    {
+      "id": "dev-012",
+      "question": "Đổi ý sau khi nhận thì có trả lại được không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-003"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-003",
+        "sample-policy-004",
+        "sample-policy-005"
+      ],
+      "scores": [
+        1.568716,
+        0.431284,
+        0.431284
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.655
+    },
+    {
+      "id": "dev-013",
+      "question": "Bảo quản bánh ở nhiệt độ nào?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-004"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-004"
+      ],
+      "scores": [
+        0.858263
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.618
+    },
+    {
+      "id": "dev-014",
+      "question": "Bánh nên để ngăn mát hay ngăn đá?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-004"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-004",
+        "sample-policy-002"
+      ],
+      "scores": [
+        0.575947,
+        0.25718
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.616
+    },
+    {
+      "id": "dev-015",
+      "question": "Bánh dùng trong bao lâu sau khi nhận?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-004"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-003",
+        "sample-policy-004"
+      ],
+      "scores": [
+        0.339931,
+        0.339931
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 0.5,
+      "exact_source_set": false,
+      "elapsed_ms": 0.636
+    },
+    {
+      "id": "dev-016",
+      "question": "Hướng dẫn bao quan trong bài tập là gì?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-004"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-004",
+        "sample-policy-005"
+      ],
+      "scores": [
+        1.182598,
+        0.269607
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.801
+    },
+    {
+      "id": "dev-017",
+      "question": "Có thể viết chữ lên bánh không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-005"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-005"
+      ],
+      "scores": [
+        1.0
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.709
+    },
+    {
+      "id": "dev-018",
+      "question": "Thay đổi trang trí cần báo trước bao lâu?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-005"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-005"
+      ],
+      "scores": [
+        0.643703
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.65
+    },
+    {
+      "id": "dev-019",
+      "question": "Yêu cầu tùy chỉnh phải đặt trước mấy giờ?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-005"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-005",
+        "sample-policy-003"
+      ],
+      "scores": [
+        1.252467,
+        0.345244
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.635
+    },
+    {
+      "id": "dev-020",
+      "question": "Có ghi nhận yêu cầu trang trí trong bài tập không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-005"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-005",
+        "sample-policy-003",
+        "sample-policy-004"
+      ],
+      "scores": [
+        1.0,
+        0.327193,
+        0.30659
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.671
+    },
+    {
+      "id": "dev-021",
+      "question": "Phí giao hàng bao nhiêu và có COD không?",
+      "answerable": true,
+      "expected_source_ids": [
+        "sample-policy-001",
+        "sample-policy-002"
+      ],
+      "retrieved_source_ids": [
+        "sample-policy-001",
+        "sample-policy-002"
+      ],
+      "scores": [
+        0.706642,
+        0.17666
+      ],
+      "recall": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.636
+    },
+    {
+      "id": "dev-022",
+      "question": "Giá bánh socola là bao nhiêu?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [
+        "sample-policy-001",
+        "sample-policy-002"
+      ],
+      "scores": [
+        0.168164,
+        0.168164
+      ],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.622
+    },
+    {
+      "id": "dev-023",
+      "question": "Bánh socola còn hàng không?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [],
+      "scores": [],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.675
+    },
+    {
+      "id": "dev-024",
+      "question": "Bánh có đậu phộng gây dị ứng không?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [],
+      "scores": [],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.639
+    },
+    {
+      "id": "dev-025",
+      "question": "Cửa hàng mở cửa lúc mấy giờ?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [
+        "sample-policy-003",
+        "sample-policy-004",
+        "sample-policy-005"
+      ],
+      "scores": [
+        0.556571,
+        0.223237,
+        0.223237
+      ],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.631
+    },
+    {
+      "id": "dev-026",
+      "question": "Có chính sách bảo hành ba năm không?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [],
+      "scores": [],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": true,
+      "elapsed_ms": 0.802
+    },
+    {
+      "id": "dev-027",
+      "question": "Có giao hàng quốc tế không?",
+      "answerable": false,
+      "expected_source_ids": [],
+      "retrieved_source_ids": [
+        "sample-policy-001"
+      ],
+      "scores": [
+        0.546362
+      ],
+      "recall": null,
+      "reciprocal_rank": 0,
+      "exact_source_set": false,
+      "elapsed_ms": 0.708
+    }
+  ],
+  "dataset_sha256": "ba63bd8e52e1529110165c8d9bb1c2ea30fe252447fae4eca3f5d00abcc43683"
+}
