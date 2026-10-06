@@ -1,0 +1,807 @@
+{
+  "version": "intent-context-fewshot-v8",
+  "source": "abstract_patterns_from_development_errors",
+  "note": "bánh A/B/C là placeholder, không phải menu. Không chứa nhãn final test.",
+  "examples": [
+    {
+      "input": {
+        "message": "Bánh B giá bao nhiêu?",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 0
+    },
+    {
+      "input": {
+        "message": "Bánh đó giá bao nhiêu?",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "reference": "last",
+            "size": null
+          }
+        ]
+      },
+      "priority": 11
+    },
+    {
+      "input": {
+        "message": "Đổi bánh A sang bánh B và hỏi giá bánh C",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request",
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "select_product",
+        "product_mentions": [
+          "bánh A",
+          "bánh B",
+          "bánh C"
+        ],
+        "order_product_mentions": [
+          "bánh B"
+        ],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh C"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 70
+    },
+    {
+      "input": {
+        "message": "Không cần bánh A, xem giá bánh B thôi",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A",
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 50
+    },
+    {
+      "input": {
+        "message": "Giá bánh B size 16 cm và hương vị bánh C",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price",
+          "flavor"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh B",
+          "bánh C"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none",
+            "size": "16 cm"
+          },
+          {
+            "intents": [
+              "flavor"
+            ],
+            "product_mentions": [
+              "bánh C"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 12
+    },
+    {
+      "input": {
+        "message": "Hai chiếc",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "missing_fields": [
+              "quantity"
+            ],
+            "product_selected": true,
+            "next_required_field": "quantity"
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "COLLECTING"
+      ],
+      "priority": 1
+    },
+    {
+      "input": {
+        "message": "Đồng ý nhưng đổi size 20 cm",
+        "context": {
+          "order_draft": {
+            "state": "REVIEW",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "confirm",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "size",
+            "value": "20 cm"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "REVIEW"
+      ],
+      "priority": 1
+    },
+    {
+      "input": {
+        "message": "gio mo cua cua hang?",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "policy"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": []
+      },
+      "priority": 60
+    },
+    {
+      "input": {
+        "message": "Bánh B có vị gì?",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 0,
+            "shown_product_count": 0,
+            "focus_is_order_product": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "flavor"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "flavor"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 55
+    },
+    {
+      "input": {
+        "message": "Size 16 cm nhé",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "size",
+            "value": "16 cm"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "COLLECTING"
+      ],
+      "priority": 2
+    },
+    {
+      "input": {
+        "message": "Không topping",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "toppings",
+            "value": []
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "COLLECTING"
+      ],
+      "priority": 3
+    },
+    {
+      "input": {
+        "message": "Ghi chữ 'Chúc mừng'",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "cake_text",
+            "value": "Chúc mừng"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "COLLECTING"
+      ],
+      "priority": 40
+    },
+    {
+      "input": {
+        "message": "Tôi muốn đặt bánh A",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 0,
+            "shown_product_count": 0,
+            "focus_is_order_product": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [
+          "bánh A"
+        ],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "states": [
+        "BROWSING"
+      ],
+      "priority": 1
+    },
+    {
+      "states": [
+        "COLLECTING",
+        "REVIEW"
+      ],
+      "input": {
+        "message": "Thêm bánh B",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "add_product",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [
+          "bánh B"
+        ],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "priority": 2
+    },
+    {
+      "states": [
+        "COLLECTING",
+        "REVIEW"
+      ],
+      "input": {
+        "message": "Bỏ bánh A",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 1,
+            "shown_product_count": 0,
+            "focus_is_order_product": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "remove_product",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [
+          "bánh A"
+        ],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [
+          "product"
+        ],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "priority": 3
+    },
+    {
+      "states": [
+        "BROWSING"
+      ],
+      "input": {
+        "message": "Đặt một bánh A size 16 cm, không topping, không viết chữ, nhận tại cửa hàng 2099-02-01 09:00, tên DEMO Khách X, sđt TEST-X1.",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 0,
+            "shown_product_count": 0,
+            "focus_is_order_product": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [
+          "bánh A"
+        ],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 1
+          },
+          {
+            "field": "size",
+            "value": "16 cm"
+          },
+          {
+            "field": "toppings",
+            "value": []
+          },
+          {
+            "field": "cake_text",
+            "value": ""
+          },
+          {
+            "field": "pickup_at",
+            "value": "2099-02-01 09:00"
+          },
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          },
+          {
+            "field": "name",
+            "value": "DEMO Khách X"
+          },
+          {
+            "field": "phone",
+            "value": "TEST-X1"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "priority": 2
+    },
+    {
+      "input": {
+        "message": "Tư vấn bánh B dưới 300k",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "next_required_field": null
+          },
+          "conversation_context": {
+            "focused_product_count": 0,
+            "shown_product_count": 0,
+            "focus_is_order_product": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "budget_vnd",
+            "value": 300000
+          },
+          {
+            "field": "price_inclusive",
+            "value": false
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none",
+            "size": null
+          }
+        ]
+      },
+      "priority": 80
+    }
+  ]
+}

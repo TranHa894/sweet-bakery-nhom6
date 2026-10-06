@@ -1,0 +1,1532 @@
+{
+  "seed_version": "1.0",
+  "source": "local_demo",
+  "is_demo": true,
+  "products": [
+    {
+      "id": "demo-001",
+      "name": "Bánh kem socola",
+      "aliases": [
+        "socola",
+        "chocolate"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem socola thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "socola",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-001-v1",
+          "size": "16 cm",
+          "price_vnd": 250000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-001-v2",
+          "size": "20 cm",
+          "price_vnd": 350000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-002",
+      "name": "Bánh kem dâu",
+      "aliases": [
+        "dâu",
+        "strawberry"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem dâu thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "dâu",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-002-v1",
+          "size": "16 cm",
+          "price_vnd": 280000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-002-v2",
+          "size": "20 cm",
+          "price_vnd": 380000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-003",
+      "name": "Bánh kem vani",
+      "aliases": [
+        "vani",
+        "vanilla"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem vani thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "vani",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-003-v1",
+          "size": "16 cm",
+          "price_vnd": 220000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-003-v2",
+          "size": "20 cm",
+          "price_vnd": 320000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 8,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-004",
+      "name": "Bánh kem trà xanh",
+      "aliases": [
+        "trà xanh",
+        "matcha"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem trà xanh thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "trà xanh",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-004-v1",
+          "size": "16 cm",
+          "price_vnd": 300000,
+          "servings": 6,
+          "stock_quantity": 0,
+          "stock_status": "out_of_stock"
+        },
+        {
+          "id": "demo-004-v2",
+          "size": "20 cm",
+          "price_vnd": 400000,
+          "servings": 10,
+          "stock_quantity": 0,
+          "stock_status": "out_of_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 24,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-005",
+      "name": "Bánh kem cà phê",
+      "aliases": [
+        "cà phê",
+        "coffee"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem cà phê thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "cà phê",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-005-v1",
+          "size": "16 cm",
+          "price_vnd": 270000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-005-v2",
+          "size": "20 cm",
+          "price_vnd": 370000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-006",
+      "name": "Bánh kem xoài",
+      "aliases": [
+        "xoài",
+        "mango"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem xoài thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "xoài",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-006-v1",
+          "size": "16 cm",
+          "price_vnd": 290000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-006-v2",
+          "size": "20 cm",
+          "price_vnd": 390000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "hạt"
+      ],
+      "allergen_info": {
+        "status": "may_contain",
+        "items": [
+          "sữa",
+          "hạt"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 16,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-007",
+      "name": "Bánh kem dừa",
+      "aliases": [
+        "kem dừa"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem dừa thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "dừa",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-007-v1",
+          "size": "16 cm",
+          "price_vnd": 260000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-007-v2",
+          "size": "20 cm",
+          "price_vnd": 360000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-008",
+      "name": "Bánh kem caramel",
+      "aliases": [
+        "caramel"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem caramel thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "caramel",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-008-v1",
+          "size": "16 cm",
+          "price_vnd": 280000,
+          "servings": 6,
+          "stock_quantity": null,
+          "stock_status": "unknown"
+        },
+        {
+          "id": "demo-008-v2",
+          "size": "20 cm",
+          "price_vnd": 380000,
+          "servings": 10,
+          "stock_quantity": null,
+          "stock_status": "unknown"
+        }
+      ],
+      "allergen": null,
+      "allergen_info": {
+        "status": "unknown",
+        "items": [],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 18,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-009",
+      "name": "Bánh kem việt quất",
+      "aliases": [
+        "việt quất",
+        "blueberry"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem việt quất thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "việt quất",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-009-v1",
+          "size": "16 cm",
+          "price_vnd": 320000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-009-v2",
+          "size": "20 cm",
+          "price_vnd": 420000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 24,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-010",
+      "name": "Bánh kem cam",
+      "aliases": [
+        "kem cam"
+      ],
+      "category": "sinh nhật",
+      "description": "Bánh kem cam thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "cam",
+      "occasions": [
+        "sinh nhật",
+        "tiệc"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-010-v1",
+          "size": "16 cm",
+          "price_vnd": 240000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        },
+        {
+          "id": "demo-010-v2",
+          "size": "20 cm",
+          "price_vnd": 340000,
+          "servings": 10,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [],
+      "allergen_info": {
+        "status": "not_listed",
+        "items": [],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "ghi chữ trên bánh",
+        "topping"
+      ],
+      "min_lead_hours": 10,
+      "writing_supported": true,
+      "max_cake_text_length": 20,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-001",
+        "demo-top-002"
+      ],
+      "storage": "Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật.",
+      "shelf_life_hours": 48,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-011",
+      "name": "Tart chanh",
+      "aliases": [
+        "tart chanh"
+      ],
+      "category": "bánh ngọt",
+      "description": "Tart chanh thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "chanh",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-011-v1",
+          "size": "18 cm",
+          "price_vnd": 150000,
+          "servings": 6,
+          "stock_quantity": null,
+          "stock_status": "unknown"
+        }
+      ],
+      "allergen": null,
+      "allergen_info": {
+        "status": "unknown",
+        "items": [],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 6,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-012",
+      "name": "Brownie socola",
+      "aliases": [
+        "brownie"
+      ],
+      "category": "bánh ngọt",
+      "description": "Brownie socola thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "socola",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-012-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 45000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 2,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [
+        "demo-top-003"
+      ],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-013",
+      "name": "Cupcake vani",
+      "aliases": [
+        "cupcake"
+      ],
+      "category": "bánh ngọt",
+      "description": "Cupcake vani thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "vani",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-013-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 35000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 2,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-014",
+      "name": "Muffin chuối",
+      "aliases": [
+        "muffin",
+        "muffin chuối"
+      ],
+      "category": "bánh ngọt",
+      "description": "Muffin chuối thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "chuối",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-014-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 40000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "hạt"
+      ],
+      "allergen_info": {
+        "status": "may_contain",
+        "items": [
+          "sữa",
+          "hạt"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 2,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-015",
+      "name": "Bánh su kem",
+      "aliases": [
+        "su kem",
+        "choux"
+      ],
+      "category": "bánh ngọt",
+      "description": "Bánh su kem thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "vani",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-015-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 60000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 4,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-016",
+      "name": "Cheesecake dâu",
+      "aliases": [
+        "cheesecake"
+      ],
+      "category": "bánh ngọt",
+      "description": "Cheesecake dâu thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "dâu",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-016-v1",
+          "size": "18 cm",
+          "price_vnd": 180000,
+          "servings": 6,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-017",
+      "name": "Bánh mì sourdough",
+      "aliases": [
+        "sourdough"
+      ],
+      "category": "bánh mì thủ công",
+      "description": "Bánh mì sourdough thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "lúa mì",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-017-v1",
+          "size": "ổ 400 g",
+          "price_vnd": 80000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 18,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-018",
+      "name": "Bánh mì baguette",
+      "aliases": [
+        "baguette"
+      ],
+      "category": "bánh mì thủ công",
+      "description": "Bánh mì baguette thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "lúa mì",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-018-v1",
+          "size": "ổ 400 g",
+          "price_vnd": 30000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 4,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-019",
+      "name": "Bánh mì focaccia",
+      "aliases": [
+        "focaccia"
+      ],
+      "category": "bánh mì thủ công",
+      "description": "Bánh mì focaccia thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "hương thảo",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-019-v1",
+          "size": "ổ 400 g",
+          "price_vnd": 90000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 8,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-020",
+      "name": "Bánh mì ngũ cốc",
+      "aliases": [
+        "ngũ cốc"
+      ],
+      "category": "bánh mì thủ công",
+      "description": "Bánh mì ngũ cốc thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "ngũ cốc",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-020-v1",
+          "size": "ổ 400 g",
+          "price_vnd": 100000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "hạt"
+      ],
+      "allergen_info": {
+        "status": "may_contain",
+        "items": [
+          "sữa",
+          "hạt"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-021",
+      "name": "Bánh mì nho khô",
+      "aliases": [
+        "nho khô"
+      ],
+      "category": "bánh mì thủ công",
+      "description": "Bánh mì nho khô thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "nho",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-021-v1",
+          "size": "ổ 400 g",
+          "price_vnd": 95000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "trứng",
+        "lúa mì"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "sữa",
+          "trứng",
+          "lúa mì"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-022",
+      "name": "Bánh yến mạch chuối",
+      "aliases": [
+        "yến mạch chuối"
+      ],
+      "category": "bánh ăn kiêng",
+      "description": "Bánh yến mạch chuối thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "chuối",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-022-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 70000,
+          "servings": 4,
+          "stock_quantity": null,
+          "stock_status": "unknown"
+        }
+      ],
+      "allergen": null,
+      "allergen_info": {
+        "status": "unknown",
+        "items": [],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 8,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-023",
+      "name": "Bánh hạnh nhân",
+      "aliases": [
+        "hạnh nhân"
+      ],
+      "category": "bánh ăn kiêng",
+      "description": "Bánh hạnh nhân thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "hạnh nhân",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-023-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 85000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "hạnh nhân",
+        "trứng"
+      ],
+      "allergen_info": {
+        "status": "contains",
+        "items": [
+          "hạnh nhân",
+          "trứng"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 12,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-024",
+      "name": "Bánh gạo dừa",
+      "aliases": [
+        "gạo dừa"
+      ],
+      "category": "bánh ăn kiêng",
+      "description": "Bánh gạo dừa thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "dừa",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-024-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 65000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [],
+      "allergen_info": {
+        "status": "not_listed",
+        "items": [],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 6,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    },
+    {
+      "id": "demo-025",
+      "name": "Bánh cacao ít ngọt",
+      "aliases": [
+        "cacao ít ngọt"
+      ],
+      "category": "bánh ăn kiêng",
+      "description": "Bánh cacao ít ngọt thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.",
+      "flavor": "cacao",
+      "occasions": [
+        "ăn nhẹ",
+        "quà tặng"
+      ],
+      "active": true,
+      "variants": [
+        {
+          "id": "demo-025-v1",
+          "size": "hộp 4 chiếc",
+          "price_vnd": 90000,
+          "servings": 4,
+          "stock_quantity": 20,
+          "stock_status": "in_stock"
+        }
+      ],
+      "allergen": [
+        "sữa",
+        "hạt"
+      ],
+      "allergen_info": {
+        "status": "may_contain",
+        "items": [
+          "sữa",
+          "hạt"
+        ],
+        "note": "Mô phỏng; not_listed không xác nhận an toàn với dị ứng."
+      },
+      "customization": [
+        "không viết chữ"
+      ],
+      "min_lead_hours": 8,
+      "writing_supported": false,
+      "max_cake_text_length": 0,
+      "cake_text_price_vnd": 0,
+      "topping_ids": [],
+      "storage": "Mẫu: nơi khô mát trong bao kín; không áp dụng cho bánh thật.",
+      "shelf_life_hours": 24,
+      "source": "local_demo",
+      "is_mock": true,
+      "is_demo": true
+    }
+  ],
+  "toppings": [
+    {
+      "id": "demo-top-001",
+      "name": "kẹo cốm",
+      "price_vnd": 10000,
+      "allergen": {
+        "status": "may_contain",
+        "items": [
+          "sữa"
+        ],
+        "note": "Có thể nhiễm chéo trong dữ liệu mô phỏng."
+      }
+    },
+    {
+      "id": "demo-top-002",
+      "name": "dâu tươi",
+      "price_vnd": 15000,
+      "allergen": {
+        "status": "unknown",
+        "items": [],
+        "note": "Chưa có xác minh an toàn dị ứng."
+      }
+    },
+    {
+      "id": "demo-top-003",
+      "name": "hạnh nhân lát",
+      "price_vnd": 20000,
+      "allergen": {
+        "status": "contains",
+        "items": [
+          "hạnh nhân"
+        ],
+        "note": "Dữ liệu mô phỏng."
+      }
+    }
+  ],
+  "policies": [
+    {
+      "id": "demo-policy-001",
+      "title": "Giờ mở cửa",
+      "content": "MÔ PHỎNG: cửa hàng mở 08:00–20:00 mỗi ngày theo Asia/Ho_Chi_Minh. Chỉ nhận lịch tại cửa hàng hoặc giao demo trong khoảng 08:00 đến trước 20:00.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-002",
+      "title": "Đặt bánh trước",
+      "content": "MÔ PHỎNG: thời gian đặt trước tối thiểu lấy từ từng sản phẩm trong menu; phải kiểm tra lead time trước xác nhận. Không có metadata thì cần tư vấn.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-003",
+      "title": "Nhận tại cửa hàng",
+      "content": "MÔ PHỎNG: nhận tại cửa hàng không tính phí giao. Cần ngày giờ đầy đủ và tên, điện thoại giả cho demo.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-004",
+      "title": "Giao hàng theo khu vực",
+      "content": "MÔ PHỎNG: giao khu vực DEMO Nội thành phí 25.000 đồng/đơn, DEMO Ngoại thành phí 40.000 đồng/đơn. Khu vực khác chưa hỗ trợ. Đây không phải dịch vụ giao hàng thật.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-005",
+      "title": "Thanh toán demo",
+      "content": "MÔ PHỎNG: đơn mới có trạng thái unpaid. Không thu tiền, không gửi mã chuyển khoản và không gọi cổng thanh toán thật.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-006",
+      "title": "Bảo quản và hạn dùng",
+      "content": "MÔ PHỎNG: bảo quản và hạn dùng lấy theo metadata từng sản phẩm, không suy từ kiến thức chung. Hướng dẫn mẫu không dùng cho thực phẩm thật.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-007",
+      "title": "Sửa và hủy đơn",
+      "content": "MÔ PHỎNG: được sửa hoặc hủy bản nháp trước xác nhận. Đơn demo đã xác nhận không sửa trực tiếp, ghi ticket để tư vấn.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-008",
+      "title": "Khiếu nại",
+      "content": "MÔ PHỎNG: khiếu nại được lưu ticket pending kèm mã đơn nếu thuộc hội thoại. Chưa có nhân viên bên ngoài nhận.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-009",
+      "title": "Gặp nhân viên",
+      "content": "MÔ PHỎNG: yêu cầu nhân viên, nghiệp vụ chưa hỗ trợ hoặc hai lượt không hiểu liên tiếp được ghi nhận ticket local pending.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-010",
+      "title": "Xử lý ngoài giờ",
+      "content": "MÔ PHỎNG: ngoài 08:00–20:00 vẫn lưu yêu cầu tư vấn local. Chỉ thông báo chờ xử lý, không cam kết nhân viên đã nhận.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-011",
+      "title": "Thông tin dị ứng",
+      "content": "MÔ PHỎNG: contains là có chất; may_contain là có thể có; unknown là chưa biết; not_listed chỉ là chưa liệt kê. Không trạng thái nào thay xác minh an toàn dị ứng. Dị ứng nghiêm trọng hoặc dữ liệu không rõ cần hand-off.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-012",
+      "title": "Topping và viết chữ",
+      "content": "MÔ PHỎNG: topping tương thích, phụ phí và giới hạn chữ lấy từ từng sản phẩm. Phụ phí topping tính mỗi bánh; không mặc định mọi size/topping khách yêu cầu đều có bán.",
+      "version": "demo-1",
+      "is_mock": true
+    },
+    {
+      "id": "demo-policy-013",
+      "title": "Tồn kho và xác nhận",
+      "content": "MÔ PHỎNG: chỉ xác nhận đơn demo sau REVIEW hiện tại, xác nhận rõ ràng và kiểm tra tồn kho trong transaction. Tồn kho unknown không đủ để xác nhận.",
+      "version": "demo-1",
+      "is_mock": true
+    }
+  ],
+  "business_settings": {
+    "id": "store",
+    "version": "demo-1",
+    "is_demo": true,
+    "timezone": "Asia/Ho_Chi_Minh",
+    "opens_at": "08:00",
+    "closes_at": "20:00",
+    "fulfillment_modes": [
+      "pickup",
+      "delivery"
+    ],
+    "delivery_regions": {
+      "DEMO Nội thành": 25000,
+      "DEMO Ngoại thành": 40000
+    }
+  }
+}

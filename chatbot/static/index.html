@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bếp Bánh · Chat thử nghiệm</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/chat.js" defer></script>
+</head>
+<body>
+  <main class="workspace">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Bếp Bánh, trang thử nghiệm"><span class="brand-mark">B</span> Bếp Bánh</a>
+      <p class="eyebrow">PHÒNG THỬ NGHIỆM · GIAI ĐOẠN 6</p>
+      <h1>Một chiếc bánh,<br>một cuộc trò chuyện.</h1>
+      <p class="intro">Tìm hiểu bánh, hỏi chính sách và thử gửi nhu cầu qua hội thoại.</p>
+      <div id="mode-label" class="badge">Đang kết nối…</div>
+      <p id="data-notice" class="notice">Đang kiểm tra nguồn dữ liệu.</p>
+      <div class="guide">
+        <h2>Bắt đầu từ đâu?</h2>
+        <p>Thử: “socola dưới 300k”, “giá và size bánh socola” hoặc “chính sách giao hàng”.</p>
+        <p>Đặt thử bằng AI: “Mình muốn đặt hai bánh socola size 16 cm, không topping, ghi chữ 'Chúc vui'.” Bot hỏi tiếp phần còn thiếu.</p>
+        <p>Có thể nhập riêng <code>size: 16 cm</code>. Ngày giờ vẫn cần <code>YYYY-MM-DD HH:MM</code> (giờ Việt Nam); bot không đoán “mai”.</p>
+        <p>Chỉ dùng liên hệ giả: <code>tên: DEMO Khách A</code>, <code>sđt: TEST-0001</code>. Giao thử cần <code>địa chỉ: DEMO Địa chỉ A</code>.</p>
+      </div>
+      <p class="footnote">Không thanh toán, giao hàng hoặc thông báo nhân viên thật.</p>
+    </aside>
+
+    <section class="chat-panel" aria-label="Hội thoại với chatbot">
+      <header class="chat-header">
+        <div><span class="eyebrow">TRỢ LÝ BÁNH TIẾNG VIỆT</span><h2>Cùng chọn bánh nhé</h2></div>
+        <button id="new-conversation" class="button secondary" type="button">Hội thoại mới</button>
+      </header>
+      <div class="session-line"><span id="connection-status" role="status">Đang tạo phiên…</span><span id="state-label">BROWSING</span></div>
+      <div id="messages" class="messages" role="log" aria-live="polite" aria-label="Tin nhắn"></div>
+      <div id="review-panel" class="review-panel" hidden></div>
+      <p id="error-message" class="error" role="alert" hidden></p>
+      <div class="composer">
+        <div class="quick-actions" aria-label="Lệnh thử nhanh">
+          <button type="button" data-message="đặt bánh">Đặt bánh thử</button>
+          <button type="button" data-message="xem lại">Xem lại yêu cầu</button>
+          <button type="button" data-message="tôi muốn gặp nhân viên">Nhờ tư vấn</button>
+        </div>
+        <form id="chat-form">
+          <label class="sr-only" for="message-input">Tin nhắn</label>
+          <textarea id="message-input" rows="2" maxlength="2000" placeholder="Bạn muốn tìm bánh gì?" required></textarea>
+          <button id="send-button" class="button primary" type="submit">Gửi <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="input-hint"><span>Enter để gửi · Shift + Enter để xuống dòng</span><span id="char-count">0 / 2000</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

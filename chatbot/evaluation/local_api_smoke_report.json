@@ -1,0 +1,22 @@
+{
+  "health": {
+    "status": "ok",
+    "data_mode": "local_demo",
+    "knowledge_mode": "local_demo",
+    "chat_mode": "ollama",
+    "message_max_length": 2000
+  },
+  "foreign_conversation_http": 404,
+  "no_token_http": 401,
+  "chat_http": 200,
+  "engine": "ollama",
+  "state": "BROWSING",
+  "products": [
+    "demo-001"
+  ],
+  "errors": [],
+  "/": 200,
+  "/static/chat.js": 200,
+  "/static/style.css": 200,
+  "passed": true
+}
