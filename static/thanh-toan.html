@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thông tin giao hàng - Sweet Bakery</title>
+    <meta
+      name="description"
+      content="Sweet Bakery — bánh kem, bánh ngọt nhỏ và thức uống cho những khoảnh khắc ngọt ngào."
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="products.js"></script>
+    <script defer src="config.js"></script>
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Đến nội dung</a>
+    <header class="header">
+      <div class="top-bar">
+        <div class="container top-bar-inner">
+          <span>Sweet Bakery · Ngọt ngào từng khoảnh khắc</span
+          ><span>Bài tập website · Nhóm 6</span>
+        </div>
+      </div>
+      <div class="main-nav">
+        <div class="container nav-inner">
+          <a class="logo" href="index.html"
+            ><h2>Sweet Bakery<span>BAKED WITH LOVE</span></h2></a
+          >
+          <nav class="menu" aria-label="Điều hướng chính">
+            <a href="index.html">Trang chủ</a
+            ><a href="banh-kem-p1.html">Bánh kem</a
+            ><a href="do-uong-p1.html">Trà & Cà phê</a
+            ><a href="banh-mini-p1.html">Bánh ngọt nhỏ</a>
+          </nav>
+          <div class="header-icons">
+            <a href="tim-kiem.html" aria-label="Tìm sản phẩm">Tìm kiếm</a
+            ><a href="gio-hang.html" class="cart-link" aria-label="Giỏ hàng"
+              >Giỏ hàng <span class="cart-count">0</span></a
+            >
+          </div>
+        </div>
+      </div>
+      <form
+        class="header-search container"
+        action="tim-kiem.html"
+        role="search"
+      >
+        <label class="sr-only" for="search">Tìm sản phẩm</label
+        ><input
+          id="search"
+          name="q"
+          placeholder="Bạn đang tìm bánh gì?"
+          maxlength="100"
+          type="search"
+        /><button type="submit">Tìm kiếm →</button>
+      </form>
+    </header>
+    <main id="main" class="container checkout-page">
+      <div class="breadcrumb">
+        <a href="index.html">Trang chủ</a><span>/</span
+        ><strong>Thông tin giao hàng</strong>
+      </div>
+      <p class="eyebrow">02 / THÔNG TIN KHÁCH HÀNG</p>
+      <h1>Hoàn tất thông tin đặt hàng</h1>
+      <p class="notice" id="mode-note">
+        Đây là bản thử nghiệm. Đơn mẫu chưa được gửi đến cửa hàng.
+      </p>
+      <div id="checkout-empty" class="empty-state" hidden>
+        <h2>Giỏ hàng đang trống</h2>
+        <p>Hãy chọn sản phẩm trước khi điền thông tin.</p>
+        <a class="btn-checkout" href="banh-kem-p1.html">Chọn bánh →</a>
+      </div>
+      <div class="checkout-layout" id="checkout-content">
+        <form id="checkout-form">
+          <section class="form-panel">
+            <h2>Thông tin liên hệ</h2>
+            <p class="muted">Các trường có dấu * là bắt buộc.</p>
+            <div class="form-grid">
+              <label
+                >Họ và tên *<input
+                  name="fullName"
+                  autocomplete="name"
+                  required
+                  minlength="2"
+                  maxlength="100"
+                  placeholder="Nguyễn Văn An" /></label
+              ><label
+                >Số điện thoại *<input
+                  name="phone"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  required
+                  maxlength="20"
+                  placeholder="09xxxxxxxx" /></label
+              ><label class="full"
+                >Email (không bắt buộc)<input
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  maxlength="254"
+                  placeholder="ban@example.com"
+              /></label>
+            </div>
+          </section>
+          <section class="form-panel">
+            <h2>Địa chỉ giao hàng</h2>
+            <div class="form-grid">
+              <label
+                >Tỉnh / Thành phố *<input
+                  name="province"
+                  autocomplete="address-level1"
+                  required
+                  maxlength="100"
+                  placeholder="Hà Nội" /></label
+              ><label
+                >Phường / Xã *<input
+                  name="ward"
+                  autocomplete="address-level2"
+                  required
+                  maxlength="100"
+                  placeholder="Tên phường / xã" /></label
+              ><label class="full"
+                >Số nhà, tên đường, tòa nhà *<input
+                  name="addressLine"
+                  autocomplete="street-address"
+                  required
+                  minlength="5"
+                  maxlength="250"
+                  placeholder="Số nhà, tên đường, tòa nhà / căn hộ" /></label
+              ><label
+                >Ngày nhận mong muốn<input
+                  name="deliveryDate"
+                  type="date" /></label
+              ><label
+                >Khung giờ mong muốn<select name="deliverySlot">
+                  <option value="">Cửa hàng liên hệ xác nhận</option>
+                  <option value="morning">08:00 – 12:00</option>
+                  <option value="afternoon">12:00 – 17:00</option>
+                  <option value="evening">17:00 – 20:00</option>
+                </select></label
+              ><label class="full"
+                >Lời chúc viết trên bánh<input
+                  name="cakeMessage"
+                  maxlength="100"
+                  placeholder="Ví dụ: Chúc mừng sinh nhật!" /></label
+              ><label class="full"
+                >Ghi chú<textarea
+                  name="note"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Yêu cầu về giao hàng, bánh hoặc người nhận…"
+                ></textarea>
+              </label>
+            </div>
+            <p class="muted">
+              Ngày và giờ giao thực tế cần được cửa hàng xác nhận.
+            </p>
+          </section>
+          <section class="form-panel">
+            <h2>Thanh toán</h2>
+            <label class="choice"
+              ><input type="radio" name="paymentMethod" value="cod" checked />
+              Thanh toán khi nhận hàng (COD)</label
+            >
+            <p class="muted">Phí giao hàng chưa được tính vào tạm tính.</p>
+          </section>
+          <label class="choice consent"
+            ><input name="consent" type="checkbox" required /> Tôi đồng ý cung
+            cấp thông tin trên để xử lý yêu cầu đặt hàng. *</label
+          >
+          <p class="form-error" id="form-error" role="alert"></p>
+          <button id="submit-order" class="btn-checkout" type="submit">
+            Tạo đơn hàng mẫu</button
+          ><a class="back-link" href="gio-hang.html">← Quay lại giỏ hàng</a>
+        </form>
+        <aside class="order-summary">
+          <h2>Đơn hàng của bạn</h2>
+          <div id="checkout-items"></div>
+          <div class="summary-line">
+            <span>Tạm tính</span><strong class="final-total"></strong>
+          </div>
+          <div class="summary-line muted">
+            <span>Phí giao hàng</span><span>Chờ xác nhận</span>
+          </div>
+          <p class="muted">Kiểm tra tên bánh và số lượng trước khi tiếp tục.</p>
+        </aside>
+      </div>
+      <section id="order-result" class="order-result" tabindex="-1" hidden>
+        <p class="eyebrow">SWEET BAKERY</p>
+        <h2 id="result-title"></h2>
+        <p id="result-message"></p>
+        <p id="result-reference"></p>
+        <button id="download-order" class="btn-checkout" type="button">
+          Tải thông tin đơn hàng (.json)</button
+        ><a class="back-link" href="index.html">Về trang chủ →</a>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="footer-brand" href="index.html">Sweet Bakery</a>
+          <p>Một chút ngọt ngào, trọn vẹn yêu thương.</p>
+        </div>
+        <div>
+          <h3>Khám phá</h3>
+          <a href="banh-kem-p1.html">Bánh kem</a
+          ><a href="banh-mini-p1.html">Bánh ngọt nhỏ</a
+          ><a href="do-uong-p1.html">Trà & Cà phê</a>
+        </div>
+        <div>
+          <h3>Mua sắm</h3>
+          <a href="gio-hang.html">Giỏ hàng của bạn</a
+          ><a href="thanh-toan.html">Thông tin giao hàng</a>
+          <p>
+            Phiên bản giao diện thử nghiệm.<br />Chưa tiếp nhận đơn hàng thực
+            tế.
+          </p>
+        </div>
+      </div>
+      <div class="container copyright">
+        © 2026 Sweet Bakery · Xây dựng bởi Nhóm 6
+      </div>
+    </footer>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><p class="notice">
+        Vui lòng bật JavaScript để xem sản phẩm và sử dụng giỏ hàng.
+      </p></noscript
+    >
+  </body>
+</html>

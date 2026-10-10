@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trang chủ - Sweet Bakery</title>
+    <meta
+      name="description"
+      content="Sweet Bakery — bánh kem, bánh ngọt nhỏ và thức uống cho những khoảnh khắc ngọt ngào."
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="products.js"></script>
+    <script defer src="config.js"></script>
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Đến nội dung</a>
+    <header class="header">
+      <div class="top-bar">
+        <div class="container top-bar-inner">
+          <span>Sweet Bakery · Ngọt ngào từng khoảnh khắc</span
+          ><span>Bài tập website · Nhóm 6</span>
+        </div>
+      </div>
+      <div class="main-nav">
+        <div class="container nav-inner">
+          <a class="logo" href="index.html"
+            ><h2>Sweet Bakery<span>BAKED WITH LOVE</span></h2></a
+          >
+          <nav class="menu" aria-label="Điều hướng chính">
+            <a href="index.html" class="active" aria-current="page">Trang chủ</a
+            ><a href="banh-kem-p1.html">Bánh kem</a
+            ><a href="do-uong-p1.html">Trà & Cà phê</a
+            ><a href="banh-mini-p1.html">Bánh ngọt nhỏ</a>
+          </nav>
+          <div class="header-icons">
+            <a href="tim-kiem.html" aria-label="Tìm sản phẩm">Tìm kiếm</a
+            ><a href="gio-hang.html" class="cart-link" aria-label="Giỏ hàng"
+              >Giỏ hàng <span class="cart-count">0</span></a
+            >
+          </div>
+        </div>
+      </div>
+      <form
+        class="header-search container"
+        action="tim-kiem.html"
+        role="search"
+      >
+        <label class="sr-only" for="search">Tìm sản phẩm</label
+        ><input
+          id="search"
+          name="q"
+          placeholder="Bạn đang tìm bánh gì?"
+          maxlength="100"
+          type="search"
+        /><button type="submit">Tìm kiếm →</button>
+      </form>
+    </header>
+    <main id="main">
+      <section class="banner">
+        <img src="bannerr.webp" alt="Bộ sưu tập bánh Sweet Bakery" />
+        <div class="hero-caption container">
+          <p>HẠNH PHÚC TỪ NHỮNG ĐIỀU NHỎ</p>
+          <h1>Gửi trao <br />vị ngọt yêu thương.</h1>
+          <a class="btn-checkout" href="banh-kem-p1.html"
+            >Khám phá bánh kem →</a
+          >
+        </div>
+      </section>
+      <div class="container">
+        <section class="category-circles" aria-label="Danh mục">
+          <a class="cat-item" href="banh-kem-p1.html"
+            ><span class="category-symbol">01</span>
+            <p>Bánh kem</p>
+            <small>Cho ngày đặc biệt</small></a
+          ><a class="cat-item" href="banh-mini-p1.html"
+            ><span class="category-symbol">02</span>
+            <p>Bánh ngọt nhỏ</p>
+            <small>Niềm vui mỗi ngày</small></a
+          ><a class="cat-item" href="do-uong-p1.html"
+            ><span class="category-symbol">03</span>
+            <p>Trà & Cà phê</p>
+            <small>Thêm chút thư thái</small></a
+          >
+        </section>
+        <section class="products-section">
+          <p class="eyebrow">SWEET SELECTION</p>
+          <h2 class="section-title">Bánh kem được giới thiệu</h2>
+          <div class="product-grid" id="home-products"></div>
+          <div class="view-all-wrap">
+            <a href="banh-kem-p1.html" class="btn-view-all"
+              >Xem tất cả bánh kem →</a
+            >
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="footer-brand" href="index.html">Sweet Bakery</a>
+          <p>Một chút ngọt ngào, trọn vẹn yêu thương.</p>
+        </div>
+        <div>
+          <h3>Khám phá</h3>
+          <a href="banh-kem-p1.html">Bánh kem</a
+          ><a href="banh-mini-p1.html">Bánh ngọt nhỏ</a
+          ><a href="do-uong-p1.html">Trà & Cà phê</a>
+        </div>
+        <div>
+          <h3>Mua sắm</h3>
+          <a href="gio-hang.html">Giỏ hàng của bạn</a
+          ><a href="thanh-toan.html">Thông tin giao hàng</a>
+          <p>
+            Phiên bản giao diện thử nghiệm.<br />Chưa tiếp nhận đơn hàng thực
+            tế.
+          </p>
+        </div>
+      </div>
+      <div class="container copyright">
+        © 2026 Sweet Bakery · Xây dựng bởi Nhóm 6
+      </div>
+    </footer>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><p class="notice">
+        Vui lòng bật JavaScript để xem sản phẩm và sử dụng giỏ hàng.
+      </p></noscript
+    >
+  </body>
+</html>

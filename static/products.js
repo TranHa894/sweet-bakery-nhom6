@@ -1,0 +1,219 @@
+// Dữ liệu mẫu dùng chung; id cần khớp database.
+window.SWEET_PRODUCTS = [
+  {
+    id: "SP0001",
+    name: "Mousse Hawaii",
+    price: 320000,
+    image: "images/SP0001.webp",
+    category: "cake",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/mousse_hawaii_8_1_e7ed3973bf7f40589f22bd302482261f_master.jpg",
+  },
+  {
+    id: "SP0024",
+    name: "Mousse Chanh leo",
+    price: 350000,
+    image: "images/SP0024.webp",
+    category: "cake",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/mousse_chanh_leo_8_1_d4f37b82c29f41af9bfa3c4a1920f50b_master.png",
+  },
+  {
+    id: "SP0003",
+    name: "Bánh kem Vàng anh",
+    price: 380000,
+    image: "images/SP0003.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_c92e0fedc3f94923a92e1d02433506ce_master.png",
+  },
+  {
+    id: "SP0004",
+    name: "Bánh kem Mật ngọt",
+    price: 400000,
+    image: "images/SP0004.webp",
+    category: "cake",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/kiss_of_lady_8_247c2cf000bc4a53a4fc2fb3ba61b636_master.png",
+  },
+  {
+    id: "SP0005",
+    name: "Bánh kem Mây trắng",
+    price: 360000,
+    image: "images/SP0005.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/b_nh_kem_m_y_tr_ng_1_4bb8f1f07de545d8b1545c326e475fb2_master.png",
+  },
+  {
+    id: "SP0006",
+    name: "Bánh kem Biển ngọc",
+    price: 390000,
+    image: "images/SP0006.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_800ff80f791e4d4dabce830c94a825cc_master.png",
+  },
+  {
+    id: "SP0007",
+    name: "Bánh kem Mây xanh",
+    price: 360000,
+    image: "images/SP0007.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/b_nh_kem_m_y_xanh_1_4736778e9cfe42a896ad7fd756dabd11_master.png",
+  },
+  {
+    id: "SP0008",
+    name: "Bánh kem Mây hồng",
+    price: 360000,
+    image: "images/SP0008.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_c545f7515ba44e8792beebaa2b730dc9_master.png",
+  },
+  {
+    id: "SP0009",
+    name: "Bánh kem Kỳ lân",
+    price: 360000,
+    image: "images/SP0009.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/k__l_n_k__di_u_1_b101ec16b36c4f7a8e4ce4e2c05adf28_master.png",
+  },
+  {
+    id: "SP0010",
+    name: "Bánh mousse Vải hoa hồng",
+    price: 450000,
+    image: "images/SP0010.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_f09ed2e485b843ac97767ddda06c6fcb_master.png",
+  },
+  {
+    id: "SP0011",
+    name: "Bánh mousse quả mọng",
+    price: 450000,
+    image: "images/SP0011.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_7312d04f2c2442b89cb23a45a9be8567_master.png",
+  },
+  {
+    id: "SP0012",
+    name: "Bánh kem Choco ngọc trai",
+    price: 360000,
+    image: "images/SP0012.webp",
+    category: "cake",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/1_d0a7e1ee2d70403684703e45d93788f0_master.png",
+  },
+  {
+    id: "SP0013",
+    name: "Bánh madeleine sô cô la",
+    price: 35000,
+    image: "images/SP0013.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/banh_madeleine_so_co_la_2_1fa8c60b27d74df88ffc5e07b90392eb_master.png",
+  },
+  {
+    id: "SP0014",
+    name: "Bánh cuộn trà xanh",
+    price: 35000,
+    image: "images/SP0014.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/banh_cuon_tra_xanh_2_ec228ef89f6a4b968732a4f5fa196db8_master.png",
+  },
+  {
+    id: "SP0015",
+    name: "Bánh cuộn vani",
+    price: 35000,
+    image: "images/SP0015.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/banh_cuon_va_ni_2_3cd5b695cacf461ba2dd81fa31e05447_master.png",
+  },
+  {
+    id: "SP0016",
+    name: "Bánh donut sô cô la",
+    price: 35000,
+    image: "images/SP0016.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/donut_socola_1_8093b5547cd649ce95e5bcff63561b5d_master.png",
+  },
+  {
+    id: "SP0017",
+    name: "Bánh donut sô cô la hương dâu",
+    price: 35000,
+    image: "images/SP0017.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/donut_socola_d_u_1_53e52ba3b623474987220b590908f650_master.png",
+  },
+  {
+    id: "SP0018",
+    name: "Bánh tiramisu",
+    price: 35000,
+    image: "images/SP0018.webp",
+    category: "mini",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/b_nh_tiramisu_1_c8cacb559cda4ff98c2126dff5b38c70_master.png",
+  },
+  {
+    id: "SP0019",
+    name: "Trà sữa Thái xanh",
+    price: 25000,
+    image: "images/SP0019.webp",
+    category: "drink",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/th_i_xanh_1f7ff9a908734aafa5cd42a3fd4a2305_master.png",
+  },
+  {
+    id: "SP0020",
+    name: "Trà đào",
+    price: 25000,
+    image: "images/SP0020.webp",
+    category: "drink",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/d_o_b877ab92a18941608e9a9a2bbf1d30cd_master.png",
+  },
+  {
+    id: "SP0021",
+    name: "Trà sữa",
+    price: 25000,
+    image: "images/SP0021.webp",
+    category: "drink",
+    sourceImage:
+      "https://cdn.hstatic.net/products/200000411281/tr__s_a_6c65f28dad6441618d654c7aa532aa52_master.png",
+  },
+  {
+    id: "SP0022",
+    name: "Cà phê đen",
+    price: 45000,
+    image: "images/SP0022.webp",
+    category: "drink",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/cafe_den_2_ddca29c1fa7a47f5a07155ab2b4004bf_master.png",
+  },
+  {
+    id: "SP0023",
+    name: "Cà phê muối",
+    price: 45000,
+    image: "images/SP0023.webp",
+    category: "drink",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/caa_phe_muoi_2_f3806eba0f7f4228b3f3c1343d92341b_master.png",
+  },
+  {
+    id: "SP0025",
+    name: "Cà phê ủ lạnh",
+    price: 45000,
+    image: "images/SP0025.webp",
+    category: "drink",
+    sourceImage:
+      "https://product.hstatic.net/200000411281/product/cafe_u_lanh_2_6ff46f07a2674a8f8f2fc861d5e770f1_master.png",
+  },
+];
