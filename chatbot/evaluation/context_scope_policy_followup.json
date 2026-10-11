@@ -1,0 +1,13 @@
+{
+  "kind": "real_ollama_policy_followup",
+  "model": "qwen3.5:4b",
+  "engine": "ollama",
+  "sources": [
+    "demo-policy-001",
+    "demo-policy-010"
+  ],
+  "state": "DEMO_CONFIRMED",
+  "orders_count": 1,
+  "response": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\n[Kiến thức: local_demo] [ĐIỀU KHOẢN MÔ PHỎNG — không áp dụng cho đơn thật]\nTrích đoạn tài liệu liên quan để đối chiếu (không phải xác nhận đơn):\nNguồn [demo-policy-001] — Giờ mở cửa — phiên bản demo-1:\n> MÔ PHỎNG: cửa hàng mở 08:00–20:00 mỗi ngày theo Asia/Ho_Chi_Minh. Chỉ nhận lịch tại cửa hàng hoặc giao demo trong khoảng 08:00 đến trước 20:00.\nNguồn [demo-policy-010] — Xử lý ngoài giờ — phiên bản demo-1:\n> MÔ PHỎNG: ngoài 08:00–20:00 vẫn lưu yêu cầu tư vấn local. Chỉ thông báo chờ xử lý, không cam kết nhân viên đã nhận.",
+  "passed": true
+}

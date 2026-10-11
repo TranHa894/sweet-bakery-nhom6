@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "is_mock": true,
+  "clauses": [
+    {
+      "id": "sample-policy-001",
+      "title": "Giao hàng và phí vận chuyển mô phỏng",
+      "content": "Giao hàng thử nghiệm trong bán kính 5 km từ cửa hàng giả lập. Phí giao hàng mô phỏng là 25.000 đồng mỗi đơn. Chưa có lịch giao hàng hoặc phục vụ đơn thật.",
+      "version": "1.0",
+      "is_mock": true
+    },
+    {
+      "id": "sample-policy-002",
+      "title": "Thanh toán mô phỏng",
+      "content": "Đơn học tập có thể mô phỏng thanh toán bằng tiền mặt khi nhận bánh (COD) hoặc chuyển khoản giả lập. Không gửi tiền và không cung cấp số tài khoản thật. Chưa nhận thanh toán thật.",
+      "version": "1.0",
+      "is_mock": true
+    },
+    {
+      "id": "sample-policy-003",
+      "title": "Đổi trả mô phỏng",
+      "content": "Với đơn mô phỏng, có thể yêu cầu đổi trả trong 2 giờ từ lúc nhận nếu bánh bị hỏng khi vận chuyển hoặc sai nội dung đã xác nhận. Không áp dụng đổi trả do đổi ý sau khi nhận. Điều khoản này không xử lý đơn kinh doanh thật.",
+      "version": "1.0",
+      "is_mock": true
+    },
+    {
+      "id": "sample-policy-004",
+      "title": "Bảo quản mô phỏng",
+      "content": "Bánh trong bài tập được hướng dẫn bảo quản ở ngăn mát 2-8 độ C và dùng trong 24 giờ sau khi nhận. Hướng dẫn này chỉ mô phỏng, không áp dụng cho bánh thật khi chưa có chỉ dẫn chính thức của sản phẩm.",
+      "version": "1.0",
+      "is_mock": true
+    },
+    {
+      "id": "sample-policy-005",
+      "title": "Đặt trước và tùy chỉnh mô phỏng",
+      "content": "Có thể ghi nhận yêu cầu viết chữ lên bánh và thay đổi trang trí trong bài tập. Yêu cầu tùy chỉnh cần báo trước ít nhất 24 giờ. Mọi yêu cầu chỉ mô phỏng; chưa có quy trình xác nhận đơn thật.",
+      "version": "1.0",
+      "is_mock": true
+    }
+  ]
+}

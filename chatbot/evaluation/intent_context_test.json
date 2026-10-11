@@ -1,0 +1,874 @@
+{
+  "version": "intent-context-v1",
+  "annotation_revision": 2,
+  "split": "test",
+  "sample_count": 26,
+  "source": "manually_labelled_synthetic",
+  "is_mock": true,
+  "scope": "Qwen NLU and controller, not overall/production evaluation",
+  "dialogues": [
+    {
+      "id": "test_basics",
+      "mode": "local_demo",
+      "tags": [
+        "price",
+        "size",
+        "flavor",
+        "availability"
+      ],
+      "turns": [
+        {
+          "message": "Cho mình biết giá bánh vani nhé",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-001",
+          "turn_index": 1
+        },
+        {
+          "message": "Kích thước bánh socola thế nào?",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-002",
+          "turn_index": 2
+        },
+        {
+          "message": "Vị của bánh dâu là gì?",
+          "label": {
+            "intents": [
+              "flavor"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-003",
+          "turn_index": 3
+        },
+        {
+          "message": "Bánh vani hiện còn bán chứ?",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-004",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "test_switch",
+      "mode": "local_demo",
+      "tags": [
+        "topic_switch",
+        "reference",
+        "draft_isolation"
+      ],
+      "turns": [
+        {
+          "message": "Cho tôi đặt một bánh vani",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 1
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "vani"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-003",
+            "state": "COLLECTING"
+          },
+          "id": "test-005",
+          "turn_index": 1
+        },
+        {
+          "message": "Mình hỏi giá socola thôi",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "order_product_id": "demo-003",
+            "draft_unchanged": true
+          },
+          "id": "test-006",
+          "turn_index": 2
+        },
+        {
+          "message": "Còn chiếc mình đang đặt thì giá sao?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "order",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "order_product_id": "demo-003",
+            "draft_unchanged": true
+          },
+          "id": "test-007",
+          "turn_index": 3
+        },
+        {
+          "message": "Dâu cần bảo quản ra sao?",
+          "label": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "Dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "order_product_id": "demo-003",
+            "draft_unchanged": true
+          },
+          "id": "test-008",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "test_linked",
+      "mode": "local_demo",
+      "tags": [
+        "multi_product",
+        "attribute_linking",
+        "ambiguity"
+      ],
+      "turns": [
+        {
+          "message": "Vani giá mấy tiền, còn dâu có vị gì?",
+          "label": {
+            "intents": [
+              "price",
+              "flavor"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "Vani",
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Vani"
+                ],
+                "reference": "none",
+                "size": null
+              },
+              {
+                "intents": [
+                  "flavor"
+                ],
+                "product_mentions": [
+                  "dâu"
+                ],
+                "reference": "none",
+                "size": null
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002",
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-009",
+          "turn_index": 1
+        },
+        {
+          "message": "Báo giá socola 16 cm với vani 20 cm",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "socola",
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "socola"
+                ],
+                "reference": "none",
+                "size": "16 cm"
+              },
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "vani"
+                ],
+                "reference": "none",
+                "size": "20 cm"
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001",
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-010",
+          "turn_index": 2
+        },
+        {
+          "message": "Loại vừa rồi còn hàng chứ?",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": true,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "clarification": true,
+            "draft_unchanged": true
+          },
+          "id": "test-011",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "test_language",
+      "mode": "local_demo",
+      "tags": [
+        "no_accents",
+        "abbreviation",
+        "negation"
+      ],
+      "turns": [
+        {
+          "message": "vani gia bn vay",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-003"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-012",
+          "turn_index": 1
+        },
+        {
+          "message": "banh dau co sz nao",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dau"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-002"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-013",
+          "turn_index": 2
+        },
+        {
+          "message": "ko dat dau dau, toi hoi gia socola",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dau",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "socola"
+                ],
+                "reference": "none",
+                "size": null
+              }
+            ],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "demo-001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-014",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "test_edit",
+      "mode": "local_demo",
+      "tags": [
+        "slot_update",
+        "product_edit",
+        "cancel"
+      ],
+      "turns": [
+        {
+          "message": "Tôi cần đặt bánh dâu",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "dâu"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-002",
+            "state": "COLLECTING"
+          },
+          "id": "test-015",
+          "turn_index": 1
+        },
+        {
+          "message": "Lấy ba chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 3
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "slots": {
+              "quantity": 3
+            }
+          },
+          "id": "test-016",
+          "turn_index": 2
+        },
+        {
+          "message": "Đổi loại đang đặt thành vani",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "vani"
+            ]
+          },
+          "expected": {
+            "order_product_id": "demo-003",
+            "slots": {
+              "quantity": 3,
+              "size": null,
+              "toppings": null
+            }
+          },
+          "id": "test-017",
+          "turn_index": 3
+        },
+        {
+          "message": "Thôi hủy bản nháp",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "cancel",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "CANCELLED",
+            "order_count": 0
+          },
+          "id": "test-018",
+          "turn_index": 4
+        }
+      ]
+    },
+    {
+      "id": "test_empty",
+      "mode": "empty",
+      "tags": [
+        "empty",
+        "handoff"
+      ],
+      "turns": [
+        {
+          "message": "Mình muốn mua bánh vani",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "vani"
+            ]
+          },
+          "expected": {
+            "order_product_id": null,
+            "state": "COLLECTING"
+          },
+          "id": "test-019",
+          "turn_index": 1
+        },
+        {
+          "message": "Socola size bao nhiêu?",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "Socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [],
+            "catalog_status": "unconfigured",
+            "draft_unchanged": true
+          },
+          "id": "test-020",
+          "turn_index": 2
+        },
+        {
+          "message": "Gặp người tư vấn giúp mình",
+          "label": {
+            "intents": [
+              "fallback"
+            ],
+            "action": "handoff",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "state": "HANDOFF"
+          },
+          "id": "test-021",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "test_mock",
+      "mode": "mock",
+      "tags": [
+        "mock",
+        "multi_product",
+        "reference"
+      ],
+      "turns": [
+        {
+          "message": "Mình đặt bánh vani",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "vani"
+            ]
+          },
+          "expected": {
+            "order_product_id": "mock-003",
+            "state": "COLLECTING"
+          },
+          "id": "test-022",
+          "turn_index": 1
+        },
+        {
+          "message": "Giá dâu với socola là bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001",
+              "mock-002"
+            ],
+            "order_product_id": "mock-003",
+            "draft_unchanged": true
+          },
+          "id": "test-023",
+          "turn_index": 2
+        },
+        {
+          "message": "Size bánh trong đơn thế nào?",
+          "label": {
+            "intents": [
+              "size"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "order",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [],
+            "order_product_mentions": []
+          },
+          "expected": {
+            "product_ids": [
+              "mock-003"
+            ],
+            "order_product_id": "mock-003",
+            "draft_unchanged": true
+          },
+          "id": "test-024",
+          "turn_index": 3
+        },
+        {
+          "message": "Thêm bánh dâu nữa nhé",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "dâu"
+            ],
+            "order_operation": "add_product"
+          },
+          "expected": {
+            "clarification": true,
+            "draft_unchanged": true,
+            "order_product_id": "mock-003"
+          },
+          "id": "test-025",
+          "turn_index": 4
+        },
+        {
+          "message": "Bỏ bánh vani khỏi yêu cầu",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [
+              "product"
+            ],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": [],
+            "order_product_mentions": [
+              "vani"
+            ],
+            "order_operation": "remove_product"
+          },
+          "expected": {
+            "order_product_id": null,
+            "state": "COLLECTING"
+          },
+          "id": "test-026",
+          "turn_index": 5
+        }
+      ]
+    }
+  ]
+}

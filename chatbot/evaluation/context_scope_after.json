@@ -1,0 +1,1259 @@
+{
+  "kind": "real_ollama_context_scope",
+  "model": "qwen3.5:4b",
+  "created_at": "2026-10-05T17:13:48.608442+00:00",
+  "database": "runtime\\context-after-c2ca589a.sqlite3",
+  "steps": [
+    {
+      "message": "Tôi muốn đặt bánh socola",
+      "proposal": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh socola"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": {
+          "cake_need": "bánh socola"
+        },
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": []
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [],
+      "draft_product_id": "demo-001",
+      "draft_unchanged": true,
+      "scope": {
+        "intents": [
+          "order_request"
+        ],
+        "product_mentions": [
+          "bánh socola"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-001"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-001"
+          ]
+        },
+        "requests": [],
+        "order_product_ids": [
+          "demo-001"
+        ]
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+    },
+    {
+      "message": "Bánh dâu giá bao nhiêu?",
+      "proposal": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none"
+          }
+        ]
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [
+        "demo-002"
+      ],
+      "draft_product_id": "demo-001",
+      "draft_unchanged": true,
+      "scope": {
+        "intents": [
+          "price"
+        ],
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-002"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-002"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+    },
+    {
+      "message": "Bảo quản bánh dâu thế nào?",
+      "proposal": {
+        "intents": [
+          "storage"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none"
+          }
+        ]
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [
+        "demo-002"
+      ],
+      "draft_product_id": "demo-001",
+      "draft_unchanged": true,
+      "scope": {
+        "intents": [
+          "storage"
+        ],
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-002"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-002"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\nBánh kem dâu — Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật. Hạn dùng mẫu: 48 giờ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+    },
+    {
+      "message": "Giá bánh dâu và socola?",
+      "proposal": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh dâu",
+          "bánh socola"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu",
+              "bánh socola"
+            ],
+            "reference": "none"
+          }
+        ]
+      },
+      "engine": "ollama",
+      "error": null,
+      "products": [
+        "demo-001",
+        "demo-002"
+      ],
+      "draft_product_id": "demo-001",
+      "draft_unchanged": true,
+      "scope": {
+        "intents": [
+          "price"
+        ],
+        "product_mentions": [
+          "bánh dâu",
+          "bánh socola"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-002",
+          "demo-001"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-002",
+            "demo-001"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu",
+              "bánh socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002",
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002",
+                "demo-001"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001]:\n  • 16 cm: 250.000 đ.\n  • 20 cm: 350.000 đ.\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+    }
+  ],
+  "passed": true,
+  "previous_runs": [
+    {
+      "kind": "real_ollama_context_scope",
+      "model": "qwen3.5:4b",
+      "database": "runtime\\context-after-6315b09e.sqlite3",
+      "steps": [
+        {
+          "message": "Tôi muốn đặt bánh socola",
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "cake_need": "socola"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "order_request"
+            ],
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-001"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bánh dâu giá bao nhiêu?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "message": "Bảo quản bánh dâu thế nào?",
+          "proposal": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nBánh kem dâu — Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật. Hạn dùng mẫu: 48 giờ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "message": "Giá bánh dâu và socola?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh dâu",
+              "socola"
+            ],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-001",
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002",
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002",
+                "demo-001"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        }
+      ],
+      "passed": true
+    },
+    {
+      "kind": "real_ollama_context_scope",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-04T14:20:08.402294+00:00",
+      "database": "runtime\\context-after-cae32a8b.sqlite3",
+      "steps": [
+        {
+          "message": "Tôi muốn đặt bánh socola",
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {
+              "cake_need": "socola"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "order_request"
+            ],
+            "product_mentions": [
+              "socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-001"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bánh dâu giá bao nhiêu?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "message": "Bảo quản bánh dâu thế nào?",
+          "proposal": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nBánh kem dâu — Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật. Hạn dùng mẫu: 48 giờ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        },
+        {
+          "message": "Giá bánh dâu và socola?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "product_mentions": [
+              "bánh dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-001",
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu",
+              "socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002",
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002",
+                "demo-001"
+              ]
+            }
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001], vị socola:\n  • 16 cm: 250.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 350.000 đ; khoảng 10 người; còn hàng.\n- Bánh kem dâu [demo-002], vị dâu:\n  • 16 cm: 280.000 đ; khoảng 6 người; còn hàng.\n  • 20 cm: 380.000 đ; khoảng 10 người; còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG."
+        }
+      ],
+      "passed": true
+    },
+    {
+      "kind": "real_ollama_context_scope",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-05T16:04:43.628090+00:00",
+      "database": "runtime\\context-after-745fc530.sqlite3",
+      "steps": [
+        {
+          "message": "Tôi muốn đặt bánh socola",
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "cake_need": "bánh socola"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": []
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "order_request"
+            ],
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-001"
+              ]
+            },
+            "requests": [],
+            "order_product_ids": [
+              "demo-001"
+            ]
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bánh dâu giá bao nhiêu?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Bánh dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Bánh dâu"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bảo quản bánh dâu thế nào?",
+          "proposal": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "storage"
+                ],
+                "product_mentions": [
+                  "Bánh kem dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "Bánh kem dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "storage"
+                ],
+                "product_mentions": [
+                  "Bánh kem dâu"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\nBánh kem dâu — Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật. Hạn dùng mẫu: 48 giờ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Giá bánh dâu và socola?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Bánh kem dâu",
+              "Bánh kem socola"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Bánh kem dâu",
+                  "Bánh kem socola"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-001",
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "Bánh kem dâu",
+              "Bánh kem socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002",
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002",
+                "demo-001"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Bánh kem dâu",
+                  "Bánh kem socola"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002",
+                  "demo-001"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002",
+                    "demo-001"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001]:\n  • 16 cm: 250.000 đ.\n  • 20 cm: 350.000 đ.\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "kind": "real_ollama_context_scope",
+      "model": "qwen3.5:4b",
+      "created_at": "2026-10-05T16:19:40.590713+00:00",
+      "database": "runtime\\context-after-dd246616.sqlite3",
+      "steps": [
+        {
+          "message": "Tôi muốn đặt bánh socola",
+          "proposal": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "cake_need": "bánh socola"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": true,
+            "requests": []
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "order_request"
+            ],
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-001"
+              ]
+            },
+            "requests": [],
+            "order_product_ids": [
+              "demo-001"
+            ]
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bánh dâu giá bao nhiêu?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh dâu"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Bảo quản bánh dâu thế nào?",
+          "proposal": {
+            "intents": [
+              "storage"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "storage"
+                ],
+                "product_mentions": [
+                  "bánh dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "storage"
+                ],
+                "product_mentions": [
+                  "bánh dâu"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\nBánh kem dâu — Mẫu: bảo quản ngăn mát 2–6 °C, không áp dụng cho bánh thật. Hạn dùng mẫu: 48 giờ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        },
+        {
+          "message": "Giá bánh dâu và socola?",
+          "proposal": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh dâu",
+              "bánh socola"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh dâu",
+                  "bánh socola"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "engine": "ollama",
+          "error": null,
+          "products": [
+            "demo-001",
+            "demo-002"
+          ],
+          "draft_product_id": "demo-001",
+          "draft_unchanged": true,
+          "scope": {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu",
+              "bánh socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002",
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002",
+                "demo-001"
+              ]
+            },
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh dâu",
+                  "bánh socola"
+                ],
+                "reference": "none",
+                "product_ids": [
+                  "demo-002",
+                  "demo-001"
+                ],
+                "filters": {
+                  "product_ids": [
+                    "demo-002",
+                    "demo-001"
+                  ]
+                }
+              }
+            ],
+            "order_product_ids": []
+          },
+          "text": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001]:\n  • 16 cm: 250.000 đ.\n  • 20 cm: 350.000 đ.\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nĐang thu thập bản nháp, chưa xác nhận đơn. Chỉ dùng liên hệ GIẢ để thử.\nBạn muốn size bao nhiêu cm?"
+        }
+      ],
+      "passed": true
+    }
+  ]
+}

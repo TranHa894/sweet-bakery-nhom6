@@ -1,0 +1,3060 @@
+{
+  "run_type": "real_ollama_nlu_controller",
+  "label": "concise",
+  "split": "dev",
+  "created_at": "2026-10-05T15:51:16.005257+00:00",
+  "model": "qwen3.5:4b",
+  "dataset_sha256": "ec65f49ef1e2c3c25636f087fb2120dc2df9e9515d9ee7f236e49f459415f07d",
+  "dataset_samples": 48,
+  "limit": 8,
+  "code_sha256": {
+    "app/schemas.py": "054bcc6d141eb5e4c9d43bf8aa20c9fa6ab36bb7db7f1fb4cff954618e249818",
+    "app/llm_client.py": "de0d4bf62b444b39b1d3bd53e6d4048e456d11e28b48a5e8b10dbbc17e5fbfca",
+    "app/conversation.py": "c49b9bdeb178a6246c83f06e03e43350615df8ab81009a6b65def3be062e51af",
+    "app/order_nlu.py": "59cfac280e0ed0aaf8a01d0949dfbbe8086b2e5245cb4d6db502e821196714e0",
+    "data/nlu_few_shots.json": "6b63058c49d4f5b925a9900a529412e3394e8682ec2ed8a5ea573e9349255b72"
+  },
+  "scope": "Real Qwen extract_turn + controller/FSM/tools; knowledge empty, no RAG generation accuracy",
+  "completed": true,
+  "steps": [
+    {
+      "id": "dev-001",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Xin chào",
+      "label": {
+        "intents": [
+          "greeting"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [],
+          "shown_products": [],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:51",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [],
+        "recent_bot_questions": []
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2021,
+          "eval_count": 59,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"greeting\"], \"action\": \"none\", \"product_mentions\": [], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": []}"
+      ],
+      "proposal": {
+        "intents": [
+          "greeting"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": true,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "draft_unchanged": true
+        },
+        "extraction_pass": true,
+        "behavior_pass": true
+      },
+      "seconds": 10.39,
+      "current_turn": {
+        "intents": [
+          "greeting"
+        ],
+        "product_mentions": [],
+        "reference": "none",
+        "product_ids": [],
+        "filters": {},
+        "requests": [],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n\nChào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO."
+    },
+    {
+      "id": "dev-002",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Bánh socola giá bao nhiêu?",
+      "label": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "socola"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-001"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-001"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-001"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [],
+          "shown_products": [],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:51",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "socola"
+        ],
+        "recent_bot_questions": [
+          "Chào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO."
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2052,
+          "eval_count": 104,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"price\"], \"action\": \"none\", \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"price\"], \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": {
+        "intents": [
+          "price"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "bánh socola"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": true,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": true,
+          "draft_unchanged": true
+        },
+        "extraction_pass": true,
+        "behavior_pass": true
+      },
+      "seconds": 14.86,
+      "current_turn": {
+        "intents": [
+          "price"
+        ],
+        "product_mentions": [
+          "bánh socola"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-001"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-001"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh socola"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-001"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-001"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem socola [demo-001]:\n  • 16 cm: 250.000 đ.\n  • 20 cm: 350.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nBạn muốn hỏi hoặc đặt bánh nào?"
+    },
+    {
+      "id": "dev-003",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Bánh dâu có những size nào?",
+      "label": {
+        "intents": [
+          "size"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "dâu"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-002"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-002"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-002"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-002"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-002"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [
+            "Bánh kem socola"
+          ],
+          "shown_products": [
+            "Bánh kem socola"
+          ],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:51",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "dau"
+        ],
+        "recent_bot_questions": [
+          "Chào bạn! Mình có thể tư vấn bánh mẫu, hỏi đáp chính sách và đặt đơn DEMO.",
+          "Bạn muốn hỏi hoặc đặt bánh nào?"
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2074,
+          "eval_count": 130,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"availability\", \"description\"], \"action\": \"none\", \"product_mentions\": [\"Bánh dâu\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"availability\"], \"product_mentions\": [\"Bánh dâu\"], \"reference\": \"none\", \"size\": null}, {\"intents\": [\"description\"], \"product_mentions\": [\"Bánh dâu\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": {
+        "intents": [
+          "availability",
+          "description"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "Bánh dâu"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none"
+          },
+          {
+            "intents": [
+              "description"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": false,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": true,
+          "draft_unchanged": true
+        },
+        "extraction_pass": false,
+        "behavior_pass": true
+      },
+      "seconds": 16.21,
+      "current_turn": {
+        "intents": [
+          "availability",
+          "description"
+        ],
+        "product_mentions": [
+          "Bánh dâu"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-002"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-002"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          {
+            "intents": [
+              "description"
+            ],
+            "product_mentions": [
+              "Bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\n  • 16 cm: còn hàng.\n  • 20 cm: còn hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\n- Bánh kem dâu [demo-002]:\nBánh kem dâu thuộc menu MÔ PHỎNG, dùng học và kiểm thử; không có cam kết dinh dưỡng hoặc sức khỏe.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nBạn muốn hỏi hoặc đặt bánh nào?"
+    },
+    {
+      "id": "dev-004",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Bánh vani có vị gì?",
+      "label": {
+        "intents": [
+          "flavor"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "vani"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-003"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-003"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-003"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [
+            "Bánh kem dâu"
+          ],
+          "shown_products": [
+            "Bánh kem dâu"
+          ],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:51",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "vani"
+        ],
+        "recent_bot_questions": [
+          "Bạn muốn hỏi hoặc đặt bánh nào?",
+          "Bạn muốn hỏi hoặc đặt bánh nào?"
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2055,
+          "eval_count": 104,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"allergen\"], \"action\": \"none\", \"product_mentions\": [\"Bánh vani\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"allergen\"], \"product_mentions\": [\"Bánh vani\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": {
+        "intents": [
+          "allergen"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "Bánh vani"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "allergen"
+            ],
+            "product_mentions": [
+              "Bánh vani"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": false,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": true,
+          "draft_unchanged": true
+        },
+        "extraction_pass": false,
+        "behavior_pass": true
+      },
+      "seconds": 12.7,
+      "current_turn": {
+        "intents": [
+          "allergen"
+        ],
+        "product_mentions": [
+          "Bánh vani"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-003"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-003"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "allergen"
+            ],
+            "product_mentions": [
+              "Bánh vani"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-003"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-003"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem vani [demo-003]:\nBánh kem vani — allergen: contains; sữa, trứng, lúa mì. Mô phỏng; not_listed không xác nhận an toàn với dị ứng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nBạn muốn hỏi hoặc đặt bánh nào?"
+    },
+    {
+      "id": "dev-005",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Bánh trà xanh còn hàng không?",
+      "label": {
+        "intents": [
+          "availability"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "trà xanh"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-004"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-004"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-004"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [
+            "Bánh kem vani"
+          ],
+          "shown_products": [
+            "Bánh kem vani"
+          ],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:52",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "tra xanh"
+        ],
+        "recent_bot_questions": [
+          "Bạn muốn hỏi hoặc đặt bánh nào?",
+          "Bạn muốn hỏi hoặc đặt bánh nào?"
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2058,
+          "eval_count": 102,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"availability\"], \"action\": \"none\", \"product_mentions\": [\"Bánh trà xanh\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"availability\"], \"product_mentions\": [\"Bánh trà xanh\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": {
+        "intents": [
+          "availability"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "Bánh trà xanh"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [
+              "Bánh trà xanh"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": true,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": true,
+          "draft_unchanged": true
+        },
+        "extraction_pass": true,
+        "behavior_pass": true
+      },
+      "seconds": 12.61,
+      "current_turn": {
+        "intents": [
+          "availability"
+        ],
+        "product_mentions": [
+          "Bánh trà xanh"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-004"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-004"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [
+              "Bánh trà xanh"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-004"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-004"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem trà xanh [demo-004]:\n  • 16 cm: hết hàng.\n  • 20 cm: hết hàng.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nBạn muốn hỏi hoặc đặt bánh nào?"
+    },
+    {
+      "id": "dev-006",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Giá và size bánh dâu?",
+      "label": {
+        "intents": [
+          "price",
+          "size"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "dâu"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-002"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-002"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-002"
+          ]
+        },
+        {
+          "filters": {
+            "product_ids": [
+              "demo-002"
+            ]
+          },
+          "status": "success",
+          "ids": [
+            "demo-002"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [
+            "Bánh kem trà xanh"
+          ],
+          "shown_products": [
+            "Bánh kem trà xanh"
+          ],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:52",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "dau"
+        ],
+        "recent_bot_questions": [
+          "Bạn muốn hỏi hoặc đặt bánh nào?",
+          "Bạn muốn hỏi hoặc đặt bánh nào?"
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2056,
+          "eval_count": 130,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"price\", \"size\"], \"action\": \"none\", \"product_mentions\": [\"bánh dâu\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"price\"], \"product_mentions\": [\"bánh dâu\"], \"reference\": \"none\", \"size\": null}, {\"intents\": [\"size\"], \"product_mentions\": [\"bánh dâu\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": {
+        "intents": [
+          "price",
+          "size"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none"
+          },
+          {
+            "intents": [
+              "size"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_product_mentions": [],
+        "order_operation": "none"
+      },
+      "engine": "ollama",
+      "error": null,
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": true,
+          "intents_exact": true,
+          "action_exact": true,
+          "reference_exact": true,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": true,
+          "draft_unchanged": true
+        },
+        "extraction_pass": true,
+        "behavior_pass": true
+      },
+      "seconds": 15.91,
+      "current_turn": {
+        "intents": [
+          "price",
+          "size"
+        ],
+        "product_mentions": [
+          "bánh dâu"
+        ],
+        "reference": "none",
+        "product_ids": [
+          "demo-002"
+        ],
+        "filters": {
+          "product_ids": [
+            "demo-002"
+          ]
+        },
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          },
+          {
+            "intents": [
+              "size"
+            ],
+            "product_mentions": [
+              "bánh dâu"
+            ],
+            "reference": "none",
+            "product_ids": [
+              "demo-002"
+            ],
+            "filters": {
+              "product_ids": [
+                "demo-002"
+              ]
+            }
+          }
+        ],
+        "order_product_ids": []
+      },
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\n- Bánh kem dâu [demo-002]:\n  • 16 cm: 280.000 đ.\n  • 20 cm: 380.000 đ.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\n- Bánh kem dâu [demo-002]:\n  • Size 16 cm; khoảng 6 người.\n  • Size 20 cm; khoảng 10 người.\nTất cả sản phẩm/giá/tình trạng trên là MÔ PHỎNG.\nBạn muốn hỏi hoặc đặt bánh nào?"
+    },
+    {
+      "id": "dev-007",
+      "dialogue_id": "dev_basics",
+      "mode": "local_demo",
+      "message": "Bánh socola có thành phần gây dị ứng nào?",
+      "label": {
+        "intents": [
+          "allergen"
+        ],
+        "action": "none",
+        "product_mentions": [
+          "socola"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [],
+        "order_product_mentions": []
+      },
+      "expected": {
+        "product_ids": [
+          "demo-001"
+        ],
+        "draft_unchanged": true
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        },
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [
+            "Bánh kem dâu"
+          ],
+          "shown_products": [
+            "Bánh kem dâu"
+          ],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:52",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "socola"
+        ],
+        "recent_bot_questions": [
+          "Bạn muốn hỏi hoặc đặt bánh nào?",
+          "Bạn muốn hỏi hoặc đặt bánh nào?"
+        ]
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2062,
+          "eval_count": 104,
+          "done_reason": "stop"
+        },
+        {
+          "prompt_eval_count": 2215,
+          "eval_count": 104,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"allergen\"], \"action\": \"none\", \"product_mentions\": [\"Bánh kem dâu\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"allergen\"], \"product_mentions\": [\"Bánh kem dâu\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}",
+        "{\"intents\": [\"allergen\"], \"action\": \"none\", \"product_mentions\": [\"Bánh kem dâu\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": false, \"requests\": [{\"intents\": [\"allergen\"], \"product_mentions\": [\"Bánh kem dâu\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [], \"order_operation\": \"none\"}"
+      ],
+      "proposal": null,
+      "engine": "llm_error",
+      "error": "invalid_turn_mention",
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": false,
+          "intents_exact": false,
+          "action_exact": false,
+          "reference_exact": false,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "query_products_exact": false,
+          "draft_unchanged": true
+        },
+        "extraction_pass": false,
+        "behavior_pass": false
+      },
+      "seconds": 25.64,
+      "current_turn": null,
+      "draft_before": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "a54f058c-dc01-43a7-95de-a05692d9f2c9",
+        "conversation_id": "96b1baa5-fc65-4d76-9214-a539ecab8302",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\nChưa xử lý được lượt này (invalid_turn_mention). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+    },
+    {
+      "id": "dev-008",
+      "dialogue_id": "dev_scope",
+      "mode": "local_demo",
+      "message": "Tôi muốn đặt bánh socola",
+      "label": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "start_order",
+        "product_mentions": [
+          "socola"
+        ],
+        "reference": "none",
+        "updates": {},
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": [],
+        "order_product_mentions": [
+          "socola"
+        ]
+      },
+      "expected": {
+        "order_product_id": "demo-001",
+        "state": "COLLECTING"
+      },
+      "catalog_queries": [
+        {
+          "filters": {},
+          "status": "success",
+          "ids": [
+            "demo-018",
+            "demo-013",
+            "demo-014",
+            "demo-012",
+            "demo-015",
+            "demo-024",
+            "demo-022",
+            "demo-017",
+            "demo-023",
+            "demo-019",
+            "demo-025",
+            "demo-021",
+            "demo-020",
+            "demo-011",
+            "demo-016",
+            "demo-003",
+            "demo-010",
+            "demo-001",
+            "demo-007",
+            "demo-005",
+            "demo-002",
+            "demo-008",
+            "demo-006",
+            "demo-004",
+            "demo-009"
+          ]
+        }
+      ],
+      "context_sent": {
+        "order_draft": {
+          "state": "BROWSING",
+          "slots": {
+            "cake_need": "missing",
+            "size": "missing",
+            "toppings": "missing",
+            "quantity": "missing",
+            "cake_text": "missing",
+            "pickup_at": "missing",
+            "fulfillment": "missing"
+          },
+          "product_name": null,
+          "missing_fields": [
+            "cake_need hoặc product_id",
+            "size",
+            "quantity",
+            "toppings",
+            "cake_text",
+            "pickup_at",
+            "fulfillment",
+            "name",
+            "phone"
+          ]
+        },
+        "conversation_context": {
+          "focused_products": [],
+          "shown_products": [],
+          "known_needs_fields": [],
+          "known_preferences": {}
+        },
+        "shop_now": "2026-10-05 22:53",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "current_message_catalog_aliases": [
+          "socola"
+        ],
+        "recent_bot_questions": []
+      },
+      "ollama_metrics": [
+        {
+          "prompt_eval_count": 2029,
+          "eval_count": 114,
+          "done_reason": "stop"
+        },
+        {
+          "prompt_eval_count": 2212,
+          "eval_count": 114,
+          "done_reason": "stop"
+        }
+      ],
+      "raw_outputs": [
+        "{\"intents\": [\"order_request\"], \"action\": \"start_order\", \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": true, \"requests\": [{\"intents\": [\"recommendation\"], \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [\"bánh socola\"], \"order_operation\": \"select_product\"}",
+        "{\"intents\": [\"order_request\"], \"action\": \"start_order\", \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"updates\": [], \"clear_slots\": [], \"ambiguous\": false, \"handoff_reason\": \"none\", \"order_update\": true, \"requests\": [{\"intents\": [\"recommendation\"], \"product_mentions\": [\"bánh socola\"], \"reference\": \"none\", \"size\": null}], \"order_product_mentions\": [\"bánh socola\"], \"order_operation\": \"select_product\"}"
+      ],
+      "proposal": null,
+      "engine": "llm_error",
+      "error": "invalid_turn_json",
+      "score": {
+        "extraction": {
+          "schema_grounding_ok": false,
+          "intents_exact": false,
+          "action_exact": false,
+          "reference_exact": false,
+          "updates_exact": true,
+          "clear_slots_exact": true
+        },
+        "behavior": {
+          "draft_target": false,
+          "state": false
+        },
+        "extraction_pass": false,
+        "behavior_pass": false
+      },
+      "seconds": 27.53,
+      "current_turn": null,
+      "draft_before": {
+        "id": "0ef21095-91bd-416c-9b38-3d55c459b98b",
+        "conversation_id": "d491b971-c55f-4399-b9ae-6320deba07c4",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "draft_after": {
+        "id": "0ef21095-91bd-416c-9b38-3d55c459b98b",
+        "conversation_id": "d491b971-c55f-4399-b9ae-6320deba07c4",
+        "state": "BROWSING",
+        "revision": 0,
+        "slots": {
+          "cake_need": null,
+          "product_id": null,
+          "size": null,
+          "toppings": null,
+          "quantity": null,
+          "cake_text": null,
+          "pickup_at": null,
+          "fulfillment": null,
+          "name": null,
+          "phone": null,
+          "address": null
+        },
+        "verification": {},
+        "issues": [],
+        "review": null,
+        "submission": null,
+        "tickets": {}
+      },
+      "answer": "[Nguồn: local_demo] [DỮ LIỆU MẪU local_demo — chỉ học và kiểm thử]\nChưa xử lý được lượt này (invalid_turn_json). Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn. Bạn có thể thử lại."
+    }
+  ],
+  "database": "runtime\\nlu-eval-e17e61fc70dd.sqlite3",
+  "summary": {
+    "samples": 8,
+    "metrics": {
+      "action_exact": {
+        "passed": 6,
+        "total": 8,
+        "rate": 0.75
+      },
+      "clear_slots_exact": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1.0
+      },
+      "draft_target": {
+        "passed": 0,
+        "total": 1,
+        "rate": 0.0
+      },
+      "draft_unchanged": {
+        "passed": 7,
+        "total": 7,
+        "rate": 1.0
+      },
+      "intents_exact": {
+        "passed": 4,
+        "total": 8,
+        "rate": 0.5
+      },
+      "query_products_exact": {
+        "passed": 5,
+        "total": 6,
+        "rate": 0.8333
+      },
+      "reference_exact": {
+        "passed": 6,
+        "total": 8,
+        "rate": 0.75
+      },
+      "schema_grounding_ok": {
+        "passed": 6,
+        "total": 8,
+        "rate": 0.75
+      },
+      "state": {
+        "passed": 0,
+        "total": 1,
+        "rate": 0.0
+      },
+      "updates_exact": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1.0
+      }
+    },
+    "intent_micro_f1": 0.5882,
+    "extraction_exact": 4,
+    "behavior_exact": 6,
+    "model_errors": 2,
+    "controller_source_errors": 0
+  }
+}

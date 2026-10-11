@@ -1,0 +1,72 @@
+{
+  "generated_at_utc": "2026-10-03T08:41:26.502375+00:00",
+  "is_mock": true,
+  "test_type": "live_ollama_smoke",
+  "model": "qwen3.5:4b",
+  "selection_error": null,
+  "timeout_seconds": 60.0,
+  "cases": [
+    {
+      "question": "Chính sách giao hàng là gì?",
+      "knowledge_mode": "empty",
+      "elapsed_seconds": 0.01,
+      "engine": "not_used",
+      "status": "unconfigured",
+      "attempts": 0,
+      "llm_error": null,
+      "source_ids": [],
+      "corpus_sha256": null,
+      "text": "[Kiến thức: empty]\nChưa có tài liệu chính sách để đối chiếu; mình chưa đủ thông tin để trả lời. Không dùng điều khoản mẫu khi KNOWLEDGE_MODE=empty.",
+      "checks": {
+        "status": true,
+        "sources": true,
+        "no_products": true,
+        "mock_label": true,
+        "fee_quote": true
+      },
+      "behavior_checks_passed": true
+    },
+    {
+      "question": "Phí giao hàng mô phỏng là bao nhiêu?",
+      "knowledge_mode": "sample",
+      "elapsed_seconds": 25.82,
+      "engine": "ollama",
+      "status": "answered",
+      "attempts": 1,
+      "llm_error": null,
+      "source_ids": [
+        "sample-policy-001"
+      ],
+      "corpus_sha256": "9e8c8f5f479e70bfd6ba651334ddc91d8384240c69081c20e614dccd80c07950",
+      "text": "[Kiến thức: sample] [ĐIỀU KHOẢN MÔ PHỎNG — không áp dụng cho đơn thật]\nTrích đoạn tài liệu liên quan để đối chiếu (không phải xác nhận đơn):\nNguồn [sample-policy-001] — Giao hàng và phí vận chuyển mô phỏng — phiên bản 1.0:\n> Phí giao hàng mô phỏng là 25.000 đồng mỗi đơn.",
+      "checks": {
+        "status": true,
+        "sources": true,
+        "no_products": true,
+        "mock_label": true,
+        "fee_quote": true
+      },
+      "behavior_checks_passed": true
+    },
+    {
+      "question": "Có giao hàng quốc tế không?",
+      "knowledge_mode": "sample",
+      "elapsed_seconds": 5.74,
+      "engine": "ollama",
+      "status": "insufficient",
+      "attempts": 1,
+      "llm_error": null,
+      "source_ids": [],
+      "corpus_sha256": "9e8c8f5f479e70bfd6ba651334ddc91d8384240c69081c20e614dccd80c07950",
+      "text": "[Kiến thức: sample] [ĐIỀU KHOẢN MÔ PHỎNG — không áp dụng cho đơn thật]\nCác đoạn truy xuất chưa đủ thông tin để trả lời câu hỏi này; mình chưa thể xác nhận nội dung bạn hỏi.",
+      "checks": {
+        "status": true,
+        "sources": true,
+        "no_products": true,
+        "mock_label": true,
+        "fee_quote": true
+      },
+      "behavior_checks_passed": true
+    }
+  ]
+}

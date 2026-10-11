@@ -1,0 +1,66 @@
+{
+  "data_mode": "mock",
+  "is_mock": true,
+  "note": "DỮ LIỆU MẪU: chỉ dùng học và kiểm thử, không phải menu cửa hàng thật.",
+  "products": [
+    {
+      "id": "mock-001", "name": "Bánh kem socola",
+      "aliases": ["bánh socola", "socola", "sô cô la", "bánh chocolate", "chocolate"],
+      "category": "bánh kem", "description": "Mẫu bánh kem vị socola.",
+      "flavor": "socola",
+      "variants": [
+        {"id": "mock-001-16", "size": "16 cm", "price_vnd": 250000, "servings": 6, "stock_status": "in_stock"},
+        {"id": "mock-001-20", "size": "20 cm", "price_vnd": 350000, "servings": 10, "stock_status": "preorder"}
+      ],
+      "allergen": ["sữa", "trứng", "lúa mì"], "customization": ["ghi chữ trên bánh"],
+      "min_lead_hours": 12, "source": "mock", "is_mock": true
+    },
+    {
+      "id": "mock-002", "name": "Bánh kem dâu",
+      "aliases": ["bánh dâu", "dâu", "strawberry"],
+      "category": "bánh kem", "description": "Mẫu bánh kem vị dâu.",
+      "flavor": "dâu",
+      "variants": [
+        {"id": "mock-002-16", "size": "16 cm", "price_vnd": 280000, "servings": 6, "stock_status": "in_stock"},
+        {"id": "mock-002-20", "size": "20 cm", "price_vnd": 390000, "servings": 10, "stock_status": "out_of_stock"}
+      ],
+      "allergen": ["sữa", "trứng", "lúa mì"], "customization": ["ghi chữ trên bánh"],
+      "min_lead_hours": 12, "source": "mock", "is_mock": true
+    },
+    {
+      "id": "mock-003", "name": "Bánh kem vani",
+      "aliases": ["bánh vani", "vani", "vanilla"],
+      "category": "bánh kem", "description": "Mẫu bánh kem vị vani.",
+      "flavor": "vani",
+      "variants": [
+        {"id": "mock-003-16", "size": "16 cm", "price_vnd": 220000, "servings": 6, "stock_status": "in_stock"},
+        {"id": "mock-003-20", "size": "20 cm", "price_vnd": 300000, "servings": 10, "stock_status": "in_stock"}
+      ],
+      "allergen": ["sữa", "trứng", "lúa mì"], "customization": ["ghi chữ trên bánh"],
+      "min_lead_hours": 8, "source": "mock", "is_mock": true
+    },
+    {
+      "id": "mock-004", "name": "Bánh kem trà xanh",
+      "aliases": ["bánh trà xanh", "trà xanh", "matcha"],
+      "category": "bánh kem", "description": "Mẫu bánh kem vị trà xanh.",
+      "flavor": "trà xanh",
+      "variants": [
+        {"id": "mock-004-16", "size": "16 cm", "price_vnd": 300000, "servings": 6, "stock_status": "out_of_stock"},
+        {"id": "mock-004-20", "size": "20 cm", "price_vnd": 420000, "servings": 10, "stock_status": "unknown"}
+      ],
+      "allergen": ["sữa", "trứng", "lúa mì"], "customization": ["ghi chữ trên bánh"],
+      "min_lead_hours": 24, "source": "mock", "is_mock": true
+    },
+    {
+      "id": "mock-005", "name": "Bánh tart chanh",
+      "aliases": ["tart chanh", "bánh chanh", "chanh"],
+      "category": "bánh tart", "description": "Mẫu cố ý thiếu giá, số người và trạng thái để học xử lý unknown.",
+      "flavor": "chanh",
+      "variants": [
+        {"id": "mock-005-18", "size": "18 cm", "price_vnd": null, "servings": null, "stock_status": "unknown"}
+      ],
+      "allergen": null, "customization": null,
+      "min_lead_hours": null, "source": "mock", "is_mock": true
+    }
+  ]
+}
