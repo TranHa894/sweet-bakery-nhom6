@@ -76,16 +76,21 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=PROJECT_ROOT / "evaluation/retrieval_dev.json")
     parser.add_argument("--policies", type=Path, default=PROJECT_ROOT / "data/sample_policies.json")
-    parser.add_argument("--output", type=Path, default=PROJECT_ROOT / "evaluation/retrieval_report.json")
+    parser.add_argument("--output", type=Path, help="Tùy chọn ghi runtime/*.json; mặc định chỉ in kết quả")
     parser.add_argument("--top-k", type=int, default=RETRIEVAL_TOP_K)
     parser.add_argument("--min-score", type=float, default=RETRIEVAL_MIN_SCORE)
     args = parser.parse_args()
     raw = args.dataset.read_bytes()
     report = evaluate(json.loads(raw.decode("utf-8")), SampleKnowledgeRepository(args.policies), args.top_k, args.min_score)
     report["dataset_sha256"] = hashlib.sha256(raw).hexdigest()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"counts": report["counts"], "metrics": report["metrics"], "output": str(args.output)}, ensure_ascii=False, indent=2))
+    if args.output is not None:
+        target = args.output if args.output.is_absolute() else PROJECT_ROOT / args.output
+        target = target.resolve()
+        if not target.is_relative_to((PROJECT_ROOT / "runtime").resolve()) or target.suffix != ".json":
+            parser.error("Chỉ ghi báo cáo .json trong runtime của chatbot")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"counts": report["counts"], "metrics": report["metrics"]}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

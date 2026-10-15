@@ -36,6 +36,8 @@ def matching_variants(product: Product, filters: SearchFilters) -> list[Variant]
 
 def matches_product(product: Product, filters: SearchFilters) -> bool:
     """So khớp các điều kiện cấp sản phẩm, không suy giá/tồn kho."""
+    if product["id"] in filters.get("exclude_product_ids", []):
+        return False
     if "product_ids" in filters and product["id"] not in filters["product_ids"]:
         return False
     if "flavor" in filters and normalize_text(product["flavor"] or "") != normalize_text(filters["flavor"]):

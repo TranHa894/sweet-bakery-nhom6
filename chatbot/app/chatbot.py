@@ -72,6 +72,13 @@ def describe_products(products: list[Product]) -> str:
     }
     lines = []
     for product in products:
+        if product["source"] == "group_files":
+            category = {"cake": "bánh kem", "mini": "bánh nhỏ", "drink": "đồ uống"}.get(product["category"], product["category"])
+            lines.append(f"{product['name']} — {category}:")
+            for variant in product["variants"]:
+                price = "chưa có giá" if variant["price_vnd"] is None else format_vnd(variant["price_vnd"])
+                lines.append(f"  • {price}.")
+            continue
         lines.append(f"- {product['name']} [{product['id']}], vị {product['flavor'] or 'chưa biết'}:")
         for variant in product["variants"]:
             price = "chưa có giá" if variant["price_vnd"] is None else format_vnd(variant["price_vnd"])
@@ -87,11 +94,14 @@ def make_response(
 ) -> ChatResponse:
     """Mọi phản hồi đều có mode; nguồn mock luôn có nhãn dữ liệu mẫu."""
     label = f"[Nguồn: {capabilities['data_mode']}]"
-    if capabilities["is_mock"]:
-        label += f" [DỮ LIỆU MẪU {capabilities['data_mode']} — chỉ học và kiểm thử]"
+    if capabilities.get("catalog_source") == "group_files":
+        label += " [MÔ PHỎNG — menu nhóm]"
+    elif capabilities["is_mock"]:
+        label += " [MÔ PHỎNG]"
     return {
         "text": label + "\n" + text, "data_mode": capabilities["data_mode"],
         "is_mock": capabilities["is_mock"], "catalog_status": result["status"],
+        "catalog_source": capabilities.get("catalog_source", capabilities["data_mode"]),
         "intents": list(nlu["intents"]), "nlu": nlu, "products": result["products"],
         "state": state, "requires_clarification": clarification, "error": result["error"], "policy": None,
     }

@@ -19,8 +19,10 @@ from app import config
 from app.conversation import handle_message, new_conversation
 from app.knowledge_loader import create_knowledge_repository
 from app.order_service import create_order_tools
+from app.order_flow import order_items
 from app.repositories.catalog import create_catalog_repository
 from app.schemas import QueryStatus, StockStatus
+from app.repositories.catalog import safe_search_products
 from app.storage import load_conversation, load_order_request, open_storage, save_conversation
 
 STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
@@ -99,6 +101,17 @@ class SlotsView(APIModel):
     address: str | None
 
 
+class OrderItemView(APIModel):
+    product_id: str | None
+    cake_need: str | None
+    name: str | None = None
+    size: str | None
+    quantity: int | None = Field(ge=1)
+    toppings: list[str] | None
+    cake_text: str | None
+    verification: dict[str, Literal["verified", "unverified", "not_applicable"]] = Field(default_factory=dict)
+
+
 class QuoteView(APIModel):
     variant_id: str
     base_price_vnd: int = Field(ge=0)
@@ -112,6 +125,7 @@ class QuoteView(APIModel):
 
 
 class ReviewView(APIModel):
+    items: list[OrderItemView] = Field(default_factory=list)
     revision: int
     product_name: str | None = None
     data_mode: str
@@ -124,6 +138,7 @@ class ReviewView(APIModel):
 
 class ChatView(APIModel):
     conversation_id: str
+    catalog_source: str
     message: str
     state: State
     products: list[ProductView]
@@ -142,6 +157,7 @@ class ChatView(APIModel):
 
 class ConversationView(APIModel):
     conversation_id: str
+    catalog_source: str
     session_token: str
     expires_in_seconds: int
     data_mode: str
@@ -151,6 +167,7 @@ class ConversationView(APIModel):
 
 
 class OrderRequestView(APIModel):
+    items: list[OrderItemView] = Field(default_factory=list)
     id: str
     conversation_id: str
     draft_id: str
@@ -179,8 +196,16 @@ class OrderRequestView(APIModel):
         return self
 
 
+class CatalogView(APIModel):
+    data_mode: str
+    catalog_source: str
+    status: QueryStatus
+    products: list[ProductView]
+
+
 class HealthView(APIModel):
     status: Literal["ok"]
+    catalog_source: str
     data_mode: str
     knowledge_mode: str
     chat_mode: Literal["rule", "ollama"]
@@ -195,6 +220,14 @@ def get_data_mode(repository) -> str:
         return "unknown"
 
 
+def get_catalog_source(repository) -> str:
+    try:
+        capabilities = repository.get_capabilities()
+        return capabilities.get("catalog_source", capabilities["data_mode"])
+    except Exception:
+        return "unknown"
+
+
 def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
     """Chuyển kết quả controller sang contract web; không trả history/model prompt."""
     conversation, response = turn["conversation"], turn["response"]
@@ -204,10 +237,12 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
     if snapshot and draft["state"] == "REVIEW" and not submission:
         review = {
             "revision": snapshot["revision"], "data_mode": snapshot["mode"],
-            "slots": draft["slots"], "verification": draft["verification"],
+            "slots": {key: None if key in draft.get("disabled_fields", []) else value for key, value in draft["slots"].items()},
+            "verification": {key: value for key, value in draft["verification"].items() if key not in draft.get("disabled_fields", [])},
             "issues": draft["issues"], "quote": snapshot["quote"],
             "availability": snapshot["availability"],
             "product_name": snapshot.get("product_name"),
+            "items": order_items(draft, snapshot.get("product_name")),
         }
     sources = [{**citation, "is_mock": policy["is_mock"]} for citation in policy["citations"]] if policy else []
     errors = [response.get("error"), turn["llm_error"]]
@@ -215,12 +250,13 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
         errors.extend([policy["error"], policy["llm_error"]])
     return {
         "conversation_id": conversation["id"], "message": response["text"],
+        "catalog_source": response.get("catalog_source", response["data_mode"]),
         "state": draft["state"], "products": response["products"], "sources": sources,
         "data_mode": response["data_mode"], "knowledge_mode": knowledge_mode,
         "catalog_status": response["catalog_status"], "policy_status": policy["status"] if policy else None,
         "requires_confirmation": review is not None and (
             review["availability"] == "available" and review["quote"] is not None and not review["issues"]
-            if response["data_mode"] == "local_demo" else review["availability"] != "unavailable"
+            if response["data_mode"] == "local_demo" and not draft.get("extra_items") else review["availability"] not in {"unavailable", "error", "unsupported"}
         ), "review": review,
         "request_id": submission["id"] if submission and submission["kind"] == "waiting_consultation" else None,
         "demo_order_id": submission["id"] if submission and submission["kind"] == "demo_order" else None,
@@ -230,10 +266,14 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
 
 def create_app(*, catalog_repository=None, knowledge_repository=None,
                db_path=config.CHATBOT_DB_PATH, chat_mode=config.CHAT_MODE,
-               knowledge_mode=config.KNOWLEDGE_MODE, base_url=config.OLLAMA_BASE_URL,
-               model=config.OLLAMA_MODEL, timeout=config.OLLAMA_TIMEOUT_SECONDS,
+               knowledge_mode=config.KNOWLEDGE_MODE, base_url=None,
+               model=None, timeout=None,
                session_seconds=SESSION_SECONDS) -> FastAPI:
     """Factory cho chạy thật/test: nguồn được truyền vào, không đổi logic chatbot."""
+    endpoint, configured_model, configured_timeout = config.get_llm_settings(chat_mode)
+    base_url = endpoint if base_url is None else base_url
+    model = configured_model if model is None else model
+    timeout = configured_timeout if timeout is None else timeout
     catalog = catalog_repository if catalog_repository is not None else create_catalog_repository(config.CATALOG_MODE, db_path)
     knowledge = knowledge_repository if knowledge_repository is not None else create_knowledge_repository(
         knowledge_mode, db_path if knowledge_mode == "local_demo" else config.KNOWLEDGE_PATH)
@@ -279,9 +319,17 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
 
     @application.get("/health", response_model=HealthView)
     def health():
-        return {"status": "ok", "data_mode": get_data_mode(catalog),
+        return {"status": "ok", "catalog_source": get_catalog_source(catalog), "data_mode": get_data_mode(catalog),
                 "knowledge_mode": knowledge_mode, "chat_mode": chat_mode,
                 "message_max_length": MESSAGE_MAX_LENGTH}
+
+    @application.get("/api/catalog", response_model=CatalogView)
+    def read_catalog():
+        result = safe_search_products(catalog, {}, get_data_mode(catalog))
+        if result["status"] in {"error", "unconfigured"}:
+            raise HTTPException(503, "catalog_unavailable")
+        return {"data_mode": result["data_mode"], "catalog_source": get_catalog_source(catalog),
+                "status": result["status"], "products": result["products"]}
 
     @application.post("/api/conversations", response_model=ConversationView, status_code=201)
     def start_conversation(body: CreateConversationRequest):
@@ -299,6 +347,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                 save_conversation(connection, conversation)
             sessions[digest] = {"conversation_id": conversation["id"], "expires_at": now + session_seconds, "lock": Lock()}
         return {"conversation_id": conversation["id"], "session_token": token,
+                "catalog_source": get_catalog_source(catalog),
                 "expires_in_seconds": session_seconds, "data_mode": get_data_mode(catalog),
                 "knowledge_mode": knowledge_mode, "chat_mode": chat_mode, "state": "BROWSING"}
 
@@ -338,6 +387,10 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
         return FileResponse(STATIC_DIR / "index.html")
 
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    group_static = config.GROUP_PROJECT_ROOT / "static"
+    if group_static.is_dir():
+        # Chỉ phục vụ file có sẵn, không ghi/chèn widget vào frontend nhóm.
+        application.mount("/website", StaticFiles(directory=group_static, html=True), name="group_website")
     return application
 
 

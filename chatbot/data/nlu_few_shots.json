@@ -1,8 +1,71 @@
 {
-  "version": "intent-context-fewshot-v8",
+  "version": "intent-context-fewshot-v18",
   "source": "abstract_patterns_from_development_errors",
-  "note": "bánh A/B/C là placeholder, không phải menu. Không chứa nhãn final test.",
+  "note": "bánh A/B/C và banh A/B/C là placeholder, không phải menu. Ví dụ viết tắt giữ nguyên mention của câu hiện tại; tham chiếu dùng reference, không chép tên từ lịch sử. Không chứa nhãn final test. Thêm both/all theo danh sách đã trả: cả hai không tự có ý đặt hoặc số lượng; mỗi loại 1c dùng order_items.",
   "examples": [
+    {
+      "input": {
+        "message": "bánh B",
+        "context": {
+          "discussion_context": {
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "pending_information_request": [
+            {
+              "intents": [
+                "price"
+              ],
+              "product_mentions": [],
+              "reference": "none",
+              "filters": {}
+            }
+          ],
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          },
+          "pending_order_question": null
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "information",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
+      },
+      "information_followup": true,
+      "priority": 0,
+      "kind": "followup"
+    },
     {
       "input": {
         "message": "Bánh B giá bao nhiêu?",
@@ -12,7 +75,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -44,11 +107,17 @@
               "bánh B"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {}
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
-      "priority": 0
+      "priority": 0,
+      "kind": "scope"
     },
     {
       "input": {
@@ -59,7 +128,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -87,11 +156,17 @@
             ],
             "product_mentions": [],
             "reference": "last",
-            "size": null
+            "size": null,
+            "filters": {}
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
-      "priority": 11
+      "priority": 11,
+      "kind": "reference"
     },
     {
       "input": {
@@ -102,7 +177,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -139,9 +214,14 @@
               "bánh C"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {}
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "priority": 70
     },
@@ -154,7 +234,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -187,11 +267,20 @@
               "bánh B"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {},
+            "excluded_product_mentions": [
+              "bánh A"
+            ]
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
-      "priority": 50
+      "priority": 50,
+      "kind": "negation"
     },
     {
       "input": {
@@ -202,7 +291,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -236,7 +325,8 @@
               "bánh B"
             ],
             "reference": "none",
-            "size": "16 cm"
+            "size": "16 cm",
+            "filters": {}
           },
           {
             "intents": [
@@ -246,9 +336,14 @@
               "bánh C"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {}
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
       "priority": 12
     },
@@ -264,10 +359,14 @@
             "product_selected": true,
             "next_required_field": "quantity"
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
+          },
+          "pending_order_question": {
+            "field": "quantity",
+            "revision": 1
           }
         }
       },
@@ -290,12 +389,17 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "order",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "states": [
         "COLLECTING"
       ],
-      "priority": 1
+      "priority": 1,
+      "kind": "slot_quantity"
     },
     {
       "input": {
@@ -306,7 +410,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -332,12 +436,17 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "states": [
         "REVIEW"
       ],
-      "priority": 1
+      "priority": 1,
+      "kind": "review_edit"
     },
     {
       "input": {
@@ -348,7 +457,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -369,9 +478,14 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": false,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
-      "priority": 60
+      "priority": 60,
+      "kind": "policy"
     },
     {
       "input": {
@@ -382,7 +496,7 @@
             "product_selected": false,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 0,
             "shown_product_count": 0,
             "focus_is_order_product": false
@@ -414,9 +528,14 @@
               "bánh B"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {}
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
       "priority": 55
     },
@@ -429,10 +548,14 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
+          },
+          "pending_order_question": {
+            "field": "size",
+            "revision": 1
           }
         }
       },
@@ -455,12 +578,17 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "order",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "states": [
         "COLLECTING"
       ],
-      "priority": 2
+      "priority": 2,
+      "kind": "slot_size"
     },
     {
       "input": {
@@ -471,7 +599,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -497,7 +625,11 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "states": [
         "COLLECTING"
@@ -513,7 +645,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -539,7 +671,11 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "states": [
         "COLLECTING"
@@ -548,17 +684,12 @@
     },
     {
       "input": {
-        "message": "Tôi muốn đặt bánh A",
+        "message": "đặt bánh kem A",
         "context": {
           "order_draft": {
             "state": "BROWSING",
             "product_selected": false,
-            "next_required_field": null
-          },
-          "conversation_context": {
-            "focused_product_count": 0,
-            "shown_product_count": 0,
-            "focus_is_order_product": false
+            "can_submit_current_review": false
           }
         }
       },
@@ -566,26 +697,28 @@
         "intents": [
           "order_request"
         ],
+        "continuation": "none",
         "action": "start_order",
         "order_operation": "select_product",
         "product_mentions": [
-          "bánh A"
+          "bánh kem A"
         ],
         "order_product_mentions": [
-          "bánh A"
+          "bánh kem A"
         ],
         "reference": "none",
         "updates": [],
         "clear_slots": [],
         "ambiguous": false,
         "handoff_reason": "none",
+        "order_negated": false,
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
       },
-      "states": [
-        "BROWSING"
-      ],
-      "priority": 1
+      "priority": 1,
+      "kind": "order_start"
     },
     {
       "states": [
@@ -600,7 +733,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -625,7 +758,11 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "priority": 2
     },
@@ -642,7 +779,7 @@
             "product_selected": true,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 1,
             "shown_product_count": 0,
             "focus_is_order_product": true
@@ -669,7 +806,11 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "priority": 3
     },
@@ -685,7 +826,7 @@
             "product_selected": false,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 0,
             "shown_product_count": 0,
             "focus_is_order_product": false
@@ -743,7 +884,11 @@
         "ambiguous": false,
         "handoff_reason": "none",
         "order_update": true,
-        "requests": []
+        "requests": [],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
       },
       "priority": 2
     },
@@ -756,7 +901,7 @@
             "product_selected": false,
             "next_required_field": null
           },
-          "conversation_context": {
+          "discussion_context": {
             "focused_product_count": 0,
             "shown_product_count": 0,
             "focus_is_order_product": false
@@ -797,11 +942,2161 @@
               "bánh B"
             ],
             "reference": "none",
-            "size": null
+            "size": null,
+            "filters": {
+              "budget_vnd": 300000,
+              "price_inclusive": false
+            }
           }
-        ]
+        ],
+        "continuation": "none",
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
       },
       "priority": 80
+    },
+    {
+      "input": {
+        "message": "bánh A",
+        "context": {
+          "discussion_context": {
+            "recent_information_intents": []
+          },
+          "order_draft": {
+            "state": "BROWSING"
+          },
+          "pending_information_request": null
+        }
+      },
+      "output": {
+        "intents": [
+          "description"
+        ],
+        "continuation": "entity",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "description"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
+      },
+      "priority": 3,
+      "states": [
+        "BROWSING"
+      ],
+      "kind": "entity"
+    },
+    {
+      "input": {
+        "message": "Giá bánh A và bánh B có sữa không?",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price",
+          "allergen"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A",
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ],
+            "reference": "none"
+          },
+          {
+            "intents": [
+              "allergen"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_negated": false,
+        "order_reference": null,
+        "order_items": []
+      },
+      "priority": 2,
+      "kind": "multi_scope"
+    },
+    {
+      "input": {
+        "message": "Nhận tại cửa hàng ngày 2099-02-01 09:00, tên DEMO Khách X, sđt TEST-X1.",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "missing_fields": [
+              "pickup_at",
+              "fulfillment",
+              "name",
+              "phone"
+            ]
+          },
+          "pending_order_question": {
+            "field": "pickup_at",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "pickup_at",
+            "value": "2099-02-01 09:00"
+          },
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          },
+          {
+            "field": "name",
+            "value": "DEMO Khách X"
+          },
+          {
+            "field": "phone",
+            "value": "TEST-X1"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_update": true,
+        "requests": [],
+        "order_negated": false,
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ],
+      "priority": 1,
+      "kind": "slot_pickup"
+    },
+    {
+      "kind": "order_quantity",
+      "priority": 1,
+      "input": {
+        "message": "Cho tôi hai bánh A",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [
+          "bánh A"
+        ],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      }
+    },
+    {
+      "kind": "negated_order",
+      "priority": 1,
+      "input": {
+        "message": "Không đặt bánh A, chỉ hỏi giá",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh B"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": true,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ],
+            "reference": "none",
+            "size": null,
+            "filters": {},
+            "excluded_product_mentions": []
+          }
+        ],
+        "order_reference": null,
+        "order_items": []
+      }
+    },
+    {
+      "kind": "price_availability",
+      "priority": 1,
+      "input": {
+        "message": "Bánh A còn không, giá bao nhiêu?",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "availability",
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability",
+              "price"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ],
+            "reference": "none",
+            "size": null,
+            "filters": {},
+            "excluded_product_mentions": []
+          }
+        ],
+        "order_reference": null,
+        "order_items": []
+      }
+    },
+    {
+      "kind": "acknowledge_choice",
+      "priority": 1,
+      "input": {
+        "message": "Đồng ý",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "can_submit_current_review": false,
+            "missing_fields": [
+              "fulfillment"
+            ]
+          },
+          "pending_order_question": {
+            "field": "fulfillment",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "acknowledgement"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": null,
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "slot_fulfillment",
+      "priority": 1,
+      "input": {
+        "message": "Nhận tại cửa hàng",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "fulfillment",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "slot_name",
+      "priority": 1,
+      "input": {
+        "message": "Tên: DEMO Khách X",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "name",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "name",
+            "value": "DEMO Khách X"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "slot_phone",
+      "priority": 1,
+      "input": {
+        "message": "Sđt: TEST-X1",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "phone",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "phone",
+            "value": "TEST-X1"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "slot_address",
+      "priority": 1,
+      "input": {
+        "message": "Địa chỉ: DEMO Địa chỉ A",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "address",
+            "revision": 2
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "address",
+            "value": "DEMO Địa chỉ A"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "confirm_review",
+      "priority": 1,
+      "input": {
+        "message": "Đồng ý gửi yêu cầu",
+        "context": {
+          "order_draft": {
+            "state": "REVIEW",
+            "can_submit_current_review": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "confirm",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "REVIEW"
+      ]
+    },
+    {
+      "kind": "review_edit_quantity",
+      "priority": 1,
+      "input": {
+        "message": "Đồng ý nhưng đổi số lượng thành hai",
+        "context": {
+          "order_draft": {
+            "state": "REVIEW",
+            "can_submit_current_review": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "confirm",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "REVIEW"
+      ]
+    },
+    {
+      "kind": "cancel_draft",
+      "priority": 1,
+      "input": {
+        "message": "Hủy yêu cầu đang đặt",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "cancel",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING",
+        "REVIEW"
+      ]
+    },
+    {
+      "kind": "human",
+      "priority": 1,
+      "input": {
+        "message": "Tôi muốn gặp nhân viên",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "handoff"
+        ],
+        "continuation": "none",
+        "action": "handoff",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "customer_requested",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": null,
+        "order_items": []
+      }
+    },
+    {
+      "kind": "complaint",
+      "priority": 1,
+      "input": {
+        "message": "Tôi muốn khiếu nại",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "complaint"
+        ],
+        "continuation": "none",
+        "action": "handoff",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "complaint",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": null,
+        "order_items": []
+      }
+    },
+    {
+      "kind": "out_of_scope",
+      "priority": 1,
+      "input": {
+        "message": "Viết chương trình Java giúp tôi",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "out_of_scope"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [],
+        "order_reference": null,
+        "order_items": []
+      }
+    },
+    {
+      "kind": "order_reference",
+      "input": {
+        "message": "đặt cho tôi bánh này",
+        "context": {
+          "discussion_context": {
+            "products": [
+              "bánh A"
+            ]
+          },
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "can_submit_current_review": false,
+            "product_name": "bánh B"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "last",
+        "order_items": []
+      }
+    },
+    {
+      "kind": "order_add",
+      "input": {
+        "message": "thêm hai bánh B nữa",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh A",
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "add_product",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [
+          "bánh B"
+        ],
+        "reference": "none",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      }
+    },
+    {
+      "kind": "order_add_reference",
+      "input": {
+        "message": "thêm hai bánh này nữa",
+        "context": {
+          "discussion_context": {
+            "products": [
+              "bánh B"
+            ]
+          },
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh A",
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "add_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "last",
+        "order_items": []
+      }
+    },
+    {
+      "kind": "pending_order_target",
+      "input": {
+        "message": "bánh B",
+        "context": {
+          "pending_order_request": {
+            "operation": "add_product",
+            "revision": 1
+          },
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true
+          },
+          "pending_order_question": {
+            "field": "pickup_at",
+            "item_index": 0
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "add_product",
+        "continuation": "order",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [
+          "bánh B"
+        ],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_reference": "none",
+        "order_items": []
+      }
+    },
+    {
+      "kind": "multi_info_order",
+      "input": {
+        "message": "Bánh A và bánh B giá bao nhiêu, còn không? Đặt cho tôi hai bánh A, nhận tại cửa hàng.",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "price",
+          "availability",
+          "order_request"
+        ],
+        "action": "start_order",
+        "order_operation": "select_product",
+        "continuation": "none",
+        "product_mentions": [
+          "bánh A",
+          "bánh B"
+        ],
+        "order_product_mentions": [
+          "bánh A"
+        ],
+        "reference": "none",
+        "order_reference": null,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          },
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [
+          {
+            "intents": [
+              "price",
+              "availability"
+            ],
+            "product_mentions": [
+              "bánh A",
+              "bánh B"
+            ]
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "multi_policy_order",
+      "input": {
+        "message": "Bánh A giá bao nhiêu? Chính sách giao hàng thế nào? Đặt hai bánh này, nhận tại cửa hàng.",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "price",
+          "policy",
+          "order_request"
+        ],
+        "action": "start_order",
+        "order_operation": "select_product",
+        "continuation": "none",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": "last",
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          },
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ]
+          },
+          {
+            "intents": [
+              "policy"
+            ],
+            "product_mentions": [],
+            "question": "Chính sách giao hàng thế nào?"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "multi_scoped_attributes",
+      "input": {
+        "message": "Bánh A giá bao nhiêu, bánh B vị gì và bảo quản thế nào?",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "price",
+          "flavor",
+          "storage"
+        ],
+        "action": "none",
+        "order_operation": "none",
+        "continuation": "none",
+        "product_mentions": [
+          "bánh A",
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ]
+          },
+          {
+            "intents": [
+              "flavor",
+              "storage"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ]
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "multi_slots_retained",
+      "input": {
+        "message": "Bánh B giá bao nhiêu? Tên DEMO Khách X, sđt TEST-X1.",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "slots": {
+              "quantity": "filled",
+              "fulfillment": "filled",
+              "name": "missing",
+              "phone": "missing"
+            }
+          },
+          "pending_order_question": {
+            "field": "name",
+            "item_index": 0
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price",
+          "order_request"
+        ],
+        "action": "none",
+        "order_operation": "update_slots",
+        "continuation": "none",
+        "product_mentions": [
+          "bánh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "updates": [
+          {
+            "field": "name",
+            "value": "DEMO Khách X"
+          },
+          {
+            "field": "phone",
+            "value": "TEST-X1"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "bánh B"
+            ]
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "advice_quantity",
+      "input": {
+        "message": "Tư vấn bánh A, tôi cần ba chiếc, ngân sách dưới 600k.",
+        "context": {
+          "order_draft": {
+            "state": "BROWSING"
+          },
+          "pending_order_question": null
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "bánh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 3
+          },
+          {
+            "field": "budget_vnd",
+            "value": 600000
+          },
+          {
+            "field": "price_inclusive",
+            "value": false
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [
+              "bánh A"
+            ],
+            "reference": "none",
+            "filters": {
+              "budget_vnd": 600000,
+              "price_inclusive": false
+            }
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "order_known_quantity",
+      "input": {
+        "message": "Đặt cho tôi bánh này.",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 1
+          },
+          "known_preferences": {
+            "quantity": 3
+          },
+          "order_draft": {
+            "state": "BROWSING"
+          },
+          "pending_order_question": null
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "order_reference": "last",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_price",
+      "input": {
+        "message": "banh A bn tien?",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "banh A"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_multi_info",
+      "input": {
+        "message": "banh A con k, gia bn? banh B vi gi?",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "availability",
+          "price",
+          "flavor"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh A",
+          "banh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability",
+              "price"
+            ],
+            "product_mentions": [
+              "banh A"
+            ],
+            "reference": "none"
+          },
+          {
+            "intents": [
+              "flavor"
+            ],
+            "product_mentions": [
+              "banh B"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_negated_order",
+      "input": {
+        "message": "k dat banh A nha, chi hoi gia thoi",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh B"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": true,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "banh A"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_multi_order",
+      "input": {
+        "message": "banh A bn, con k? dat giup m 2c banh B, lay tai shop",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "price",
+          "availability",
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [
+          "banh A",
+          "banh B"
+        ],
+        "order_product_mentions": [
+          "banh B"
+        ],
+        "reference": "none",
+        "order_reference": "none",
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          },
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [
+          {
+            "intents": [
+              "price",
+              "availability"
+            ],
+            "product_mentions": [
+              "banh A"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_reference_order",
+      "input": {
+        "message": "dat cho m banh nay 2c nha",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 1,
+            "products": [
+              "bánh B"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "order_reference": "last",
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_add_reference",
+      "input": {
+        "message": "them 1c banh nay nua",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 1,
+            "products": [
+              "bánh B"
+            ]
+          },
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh A",
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "add_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "order_reference": "last",
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 1
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING",
+        "REVIEW"
+      ]
+    },
+    {
+      "kind": "abbreviation_slot_answer",
+      "input": {
+        "message": "2c nhe",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true
+          },
+          "pending_order_question": {
+            "field": "quantity",
+            "revision": 2,
+            "item_index": 0
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "order",
+        "action": "none",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": "none",
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 2
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_items": []
+      },
+      "states": [
+        "COLLECTING"
+      ]
+    },
+    {
+      "kind": "abbreviation_review_edit",
+      "input": {
+        "message": "ok nhung doi sl thanh 3c",
+        "context": {
+          "order_draft": {
+            "state": "REVIEW",
+            "can_submit_current_review": true
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "confirm",
+        "order_operation": "update_slots",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": "none",
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "quantity",
+            "value": 3
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": [],
+        "order_items": []
+      },
+      "states": [
+        "REVIEW"
+      ]
+    },
+    {
+      "kind": "abbreviation_followup",
+      "input": {
+        "message": "banh B",
+        "context": {
+          "pending_information_request": [
+            {
+              "intents": [
+                "price"
+              ],
+              "product_mentions": [],
+              "reference": "none",
+              "filters": {}
+            }
+          ],
+          "order_draft": {
+            "state": "COLLECTING",
+            "product_selected": true,
+            "product_name": "bánh A"
+          },
+          "pending_order_question": {
+            "field": "quantity",
+            "item_index": 0
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "information",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh B"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [
+              "banh B"
+            ],
+            "reference": "none"
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_budget",
+      "input": {
+        "message": "tu van banh duoi 250k, k lay banh A",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "updates": [
+          {
+            "field": "budget_vnd",
+            "value": 250000
+          },
+          {
+            "field": "price_inclusive",
+            "value": false
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "reference": "none",
+            "filters": {
+              "budget_vnd": 250000,
+              "price_inclusive": false
+            },
+            "excluded_product_mentions": [
+              "banh A"
+            ]
+          }
+        ],
+        "order_items": []
+      }
+    },
+    {
+      "kind": "abbreviation_catalog_scope",
+      "input": {
+        "message": "ban co banh nhom A ko?",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "availability"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [
+          "banh nhom A"
+        ],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [
+              "banh nhom A"
+            ],
+            "reference": "none"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "abbreviation_both_information",
+      "input": {
+        "message": "ca2banh nhe",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "availability"
+            ]
+          },
+          "pending_information_request": [
+            {
+              "intents": [
+                "availability"
+              ],
+              "product_mentions": [],
+              "reference": "none",
+              "filters": {}
+            }
+          ],
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "availability"
+        ],
+        "continuation": "information",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "both",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "availability"
+            ],
+            "product_mentions": [],
+            "reference": "both"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "abbreviation_all_information",
+      "input": {
+        "message": "tat ca gia nhe",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "information",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "all",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "reference": "all"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "abbreviation_both_order",
+      "input": {
+        "message": "dat ca2loai, moi1c, lay tai tiem",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "order_request"
+        ],
+        "continuation": "none",
+        "action": "start_order",
+        "order_operation": "select_product",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "both",
+        "order_reference": "both",
+        "order_ambiguous": false,
+        "order_items": [
+          {
+            "product_mention": null,
+            "reference": "both",
+            "quantity": 1
+          }
+        ],
+        "updates": [
+          {
+            "field": "fulfillment",
+            "value": "pickup"
+          }
+        ],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": true,
+        "requests": []
+      }
+    },
+    {
+      "kind": "abbreviation_single_reference",
+      "input": {
+        "message": "banh do bn?",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "last",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": true,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "reference": "last",
+            "ambiguous": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "abbreviation_negated_both",
+      "input": {
+        "message": "k dat ca2loai, chi hoi gia",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "both",
+        "order_reference": null,
+        "order_ambiguous": false,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": true,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "reference": "both"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "ordinal_information",
+      "input": {
+        "message": "bánh thứ hai giá bn?",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 2,
+            "shown_product_count": 2,
+            "recent_information_intents": [
+              "availability"
+            ]
+          },
+          "order_draft": {
+            "state": "BROWSING",
+            "product_selected": false,
+            "can_submit_current_review": false
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "second",
+        "order_reference": null,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "reference": "second"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "store_information",
+      "input": {
+        "message": "địa chỉ cửa hàng ở đâu, mở cửa mấy giờ?",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 1,
+            "recent_information_intents": [
+              "price"
+            ]
+          },
+          "order_state": "COLLECTING",
+          "pending_order_field": "name"
+        }
+      },
+      "output": {
+        "intents": [
+          "policy"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "reference": "none",
+        "order_reference": null,
+        "order_items": [],
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "order_ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "order_update": false,
+        "requests": [
+          {
+            "intents": [
+              "policy"
+            ],
+            "question": "địa chỉ cửa hàng ở đâu, mở cửa mấy giờ?",
+            "product_mentions": [],
+            "reference": "none",
+            "excluded_product_mentions": []
+          }
+        ]
+      }
+    },
+    {
+      "kind": "recommendation_constraints",
+      "input": {
+        "message": "Mình cần bánh vị A cho 6 người dưới 300k.",
+        "context": {
+          "catalog_configured": false
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "continuation": "none",
+        "action": "none",
+        "order_operation": "none",
+        "product_mentions": [],
+        "order_product_mentions": [],
+        "order_reference": null,
+        "order_items": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "order_negated": false,
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "reference": "none",
+            "filters": {
+              "flavor": "vị A",
+              "servings": 6,
+              "budget_vnd": 300000,
+              "price_inclusive": false
+            },
+            "excluded_product_mentions": []
+          }
+        ]
+      }
     }
   ]
 }

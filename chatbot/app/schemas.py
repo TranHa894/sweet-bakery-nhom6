@@ -10,54 +10,8 @@ Intent = Literal[
     "greeting", "price", "size", "flavor", "availability",
     "recommendation", "policy", "order_request", "fallback",
     "allergen", "topping", "storage", "description",
+    "acknowledgement", "out_of_scope", "handoff", "complaint",
 ]
-
-
-class LLMNLU(BaseModel):
-    """Dữ liệu LLM đề xuất; không có product_id, giá bán hoặc tồn kho."""
-
-    model_config = ConfigDict(strict=True, extra="forbid", str_strip_whitespace=True)
-
-    intents: list[Intent] = Field(min_length=1, max_length=9)
-    product_mentions: list[str] = Field(max_length=10)
-    budget_vnd: int | None = Field(ge=0)
-    flavor: str | None
-    servings: int | None = Field(ge=1)
-    quantity: int | None = Field(ge=1)
-    size: str | None
-    price_inclusive: bool
-
-
-Opening = Literal[
-    "Mình đã ghi nhận yêu cầu của bạn.",
-    "Mình sẽ đối chiếu nhu cầu với nguồn dữ liệu đang chọn.",
-    "Bạn hãy làm rõ nhu cầu để mình tiếp tục.",
-]
-
-
-class LLMOpening(BaseModel):
-    """LLM chọn lời mở đầu; không được tự viết lại các thông tin nghiệp vụ."""
-
-    model_config = ConfigDict(strict=True, extra="forbid")
-    opening: Opening
-
-
-class LLMOrderSlots(BaseModel):
-    """Mong muốn khách nêu trong câu hiện tại; không có ID/giá/confirmed."""
-
-    model_config = ConfigDict(strict=True, extra="forbid")
-    product_mentions: list[str] = Field(max_length=10)
-    cake_need: str | None
-    size: str | None
-    quantity: int | None = Field(ge=1)
-    toppings: list[str] | None
-    cake_text: str | None
-    pickup_at: str | None
-    fulfillment: Literal["pickup", "delivery"] | None
-    name: str | None
-    phone: str | None
-    address: str | None
-    needs_clarification: bool
 
 
 class TurnUpdates(BaseModel):
@@ -85,44 +39,105 @@ class TurnUpdates(BaseModel):
 
 SlotName = Literal["product", "cake_need", "size", "quantity", "toppings", "cake_text", "pickup_at", "fulfillment", "name", "phone", "address", "budget_vnd", "flavor", "servings", "occasion", "allergens"]
 
-Reference = Literal["none", "last", "first", "second", "cheaper", "order"]
+Reference = Literal["none", "last", "first", "second", "cheaper", "order", "both", "all"]
+
+
+class OrderItemSelection(BaseModel):
+    """Một món AI đề xuất từ câu hiện tại; repository mới xác minh được ID."""
+
+    model_config = ConfigDict(strict=True, extra="forbid", str_strip_whitespace=True)
+    product_mention: str | None = Field(default=None, min_length=1, max_length=200,
+        description="Verbatim CURRENT cake name/alias; null for references. Never a verified product_id.")
+    reference: Reference = Field(default="none",
+        description="both means exactly 2 offered choices; all means every offered choice, never all draft items.")
+    quantity: int | None = Field(default=None, ge=1, le=1000,
+        description="Quantity for THIS cake. null when unknown. For both/all only explicit EACH quantity, never the number of selected cake types.")
+
+    @model_validator(mode="after")
+    def require_target(self):
+        if not self.product_mention and self.reference == "none":
+            raise ValueError("An order item needs a current product mention or a reference.")
+        return self
+
+
+class QueryConstraints(BaseModel):
+    """Điều kiện riêng của một truy vấn, không phải slot đặt hàng."""
+
+    model_config = ConfigDict(strict=True, extra="forbid")
+    budget_vnd: int | None = Field(default=None, ge=0)
+    price_inclusive: bool | None = None
+    flavor: str | None = Field(default=None, max_length=100)
+    servings: int | None = Field(default=None, ge=1)
+    occasion: str | None = Field(default=None, max_length=100)
+    allergens: list[str] | None = Field(default=None, max_length=10,
+        description="Customer's explicit AVOIDANCE constraints, not ingredients merely asked about. None when unmentioned.")
+    available_only: bool | None = None
 
 
 class InformationRequest(BaseModel):
     """Một câu hỏi có đối tượng riêng; size ở đây chỉ lọc tra cứu, không sửa đơn."""
 
     model_config = ConfigDict(strict=True, extra="forbid")
-    intents: list[Literal["price", "size", "flavor", "availability", "recommendation", "allergen", "topping", "storage", "description"]] = Field(min_length=1, max_length=9)
+    intents: list[Literal["price", "size", "flavor", "availability", "recommendation", "policy", "allergen", "topping", "storage", "description"]] = Field(min_length=1, max_length=10)
+    question: str | None = Field(default=None, min_length=1, max_length=2000,
+        description="Exact current-message clause for this question, especially policy; never include an order clause.")
+    ambiguous: bool = Field(default=False, description="ONLY this request has an unclear target or attribute link.")
     product_mentions: list[str] = Field(max_length=10)
     reference: Reference = "none"
     size: str | None = Field(default=None, max_length=100)
+    filters: QueryConstraints = Field(default_factory=QueryConstraints)
+    excluded_product_mentions: list[str] = Field(default_factory=list, max_length=10)
 
 
 class LLMTurn(BaseModel):
     """Một kết quả hiểu cho cả hỏi đáp/lệnh/đặt bánh; code thực hiện hành động."""
 
     model_config = ConfigDict(strict=True, extra="forbid")
-    intents: list[Intent] = Field(min_length=1, max_length=13)
+    intents: list[Intent] = Field(min_length=1, max_length=17)
+    continuation: Literal["none", "information", "order", "entity"] = Field(
+        default="none", description="entity ONLY bare cake name; information short continuation of information; order pending-slot answer; none explicit new question/action.")
     action: Literal["none", "start_order", "review", "confirm", "cancel", "handoff"]
     order_operation: Literal["none", "select_product", "add_product", "remove_product", "update_slots"] = Field(
         default="none", description="Explicit order operation. MUST be none without order_request intent. Select=start/replace, add=append, remove=delete, update_slots=set details. Information questions never edit the order.")
     product_mentions: list[str] = Field(max_length=10, description="Exact cake NAME/alias phrases in CURRENT message, especially when asking price/size. Retain ALL names mentioned; not verified IDs. Use [] only when no cake name is mentioned.")
+    order_reference: Reference | None = Field(default=None, description="Reference ONLY for the order target; independent of question references.")
+    order_ambiguous: bool = Field(default=False, description="ONLY the order target/details are unclear, not every information request.")
     order_product_mentions: list[str] = Field(default_factory=list, max_length=10,
         description="ONLY cake names explicitly chosen to add/change/start the ORDER, not cakes asked about. [] for information-only or slot answers without cake names.")
     reference: Reference = Field(
-        description="none when CURRENT message names cakes; last for implicit/current-topic references; order ONLY for explicit reference to the order draft. Never combine old draft names with current mentions.")
+        description="none for named current cakes; last for current topic; order for the draft; both/all ONLY offered choices. Never combine old draft names with current mentions.")
+    order_items: list[OrderItemSelection] = Field(default_factory=list, max_length=6,
+        description="Only explicit order selections, one entry per named cake/reference with its own quantity; [] for information only.")
+    response_opening: Literal["", "Mình kiểm tra thông tin cho bạn nhé.",
+        "Mình đã ghi nhận nhu cầu này.", "Mình chưa đủ thông tin để kết luận."] = ""
     updates: TurnUpdates
     clear_slots: list[SlotName] = Field(max_length=17)
     ambiguous: bool
     handoff_reason: Literal["none", "customer_requested", "severe_allergy", "complaint", "unsupported_business"]
+    order_negated: bool = Field(default=False, description="True ONLY when declining an order action, e.g. không đặt A, chỉ hỏi giá. The named cake can still be the query target. No order mutations allowed.")
     order_update: bool = Field(default=False, description="True only for an explicit order change or missing-slot answer; asking price/storage about another cake is NOT an order change.")
-    requests: list[InformationRequest] = Field(default_factory=list, max_length=8,
+    requests: list[InformationRequest] = Field(default_factory=list, max_length=16,
         description="ONLY explicitly asked information queries. [] for order-only messages, including named cakes or slot answers. Each request intent MUST be declared in top-level intents. Bind its own names/reference/size; no negated targets or order edits.")
 
     @model_validator(mode="after")
     def declared_request_intents(self):
+        self.intents = list(dict.fromkeys(self.intents))
+        if len(self.intents) > 1 and "fallback" in self.intents:
+            self.intents.remove("fallback")
+        if self.order_negated and (self.action != "none" or self.order_operation != "none"
+                or self.order_update or self.order_product_mentions or self.order_items or self.clear_slots):
+            raise ValueError("negated order must not perform an order action")
+        if self.order_items and "order_request" not in self.intents:
+            raise ValueError("order_items needs order_request intent")
         if any(not set(request.intents).issubset(self.intents) for request in self.requests):
             raise ValueError("request intents must also be declared in top-level intents")
+        if self.requests:
+            information_intents = {"price", "size", "flavor", "availability", "recommendation", "allergen", "topping", "storage", "description"}
+            covered = {intent for request in self.requests for intent in request.intents}
+            if (set(self.intents) & information_intents) - covered:
+                raise ValueError("every declared product information intent needs a scoped request")
+        if self.action in {"start_order", "review", "confirm", "cancel"} and "order_request" not in self.intents:
+            raise ValueError("order action needs order_request intent")
         if self.order_operation != "none" and "order_request" not in self.intents:
             raise ValueError("order_operation needs order_request intent")
         return self
@@ -155,6 +170,14 @@ class BoolSlotChange(SlotChange):
 
 
 class LLMWireTurn(LLMTurn):
+    # HTTP phải có dòng món, kể cả []; internal LLMTurn vẫn đọc nhãn/phiên cũ.
+    order_items: list[OrderItemSelection] = Field(max_length=6)
+    order_reference: Reference | None
+    order_operation: Literal["none", "select_product", "add_product", "remove_product", "update_slots"]
+    order_product_mentions: list[str] = Field(max_length=10)
+    requests: list[InformationRequest] = Field(max_length=16)
+    order_negated: bool
+    continuation: Literal["none", "information", "order", "entity"]
     updates: list[Annotated[TextSlotChange | NumberSlotChange | ListSlotChange | BoolSlotChange,
                            Field(discriminator="field")]] = Field(max_length=17)
 
@@ -206,9 +229,6 @@ LLMCallResult = TypedDict("LLMCallResult", {
     "ok": bool, "content": str | None, "error": str | None,
     "model": str | None, "http_status": int | None,
 })
-LLMExtractionResult = TypedDict("LLMExtractionResult", {
-    "data": LLMNLU | None, "error": str | None, "attempts": int, "repaired": bool,
-})
 
 Variant = TypedDict("Variant", {
     "id": str, "size": str | None, "price_vnd": int | None,
@@ -227,12 +247,14 @@ Product = TypedDict("Product", {
 SearchFilters = TypedDict("SearchFilters", {
     "query": str, "product_ids": list[str], "flavor": str,
     "max_price_vnd": int, "price_inclusive": bool, "servings": int, "size": str,
-    "occasion": str, "exclude_allergens": list[str], "available_only": bool,
+    "occasion": str, "exclude_allergens": list[str], "available_only": bool, "exclude_product_ids": list[str],
 }, total=False)
 CurrentTurn = TypedDict("CurrentTurn", {
     "intents": list[Intent], "product_mentions": list[str], "reference": str,
     "product_ids": list[str], "filters": SearchFilters,
     "requests": NotRequired[list[dict]], "order_product_ids": NotRequired[list[str]],
+    "question": NotRequired[str], "ambiguous": NotRequired[bool],
+    "status": NotRequired[Literal["answered", "insufficient_data", "awaiting_clarification"]],
 })
 ConversationContext = TypedDict("ConversationContext", {
     "focus_product_ids": list[str], "focus_product_terms": list[str],
@@ -248,6 +270,9 @@ ProductResult = TypedDict("ProductResult", {
 CatalogCapabilities = TypedDict("CatalogCapabilities", {
     "data_mode": str, "is_mock": bool, "configured": bool,
     "policy_available": bool, "can_accept_real_orders": bool,
+    "catalog_source": NotRequired[str], "can_create_demo_orders": NotRequired[bool],
+    "optional_order_fields": NotRequired[list[str]], "disabled_order_fields": NotRequired[list[str]],
+    "unsupported_search_filters": NotRequired[list[str]],
 })
 NLUResult = TypedDict("NLUResult", {
     "raw_text": str, "normalized_text": str, "intents": list[Intent],
@@ -265,11 +290,16 @@ ChatResponse = TypedDict("ChatResponse", {
     "catalog_status": QueryStatus, "intents": list[Intent],
     "nlu": NLUResult, "products": list[Product], "state": ChatState,
     "requires_clarification": bool, "error": str | None, "policy": PolicyResponse | None,
+    "catalog_source": NotRequired[str],
 })
 Conversation = TypedDict("Conversation", {
     "id": str, "history": list[ChatMessage], "needs": ChatState,
     "model": str | None, "max_turns": int,
     "order": dict, "unknown_streak": int,
+    "discussion_context": dict, "product_choices": NotRequired[dict], "current_request": dict | None,
+    "pending_information_request": list[dict] | None, "pending_order_question": dict | None,
+    "request_memory": NotRequired[list[dict]], "request_sequence": NotRequired[int],
+    "pending_order_request": NotRequired[dict | None],
 })
 ConversationTurn = TypedDict("ConversationTurn", {
     "conversation": Conversation, "response": ChatResponse,

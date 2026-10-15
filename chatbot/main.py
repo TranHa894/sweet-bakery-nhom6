@@ -1,10 +1,10 @@
-"""Điểm chạy chatbot terminal: rule hoặc Qwen qua Ollama local."""
+"""Điểm chạy chatbot terminal: Qwen qua Ollama local hoặc rule."""
 
 import sqlite3
 import json
 
 from app.conversation import new_conversation, handle_message
-from app.config import CATALOG_MODE, CHAT_MODE, KNOWLEDGE_MODE, CHATBOT_DB_PATH
+from app.config import CATALOG_MODE, CHAT_MODE, KNOWLEDGE_MODE, CHATBOT_DB_PATH, CHAT_DEBUG
 from app.knowledge_loader import create_knowledge_repository
 from app.repositories.catalog import create_catalog_repository
 from app.text_utils import normalize_text
@@ -13,9 +13,11 @@ from app.order_service import create_order_tools
 
 
 def main() -> None:
-    """Tạo nguồn và phiên một lần; chỉ gọi model khi chọn ollama."""
+    """Tạo nguồn và phiên một lần; gọi model theo provider đang chọn."""
     print("Chatbot bán bánh tiếng Việt — LOCAL DEMO, không thanh toán/giao thật.")
     print(f"Nguồn dữ liệu: {CATALOG_MODE}.")
+    if CATALOG_MODE == "group_files":
+        print("Menu mẫu lấy trực tiếp từ website nhóm; chưa có size/tồn kho/chính sách. Chỉ lưu yêu cầu chờ tư vấn.")
     repository = create_catalog_repository(CATALOG_MODE, CHATBOT_DB_PATH)
     knowledge_repository = create_knowledge_repository(KNOWLEDGE_MODE, CHATBOT_DB_PATH if KNOWLEDGE_MODE == "local_demo" else None)
     print(f"Nguồn chính sách: {KNOWLEDGE_MODE}.")
@@ -78,9 +80,10 @@ def run_terminal(repository, knowledge_repository, connection, conversation) -> 
                               order_tools=create_order_tools(repository, connection, conversation["id"]), storage_connection=connection)
         conversation = turn["conversation"]
         print("Bot: " + turn["response"]["text"])
-        print(f"[Bộ hiểu câu: {turn['engine']}; model: {turn['model'] or 'không dùng'}; NLU: {turn['nlu_attempts']} lần; diễn đạt: {turn['phrasing_status']}]")
+        if CHAT_DEBUG:
+            print(f"[Bộ hiểu câu: {turn['engine']}; model: {turn['model'] or 'không dùng'}; NLU: {turn['nlu_attempts']} lần; diễn đạt: {turn['phrasing_status']}; lỗi: {turn['llm_error'] or turn['response']['error'] or 'không'}]")
         policy = turn["response"]["policy"]
-        if policy is not None:
+        if CHAT_DEBUG and policy is not None:
             print(f"[RAG: {policy['engine']}; trạng thái: {policy['status']}; model: {turn['model'] or 'không dùng'}; lần gọi/sửa: {policy['attempts']}; nguồn: {', '.join(policy['source_ids']) or 'không có'}]")
 
 

@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 from app.handoff import create_handoff_ticket
 from app.repositories.catalog import CatalogRepository
 from app.schemas import OrderTools, ToolResult, validate_product
-from app.storage import fingerprint, save_record, load_order_request, utc_now
+from app.storage import fingerprint, draft_fingerprint, save_record, load_order_request, utc_now
 from app.text_utils import normalize_text
 
 LOCAL_ZONE = ZoneInfo("Asia/Ho_Chi_Minh")
@@ -31,19 +31,21 @@ def parse_pickup_at(value: str) -> str:
     return datetime.strptime(value.replace("T", " "), "%Y-%m-%d %H:%M").replace(tzinfo=LOCAL_ZONE).astimezone(timezone.utc).isoformat()
 
 
-def validate_slots(slots: dict, now: datetime) -> list[str]:
+def validate_slots(slots: dict, now: datetime, optional_fields=(), disabled_fields=()) -> list[str]:
     errors = []
     if type(slots.get("quantity")) is not int or slots["quantity"] <= 0:
         errors.append("quantity_positive_integer")
-    try:
-        received = datetime.fromisoformat(slots["pickup_at"])
-        if received.tzinfo is None or received <= now:
+    if "pickup_at" not in disabled_fields and ("pickup_at" not in optional_fields or slots.get("pickup_at") is not None):
+        try:
+            received = datetime.fromisoformat(slots["pickup_at"])
+            if received.tzinfo is None or received <= now:
+                errors.append("pickup_at_future_local")
+        except (TypeError, ValueError, KeyError):
             errors.append("pickup_at_future_local")
-    except (TypeError, ValueError, KeyError):
-        errors.append("pickup_at_future_local")
     if not (slots.get("cake_need") or slots.get("product_id")):
         errors.append("cake_need_required")
-    if not slots.get("size") or slots.get("toppings") is None or slots.get("cake_text") is None:
+    if any(field not in optional_fields and (not slots.get(field) if field == "size" else slots.get(field) is None)
+           for field in ("size", "toppings", "cake_text")):
         errors.append("choices_required")
     if slots.get("fulfillment") not in {"pickup", "delivery"}:
         errors.append("fulfillment_required")
@@ -72,16 +74,24 @@ def validate_metadata(metadata: dict) -> None:
         raise ValueError("Hình thức nhận sai schema.")
 
 
-def inspect_order(repository: CatalogRepository, draft: dict, now: datetime) -> dict:
+def inspect_single_order(repository: CatalogRepository, draft: dict, now: datetime) -> dict:
     """Một lần đọc nguồn tạo cả verification/khả dụng/quote, không tin cờ từ khách."""
     slots = draft["slots"]
     verification = {key: "unverified" for key in slots}
-    issues = validate_slots(slots, now)
+    issues = []
     result = {"mode": "unknown", "is_mock": False, "verification": verification, "issues": issues,
               "availability": "unknown", "quote": None, "catalog_fingerprint": None, "error": None}
     try:
         caps = repository.get_capabilities()
+        disabled = caps.get("disabled_order_fields", [])
+        optional = list(dict.fromkeys([*caps.get("optional_order_fields", []), *disabled]))
+        issues.extend(validate_slots(slots, now, optional, disabled))
+        for field in optional:
+            if field in disabled or slots.get(field) is None:
+                verification[field] = "not_applicable"
         result.update(mode=caps["data_mode"], is_mock=caps["is_mock"])
+        if caps.get("can_create_demo_orders") is False:
+            result["issues"].append("catalog_read_only_order_requires_verification")
         if caps["data_mode"] == "empty":
             result["issues"] += ["catalog_unconfigured", "cake_text_limit_unverified", "lead_time_unverified"]
             return result
@@ -116,12 +126,14 @@ def inspect_order(repository: CatalogRepository, draft: dict, now: datetime) -> 
                 validate_metadata(metadata)
         result["catalog_fingerprint"] = fingerprint({"product": product, "metadata": metadata})
         variants = [variant for variant in product["variants"] if slots["size"] and normalize_text(variant["size"] or "").replace(" ", "") == normalize_text(slots["size"]).replace(" ", "")]
+        if not slots["size"] and "size" in optional:
+            variants = product["variants"] if len(product["variants"]) == 1 and product["variants"][0]["size"] is None else []
         variant = variants[0] if len(variants) == 1 else None
         if variant is None:
             result["issues"].append("size_unverified")
-        else:
+        elif slots["size"]:
             verification["size"] = "verified"
-        requested = datetime.fromisoformat(slots["pickup_at"]) if slots["pickup_at"] else None
+        requested = datetime.fromisoformat(slots["pickup_at"]) if slots["pickup_at"] and "pickup_at" not in disabled else None
         if metadata and "business" in metadata and requested is not None:
             clock = requested.astimezone(LOCAL_ZONE).strftime("%H:%M")
             business = metadata["business"]
@@ -136,7 +148,9 @@ def inspect_order(repository: CatalogRepository, draft: dict, now: datetime) -> 
                 result["issues"].append("allergen_requires_staff")
             elif excludes.intersection(normalize_text(x) for x in info["items"]):
                 result["issues"].append("allergen_conflict")
-        if product["min_lead_hours"] is None:
+        if "pickup_at" in disabled:
+            verification["lead_time"] = "not_applicable"
+        elif product["min_lead_hours"] is None or requested is None:
             result["issues"].append("lead_time_unverified")
         elif requested is not None and requested < now + timedelta(hours=product["min_lead_hours"]):
             result["issues"].append("lead_time_too_short")
@@ -201,11 +215,42 @@ def inspect_order(repository: CatalogRepository, draft: dict, now: datetime) -> 
                     "quantity": slots["quantity"], "delivery_fee_vnd": delivery_fee,
                     "total_vnd": unit * slots["quantity"] + delivery_fee, "is_mock": True}
         for key in ("quantity", "pickup_at", "name", "phone", "address"):
-            verification[key] = "verified" if not issues else "unverified"
+            if key not in disabled:
+                verification[key] = "verified" if not issues else "unverified"
         return result
     except Exception:
         result.update(availability="error", error="order_source_error", quote=None)
         return result
+
+
+def inspect_order(repository: CatalogRepository, draft: dict, now: datetime) -> dict:
+    """Mỗi món đối chiếu nguồn riêng. Nhiều món hiện chỉ lưu yêu cầu tư vấn."""
+    result = inspect_single_order(repository, draft, now)
+    extras = draft.get("extra_items", [])
+    if not extras:
+        return result
+    checks = [result]
+    for item in extras:
+        child = {**draft, "slots": {**draft["slots"], **{k: item.get(k) for k in
+            ("product_id", "cake_need", "size", "quantity", "toppings", "cake_text")}}}
+        checks.append(inspect_single_order(repository, child, now))
+    result = {**result, "issues": list(result["issues"]), "quote": None}
+    result["catalog_fingerprint"] = fingerprint([check["catalog_fingerprint"] for check in checks])
+    result["items"] = [{**item, "name": check.get("product_name") or item.get("name"),
+                        "verification": check["verification"]}
+                      for item, check in zip([{k: draft["slots"][k] for k in
+                        ("product_id", "cake_need", "size", "quantity", "toppings", "cake_text")}, *extras], checks)]
+    for index, check in enumerate(checks[1:], 2):
+        result["issues"] += [f"item_{index}:{issue}" for issue in check["issues"]]
+    result["issues"].append("multi_item_consultation_only")
+    failed = next((check for check in checks if check["error"]), None)
+    if failed:
+        result.update(error=failed["error"], availability=failed["availability"])
+    elif any(check["availability"] == "unavailable" for check in checks):
+        result["availability"] = "unavailable"
+    else:
+        result["availability"] = "unknown"
+    return result
 
 
 def check_availability(repository: CatalogRepository, draft: dict, now: datetime | None = None) -> ToolResult:
@@ -224,24 +269,31 @@ def calculate_quote(repository: CatalogRepository, draft: dict, now: datetime | 
 
 
 def submit_order_request(connection: sqlite3.Connection, repository: CatalogRepository, draft: dict, idempotency_key: str, now: datetime | None = None) -> ToolResult:
-    if repository.get_capabilities()["data_mode"] == "local_demo":
+    if repository.get_capabilities()["data_mode"] == "local_demo" and not draft.get("extra_items"):
         return submit_local_order(connection, repository, draft, idempotency_key, now)
     review = draft.get("review")
-    if draft["state"] != "REVIEW" or not review or review["revision"] != draft["revision"] or review["slots_hash"] != fingerprint(draft["slots"]):
+    if draft["state"] != "REVIEW" or not review or review["revision"] != draft["revision"] or review["slots_hash"] != draft_fingerprint(draft):
         return {"status": "error", "data": None, "error": "stale_review"}
     inspection = inspect_order(repository, draft, now or local_now())
     if inspection["error"]:
         return {"status": inspection["availability"], "data": None, "error": inspection["error"]}
-    if validate_slots(draft["slots"], now or local_now()):
+    from app.order_flow import order_items
+    capabilities = repository.get_capabilities()
+    disabled = capabilities.get("disabled_order_fields", [])
+    optional = list(dict.fromkeys([*capabilities.get("optional_order_fields", []), *disabled]))
+    if any(validate_slots({**draft["slots"], **{k: v for k, v in item.items() if k in {"product_id", "cake_need", "size", "quantity", "toppings", "cake_text"}}}, now or local_now(), optional, disabled) for item in order_items(draft)):
         return {"status": "unknown", "data": None, "error": "invalid_slots"}
     if inspection["catalog_fingerprint"] != review["catalog_fingerprint"] or inspection["quote"] != review["quote"] or inspection["mode"] != review["mode"]:
         return {"status": "error", "data": None, "error": "source_changed_review_again"}
     if inspection["availability"] == "unavailable":
         return {"status": "unavailable", "data": None, "error": "requested_quantity_unavailable"}
-    demo = inspection["mode"] == "mock" and inspection["availability"] == "available" and inspection["quote"] is not None and not inspection["issues"]
+    demo = (inspection["mode"] == "mock" and inspection["availability"] == "available"
+            and inspection["quote"] is not None and not inspection["issues"]
+            and repository.get_capabilities().get("can_create_demo_orders", True))
     return save_record(connection, "submissions", draft["conversation_id"], idempotency_key, {
         "draft_id": draft["id"], "revision": draft["revision"], "kind": "demo_order" if demo else "waiting_consultation",
-        "slots": draft["slots"], "verification": inspection["verification"], "issues": inspection["issues"],
+        "slots": draft["slots"], "items": inspection.get("items", order_items(draft, inspection.get("product_name"))),
+        "verification": inspection["verification"], "issues": inspection["issues"],
         "quote": inspection["quote"] if demo else None, "data_mode": inspection["mode"],
         "is_mock": True, "confirmed": demo,
     })
@@ -302,7 +354,7 @@ def submit_local_order(connection, repository, draft, idempotency_key, now=None)
             connection.execute("RELEASE create_demo_order")
             return result
         review = draft.get("review")
-        if draft["state"] != "REVIEW" or not review or review["revision"] != draft["revision"] or review["slots_hash"] != fingerprint(draft["slots"]):
+        if draft["state"] != "REVIEW" or not review or review["revision"] != draft["revision"] or review["slots_hash"] != draft_fingerprint(draft):
             result = {"status": "error", "data": None, "error": "stale_review"}
         else:
             bound_repo = repository.using_connection(connection)

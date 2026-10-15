@@ -1,4 +1,4 @@
-"""Smoke Qwen thật, tách khỏi pytest. Không tải model/không dùng DB đang demo."""
+"""Smoke model thật bằng SQLite riêng. Không tải model/không dùng DB đang demo."""
 
 import argparse
 from contextlib import closing
@@ -17,10 +17,11 @@ from scripts.database import seed_database, check_database
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Smoke riêng bằng Qwen đã cài; có thể chậm, không tải model.")
+    parser = argparse.ArgumentParser(description="Smoke riêng bằng Qwen/Ollama đã cấu hình; có thể chậm, không tải model.")
     parser.add_argument("--skip-policy", action="store_true")
     args = parser.parse_args()
-    selected = llm_client.select_model(config.OLLAMA_BASE_URL, config.OLLAMA_MODEL)
+    base_url, model, timeout = config.get_llm_settings("ollama")
+    selected = llm_client.select_model(base_url, model, timeout)
     if selected["error"]:
         parser.exit(1, f"Chưa thử model thật: {selected['error']}\n")
     database_path = PROJECT_ROOT / "runtime" / ("model-smoke-" + uuid4().hex[:8] + ".sqlite3")
@@ -37,7 +38,7 @@ def main() -> None:
     wire_responses = []
     def traced_chat(*args):
         value = actual_chat(*args)
-        if args[3].get("title") == "LLMWireTurn":
+        if "order_operation" in args[3].get("properties", {}):
             wire_responses.append(value)
         return value
     llm_client.chat = traced_chat
@@ -59,7 +60,7 @@ def main() -> None:
         report["conversation_id"] = current["id"]
         for index, question in enumerate(questions):
             started = time.monotonic()
-            turn = handle_message(question, repository, current, model=selected["model"], chat_mode="ollama",
+            turn = handle_message(question, repository, current, model=selected["model"], chat_mode="ollama", base_url=base_url, timeout=timeout,
                                   knowledge_repository=knowledge, storage_connection=connection,
                                   order_tools=create_order_tools(repository, connection, current["id"]))
             current = turn["conversation"]
@@ -88,7 +89,7 @@ def main() -> None:
                             and report["steps"][4]["orders_count"] == 1
                             and bool(submission and submission["quote"]["total_vnd"] == 700000)
                             and (args.skip_policy or bool(report["steps"][-1]["policy_sources"])))
-    output = PROJECT_ROOT / "evaluation" / "local_demo_smoke_report.json"
+    output = PROJECT_ROOT / "runtime" / "local_demo_smoke_report.json"
     report["wire_responses"] = wire_responses
     if output.exists():
         previous = json.loads(output.read_text(encoding="utf-8"))

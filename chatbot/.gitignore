@@ -2,7 +2,7 @@
 .venv/
 venv/
 
-# File Python và kết quả kiểm thử sinh tự động.
+# File Python sinh tự động; bỏ qua artifact kiểm thử cũ nếu còn.
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -27,3 +27,6 @@ htmlcov/
 *.sqlite3-wal
 *.sqlite3-shm
 runtime/*.bak
+
+# Database, vector index và artifact local sinh lúc chạy.
+runtime/

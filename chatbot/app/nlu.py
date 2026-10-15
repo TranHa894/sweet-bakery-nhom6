@@ -1,10 +1,9 @@
 """NLU theo quy tắc: nhiều intent, thực thể và trường hợp cần hỏi lại."""
 
 import re
-from copy import deepcopy
 
 from app.repositories.catalog import CatalogRepository, safe_search_products
-from app.schemas import Intent, LLMNLU, NLUResult, Product
+from app.schemas import Intent, NLUResult, Product
 from app.text_utils import normalize_text, phrase_spans
 
 # Từ vựng hương vị phổ thông, không phải tên/ID sản phẩm hoặc danh sách đang bán.
@@ -172,90 +171,3 @@ def analyze_message(text: str, repository: CatalogRepository) -> NLUResult:
         "size": f"{sizes[0]} cm" if sizes else None,
         "requires_clarification": ambiguous, "catalog_status": catalog["status"],
     }
-
-
-def check_llm_proposal(proposal: LLMNLU, rule: NLUResult) -> str | None:
-    """Kiểm tra nghĩa cơ bản sau Pydantic; lỗi đề xuất cho phép quay về rule."""
-    text = rule["normalized_text"]
-    for term in proposal.product_mentions:
-        value = normalize_text(term)
-        if value not in {"banh", "banh do", "loai do", "no"} and (not value or not phrase_spans(text, value)):
-            return "invalid_nlu_mentions"
-    if proposal.budget_vnd is not None:
-        if rule["budgets_vnd"] and rule["budgets_vnd"] != [proposal.budget_vnd]:
-            return "nlu_rule_conflict"
-        if not rule["budgets_vnd"] and not re.search(r"\b(?:ngan sach|nghin|ngan|trieu|dong|vnd|k|tr)\b", text):
-            return "invalid_nlu_context"
-    for field, indicator in [
-        ("servings", r"\b(?:nguoi|khach|suat|phan)\b"),
-        ("quantity", r"\b(?:banh|cai|chiec|hop)\b"),
-        ("size", r"\b(?:size|kich thuoc|co|cm)\b"),
-    ]:
-        value = getattr(proposal, field)
-        if value is not None:
-            if rule[field] is not None and normalize_text(str(rule[field])).replace(" ", "") != normalize_text(str(value)).replace(" ", ""):
-                return "nlu_rule_conflict"
-            if rule[field] is None and not re.search(indicator, text):
-                return "invalid_nlu_context"
-    if proposal.flavor and not rule["flavors"] and not phrase_spans(text, proposal.flavor):
-        return "invalid_nlu_context"
-    return None
-
-
-def merge_llm_nlu(
-    text: str, proposal: LLMNLU, repository: CatalogRepository,
-    rule_result: NLUResult | None = None,
-) -> NLUResult:
-    """Đề xuất LLM bổ sung rule; ID chỉ giữ từ tên/alias repository đã đối chiếu."""
-    result = deepcopy(rule_result if rule_result is not None else analyze_message(text, repository))
-    normalized = result["normalized_text"]
-    ambiguous = result["requires_clarification"]
-    terms = []
-    for term in proposal.product_mentions:
-        value = normalize_text(term)
-        if value in {"banh", "banh do", "loai do", "no"}:
-            continue  # Đại từ nối tiếp không phải yêu cầu chọn bánh mới.
-        if not value or not phrase_spans(normalized, value):
-            ambiguous = True  # Cụm model tự thêm không được biến thành sản phẩm.
-        else:
-            terms.append(term)
-    if not result["product_ids"] and terms:
-        result["product_terms"] = list(dict.fromkeys(terms))
-        if not result["query"] and len(terms) == 1:
-            result["query"] = re.sub(r"^banh\s+", "", normalize_text(terms[0]))
-
-    intents = list(dict.fromkeys([*result["intents"], *proposal.intents]))
-    result["intents"] = [intent for intent in intents if intent != "fallback"] or ["fallback"]
-    if proposal.budget_vnd is not None:
-        if result["budgets_vnd"] and result["budgets_vnd"] != [proposal.budget_vnd]:
-            ambiguous = True
-        elif not result["budgets_vnd"]:
-            result["budgets_vnd"] = [proposal.budget_vnd]
-            result["price_inclusive"] = proposal.price_inclusive
-    for field in ("servings", "quantity", "size"):
-        value = getattr(proposal, field)
-        if value is not None:
-            old_value = normalize_text(str(result[field])).replace(" ", "")
-            new_value = normalize_text(str(value)).replace(" ", "")
-            if result[field] is not None and old_value != new_value:
-                ambiguous = True
-            elif result[field] is None:
-                result[field] = value
-    if proposal.flavor:
-        flavor = proposal.flavor
-        for canonical, aliases in FLAVOR_WORDS.items():
-            if normalize_text(flavor) in [normalize_text(canonical), *aliases]:
-                flavor = canonical
-                break
-        if result["flavors"] and result["product_ids"]:
-            pass  # Nhãn vị của bánh đã nhận diện luôn thuộc quyền xác định của nguồn.
-        elif result["flavors"]:
-            if normalize_text(flavor) not in [normalize_text(item) for item in result["flavors"]]:
-                ambiguous = True
-        else:
-            result["flavors"] = [flavor]
-    has_attributes = bool(result["budgets_vnd"] or result["servings"] or result["quantity"] or result["size"] or proposal.flavor)
-    if (len(terms) > 1 or len(result["product_ids"]) > 1) and has_attributes:
-        ambiguous = True
-    result["requires_clarification"] = ambiguous
-    return result

@@ -28,14 +28,14 @@ def compare(before, after):
 
 
 def main():
-    folder = ROOT / "evaluation"
-    before = json.loads((folder / "intent_context_before_dev_report.json").read_text(encoding="utf-8"))
-    after = json.loads((folder / "intent_context_after_dev_report.json").read_text(encoding="utf-8"))
-    report = compare(before,after)
-    path = folder / "intent_context_comparison_report.json"
-    path.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    print(json.dumps({k:v for k,v in report.items() if k not in {"metrics","dataset_sha256"}},ensure_ascii=False))
-    print(path)
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--before", type=Path, required=True)
+    parser.add_argument("--after", type=Path, required=True)
+    args = parser.parse_args()
+    report = compare(json.loads(args.before.read_text(encoding="utf-8")),
+                     json.loads(args.after.read_text(encoding="utf-8")))
+    print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

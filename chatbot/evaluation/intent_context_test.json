@@ -1,8 +1,8 @@
 {
-  "version": "intent-context-v1",
-  "annotation_revision": 2,
+  "version": "intent-context-v12",
+  "annotation_revision": 3,
   "split": "test",
-  "sample_count": 26,
+  "sample_count": 33,
   "source": "manually_labelled_synthetic",
   "is_mock": true,
   "scope": "Qwen NLU and controller, not overall/production evaluation",
@@ -34,7 +34,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -62,7 +63,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -90,7 +92,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -118,7 +121,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -161,7 +165,8 @@
             "requests": [],
             "order_product_mentions": [
               "vani"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-003",
@@ -187,7 +192,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -214,7 +220,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -243,7 +250,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -306,7 +314,8 @@
                 "size": null
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -357,7 +366,8 @@
                 "size": "20 cm"
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -384,7 +394,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "clarification": true,
@@ -421,7 +432,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -449,7 +461,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -489,7 +502,8 @@
                 "size": null
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -530,7 +544,8 @@
             "requests": [],
             "order_product_mentions": [
               "dâu"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-002",
@@ -556,7 +571,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -585,7 +601,8 @@
             "requests": [],
             "order_product_mentions": [
               "vani"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-003",
@@ -613,7 +630,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "CANCELLED",
@@ -651,7 +669,8 @@
             "requests": [],
             "order_product_mentions": [
               "vani"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": null,
@@ -677,7 +696,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [],
@@ -691,7 +711,7 @@
           "message": "Gặp người tư vấn giúp mình",
           "label": {
             "intents": [
-              "fallback"
+              "handoff"
             ],
             "action": "handoff",
             "product_mentions": [],
@@ -699,10 +719,11 @@
             "updates": {},
             "clear_slots": [],
             "ambiguous": false,
-            "handoff_reason": "none",
+            "handoff_reason": "customer_requested",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "HANDOFF"
@@ -740,7 +761,8 @@
             "requests": [],
             "order_product_mentions": [
               "vani"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "mock-003",
@@ -767,7 +789,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -795,7 +818,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -827,12 +851,22 @@
             "order_product_mentions": [
               "dâu"
             ],
-            "order_operation": "add_product"
+            "order_operation": "add_product",
+            "order_negated": false
           },
           "expected": {
-            "clarification": true,
-            "draft_unchanged": true,
-            "order_product_id": "mock-003"
+            "clarification": false,
+            "order_product_id": "mock-003",
+            "items": [
+              {
+                "product_id": "mock-003",
+                "quantity": null
+              },
+              {
+                "product_id": "mock-002",
+                "quantity": null
+              }
+            ]
           },
           "id": "test-025",
           "turn_index": 4
@@ -859,16 +893,270 @@
             "order_product_mentions": [
               "vani"
             ],
-            "order_operation": "remove_product"
+            "order_operation": "remove_product",
+            "order_negated": false
           },
           "expected": {
-            "order_product_id": null,
+            "order_product_id": "mock-002",
             "state": "COLLECTING"
           },
           "id": "test-026",
           "turn_index": 5
         }
       ]
+    },
+    {
+      "id": "test_group_add_switch",
+      "mode": "group_files",
+      "tags": [
+        "reference",
+        "ordered_requests",
+        "add_product"
+      ],
+      "turns": [
+        {
+          "message": "Bánh kem Biển ngọc bao nhiêu tiền?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Bánh kem Biển ngọc"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "product_ids": [
+              "SP0006"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-027",
+          "turn_index": 1
+        },
+        {
+          "message": "đặt bánh này nhé",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "order_product_id": "SP0006"
+          },
+          "id": "test-028",
+          "turn_index": 2
+        },
+        {
+          "message": "một chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 1
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "order"
+          },
+          "expected": {
+            "slots": {
+              "quantity": 1
+            }
+          },
+          "id": "test-029",
+          "turn_index": 3
+        },
+        {
+          "message": "thêm hai bánh kem Mật ngọt",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "add_product",
+            "product_mentions": [
+              "bánh kem Mật ngọt"
+            ],
+            "order_product_mentions": [
+              "bánh kem Mật ngọt"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0006",
+                "quantity": 1
+              },
+              {
+                "product_id": "SP0004",
+                "quantity": 2
+              }
+            ]
+          },
+          "id": "test-030",
+          "turn_index": 4
+        },
+        {
+          "message": "Bánh mousse Vải hoa hồng giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Bánh mousse Vải hoa hồng"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "product_ids": [
+              "SP0010"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "test-031",
+          "turn_index": 5
+        },
+        {
+          "message": "thêm ba bánh này nữa",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "add_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "updates": {
+              "quantity": 3
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0006",
+                "quantity": 1
+              },
+              {
+                "product_id": "SP0004",
+                "quantity": 2
+              },
+              {
+                "product_id": "SP0010",
+                "quantity": 3
+              }
+            ]
+          },
+          "id": "test-032",
+          "turn_index": 6
+        },
+        {
+          "message": "bỏ bánh kem Mật ngọt",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "remove_product",
+            "product_mentions": [
+              "bánh kem Mật ngọt"
+            ],
+            "order_product_mentions": [
+              "bánh kem Mật ngọt"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [
+              "product"
+            ],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0006",
+                "quantity": 1
+              },
+              {
+                "product_id": "SP0010",
+                "quantity": 3
+              }
+            ]
+          },
+          "id": "test-033",
+          "turn_index": 7
+        }
+      ]
     }
-  ]
+  ],
+  "note": "Giữ câu/nhãn cũ; cập nhật handoff và hành vi thêm món. Thêm hội thoại group_files; nhãn test không được gửi vào prompt."
 }

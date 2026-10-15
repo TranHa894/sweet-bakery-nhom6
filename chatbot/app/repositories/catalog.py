@@ -23,6 +23,9 @@ def create_catalog_repository(mode: str, database_path=None) -> CatalogRepositor
     if mode == "mock":
         from app.repositories.mock_catalog import MockCatalogRepository
         return MockCatalogRepository()
+    if mode == "group_files":
+        from app.repositories.group_catalog import GroupCatalogRepository
+        return GroupCatalogRepository()
     if mode == "local_demo":
         from app.config import DATABASE_PATH
         from app.repositories.local_catalog import LocalCatalogRepository

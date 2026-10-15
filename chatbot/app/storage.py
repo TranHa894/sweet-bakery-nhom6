@@ -20,6 +20,13 @@ def fingerprint(value: dict) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def draft_fingerprint(draft: dict) -> str:
+    """Giữ hash cũ cho một món; nhiều món phải khóa cả danh sách REVIEW."""
+    if not draft.get("extra_items"):
+        return fingerprint(draft["slots"])
+    return fingerprint({"slots": draft["slots"], "extra_items": draft["extra_items"]})
+
+
 def safe_history_text(text: str) -> str:
     """Không lưu giá trị contact nhập thô; che email/chuỗi giống số điện thoại."""
     if re.match(r"\s*(?:tên|ten|sđt|sdt|điện thoại|dien thoai|địa chỉ|dia chi)\s*:", text, re.I):

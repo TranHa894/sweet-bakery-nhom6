@@ -1,11 +1,12 @@
-# Dữ liệu học tập
+# Dữ liệu trong chatbot
 
-`data/` là folder chứa file, không tự là database. Nguồn đang chạy là SQLite runtime/chatbot.sqlite3 (DATABASE_PATH). Chưa có nguồn chính thức của nhóm.
+Mặc định DATA_SOURCE=group_files: menu đọc trực tiếp từ ../static/products.json của website nhóm. Không chép/ghi lại file này; NLU/FSM chỉ gọi repository.
 
-- local_demo_seed.json: 25 bánh/35 biến thể/3 topping/13 chính sách và metadata nghiệp vụ, ID ổn định, nhãn local_demo/is_mock/is_demo. Seed chỉ dữ liệu ban đầu; SQLite là dữ liệu sống sau đặt đơn.
-- schema_v2.sql: bổ sung bảng vào storage v1; khóa ngoại và CHECK bảo vệ giá/tồn kho.
-- mock_catalog.json, mock_order_metadata.json, sample_policies.json: fixture nhỏ giữ cho bài học và mode mock/sample.
+Các file ở data phục vụ chế độ demo cũ và cấu hình AI:
+- local_demo_seed.json: 25 bánh/35 biến thể/13 chính sách mô phỏng để seed SQLite local_demo.
+- schema_v2.sql: cấu trúc SQLite chatbot, không dùng để tạo database sản phẩm của nhóm.
+- mock_catalog.json, mock_order_metadata.json: fixture 5 bánh và metadata mẫu cho mode mock.
+- sample_policies.json: điều khoản mô phỏng cho KNOWLEDGE_MODE=sample.
+- nlu_few_shots.json: ví dụ trích ý định/slot cho prompt Qwen, không phải menu nguồn.
 
-Chạy init/seed/check bằng `python -m scripts.database` trong .venv. Seed không ghi đè ID có sẵn, stock/price/policy đã chỉnh. Sửa file seed không tự đổi SQLite đang chạy. Chỉnh policies bằng SQL tham số, tăng version; lần retrieval sau đọc nội dung/hash mới, không sửa chatbot. Reset riêng cần --confirm, backup và kiểm tra demo; xem README root.
-
-Unknown khác hết hàng; null giá khác 0. not_listed không là chứng minh an toàn dị ứng. Giới hạn chữ/lead time/phí là metadata mô phỏng. Database runtime/backup không đưa vào Git. Không lưu liên hệ thật, API key hay thông tin thanh toán. Xem [tích hợp](../docs/data_integration.md).
+data là thư mục file. Database lưu hội thoại/bản nháp/yêu cầu/đơn demo nằm ở runtime/chatbot.sqlite3. Menu nhóm chưa có size/tồn kho/allergen/chính sách; giữ null/unknown, không lấy metadata của bánh demo ghép sang mã SP của nhóm.

@@ -1,11 +1,11 @@
-"""Thử HTTP Qwen thật trên ba câu mô phỏng; không tải model, không tạo đơn."""
+"""Thử HTTP model thật trên ba câu mô phỏng; không tải model, không tạo đơn."""
 
 from datetime import datetime, timezone
 import json
 from pathlib import Path
 from time import perf_counter
 
-from app.config import OLLAMA_BASE_URL, OLLAMA_MODEL, OLLAMA_TIMEOUT_SECONDS
+from app.config import get_llm_settings
 from app.conversation import handle_message, new_conversation
 from app.knowledge_loader import EmptyKnowledgeRepository, SampleKnowledgeRepository
 from app.llm_client import select_model
@@ -15,7 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
-    selected = select_model(OLLAMA_BASE_URL, OLLAMA_MODEL, 5)
+    base_url, model, timeout = get_llm_settings("ollama")
+    selected = select_model(base_url, model, timeout)
+    if selected["error"]:
+        raise SystemExit("Chưa chạy model thật: " + selected["error"])
     cases = [
         ("empty", "Chính sách giao hàng là gì?", "unconfigured", []),
         ("sample", "Phí giao hàng mô phỏng là bao nhiêu?", "answered", ["sample-policy-001"]),
@@ -24,7 +27,7 @@ def main() -> None:
     report = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(), "is_mock": True,
         "test_type": "live_ollama_smoke", "model": selected["model"],
-        "selection_error": selected["error"], "timeout_seconds": OLLAMA_TIMEOUT_SECONDS,
+        "selection_error": selected["error"], "timeout_seconds": timeout,
         "cases": [],
     }
     for mode, question, expected_status, expected_ids in cases:
@@ -32,10 +35,16 @@ def main() -> None:
         start = perf_counter()
         turn = handle_message(
             question, EmptyCatalogRepository(), new_conversation(), chat_mode="ollama",
-            base_url=OLLAMA_BASE_URL, model=OLLAMA_MODEL, timeout=OLLAMA_TIMEOUT_SECONDS,
+            base_url=base_url, model=selected["model"], timeout=timeout,
             knowledge_repository=repo,
         )
         policy = turn["response"]["policy"]
+        if policy is None:
+            report["cases"].append({"question": question, "knowledge_mode": mode,
+                "engine": turn["engine"], "llm_error": turn["llm_error"],
+                "behavior_checks_passed": False})
+            print(json.dumps(report["cases"][-1], ensure_ascii=False), flush=True)
+            continue
         checks = {
             "status": policy["status"] == expected_status,
             "sources": policy["source_ids"] == expected_ids,
@@ -52,7 +61,7 @@ def main() -> None:
         }
         report["cases"].append(row)
         print(json.dumps({key: value for key, value in row.items() if key != "text"}, ensure_ascii=False), flush=True)
-    output = ROOT / "evaluation/rag_smoke_report.json"
+    output = ROOT / "runtime/rag_smoke_report.json"
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Báo cáo: {output}; kiểm tra hành vi không chứng minh toàn bộ ý nghĩa đúng.")
     if not all(row["behavior_checks_passed"] for row in report["cases"]):

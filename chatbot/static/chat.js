@@ -1,12 +1,22 @@
 "use strict";
-// Token chỉ ở RAM tab. Reload tạo phiên mới; không cất token trong URL/localStorage.
+// Token chỉ nằm trong RAM của tab; không ghi vào URL hoặc localStorage.
 let session = null;
 let busy = false;
 const byId = (id) => document.getElementById(id);
 const messages = byId("messages");
 const input = byId("message-input");
 const reviewPanel = byId("review-panel");
-const money = (value) => value === null ? "Chưa có giá" : `${new Intl.NumberFormat("vi-VN").format(value)} đ`;
+const welcome = byId("welcome");
+const formatMoney = (value) => Number.isInteger(value) && value >= 0
+  ? new Intl.NumberFormat("vi-VN").format(value) + " đ" : null;
+const stateLabels = {
+  BROWSING: "Bạn có thể hỏi về bánh",
+  COLLECTING: "Đang ghi nhận yêu cầu của bạn",
+  REVIEW: "Xem lại yêu cầu trước khi gửi",
+  DEMO_CONFIRMED: "Đã lưu đơn mô phỏng",
+  CANCELLED: "Đã hủy bản nháp",
+  HANDOFF: "Đã ghi nhận yêu cầu hỗ trợ"
+};
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -15,14 +25,27 @@ function element(tag, text, className) {
   return node;
 }
 
+function updateInput() {
+  const count = input.value.length;
+  byId("char-count").textContent = count + " / 2000";
+  byId("char-count").hidden = count < 1800;
+  byId("send-button").disabled = busy || !session || !input.value.trim();
+  input.style.height = "auto";
+  input.style.height = Math.min(120, Math.max(44, input.scrollHeight)) + "px";
+}
+
 function setBusy(value) {
   busy = value;
-  document.querySelectorAll("button").forEach((button) => { button.disabled = value || !session; });
+  document.querySelectorAll("button").forEach((button) => {
+    button.disabled = value || !session;
+  });
   byId("new-conversation").disabled = value;
   input.disabled = value || !session;
-  byId("connection-status").textContent = value ? "Đang xử lý…" : session
-    ? `${session.chat_mode === "ollama" ? "AI qua Ollama" : "Chế độ rule"} · Phiên riêng đã sẵn sàng`
-    : "Chưa có phiên";
+  messages.setAttribute("aria-busy", String(value));
+  document.querySelector(".chat-panel").classList.toggle("is-busy", value);
+  byId("connection-status").textContent = value ? "Đang trả lời…"
+    : session ? (stateLabels[session.state] || "Sẵn sàng trò chuyện") : "Chưa kết nối";
+  updateInput();
 }
 
 function showError(message) {
@@ -33,115 +56,151 @@ function showError(message) {
 async function api(path, body) {
   const headers = {};
   if (body !== undefined) headers["Content-Type"] = "application/json";
-  if (session) headers.Authorization = `Bearer ${session.session_token}`;
-  // Không đặt timeout ngắn hơn các lần retry Ollama phía backend.
+  if (session) headers.Authorization = "Bearer " + session.session_token;
   let response;
   try {
-    response = await fetch(path, {method: body === undefined ? "GET" : "POST", headers,
-      body: body === undefined ? undefined : JSON.stringify(body)});
+    // Chờ timeout/retry của backend; không tự gửi lại tin nhắn hoặc xác nhận.
+    response = await fetch(path, {
+      method: body === undefined ? "GET" : "POST", headers,
+      body: body === undefined ? undefined : JSON.stringify(body)
+    });
   } catch {
-    throw new Error("Không kết nối được API. Kiểm tra server run_web.py đang chạy, rồi bấm Hội thoại mới. Nếu server đã chạy, kiểm tra kết nối và tải lại trang.");
+    throw new Error("Mất kết nối. Kiểm tra chatbot đang chạy rồi thử lại.");
   }
   let result;
-  try { result = await response.json(); } catch { throw new Error("Máy chủ trả dữ liệu không hợp lệ."); }
+  try { result = await response.json(); }
+  catch { throw new Error("Chưa đọc được phản hồi. Bạn có thể thử lại."); }
   if (!response.ok) {
-    if (response.status === 401) throw new Error("Phiên hết hạn hoặc máy chủ vừa khởi động lại. Bấm Hội thoại mới.");
-    const code = typeof result.detail === "string" ? result.detail : "request_failed";
-    throw new Error(`Yêu cầu lỗi (${response.status}): ${code}. Có thể thử lại; xác nhận lại cùng bản nháp không tạo đơn demo trùng.`);
+    const errors = {
+      401: "Phiên đã hết hạn. Bấm Chat mới để tiếp tục.",
+      404: "Không tìm thấy hội thoại. Bấm Chat mới để tiếp tục.",
+      422: "Tin nhắn chưa hợp lệ. Vui lòng nhập từ 1 đến 2.000 ký tự.",
+      503: "Chatbot tạm thời chưa sẵn sàng. Bạn có thể thử lại."
+    };
+    throw new Error(errors[response.status] || "Chưa xử lý được yêu cầu. Bạn có thể thử lại.");
   }
   return result;
 }
 
 function showModes(data) {
-  const mock = ["mock", "local_demo"].includes(data.data_mode);
-  byId("mode-label").textContent = mock ? `MENU MÔ PHỎNG · ${data.data_mode.toUpperCase()}` : "MENU CHƯA KẾT NỐI · EMPTY";
-  byId("data-notice").textContent = mock
-    ? "Tên bánh, giá và tồn kho là dữ liệu mẫu để học. Chỉ có đơn DEMO."
-    : "Chưa có menu để đối chiếu. Có thể ghi nhận nhu cầu và lưu yêu cầu chờ tư vấn; chưa xác nhận đơn.";
-  if (["sample", "local_demo"].includes(data.knowledge_mode)) byId("data-notice").textContent += " Chính sách đang dùng tài liệu mô phỏng.";
-  else byId("data-notice").textContent += " Chưa có chính sách cửa hàng.";
-  if (!["empty", "mock", "local_demo"].includes(data.data_mode)) {
-    byId("mode-label").textContent = "NGUỒN CHƯA XÁC ĐỊNH";
-    byId("data-notice").textContent = "Không đọc được trạng thái nguồn. Chưa thể xác nhận sản phẩm, giá hoặc còn hàng; xem lỗi trong hội thoại.";
+  const source = data.catalog_source || session?.catalog_source;
+  let label, notice;
+  if (data.catalog_status === "error") {
+    label = "Menu chưa đọc được";
+    notice = "Chưa thể xác nhận sản phẩm hoặc giá. Bạn có thể thử lại.";
+  } else if (data.data_mode === "empty" || data.catalog_status === "unconfigured") {
+    label = "Chưa kết nối menu";
+    notice = "Có thể ghi nhận nhu cầu; chưa đủ dữ liệu để chọn bánh hoặc xác nhận đơn.";
+  } else if (source === "group_files") {
+    label = "Menu nhóm · dữ liệu mẫu";
+    notice = "Chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn.";
+  } else if (["mock", "local_demo"].includes(data.data_mode)) {
+    label = "Dữ liệu mô phỏng";
+    notice = "Bánh và đơn chỉ dùng để thử, không thanh toán hoặc giao hàng thật.";
+  } else {
+    label = "Chưa xác định nguồn";
+    notice = "Chưa đủ thông tin để xác nhận sản phẩm, giá hoặc tình trạng bán.";
   }
-  byId("state-label").textContent = data.state;
+  if (["sample", "local_demo"].includes(data.knowledge_mode)) notice += " Chính sách mẫu.";
+  if (["COLLECTING", "REVIEW"].includes(data.state)) notice += " Chỉ dùng liên hệ giả DEMO/TEST.";
+  byId("mode-label").textContent = label;
+  byId("data-notice").textContent = notice;
+  session.state = data.state;
+  if (data.catalog_source) session.catalog_source = data.catalog_source;
+}
+
+function displayMessage(text) {
+  // Nhãn nguồn đã có ở đầu khung chat. Chỉ bỏ tiền tố do backend tạo,
+  // giữ nguyên nội dung, cảnh báo nghiệp vụ và nguồn trích dẫn trong câu trả lời.
+  return String(text ?? "")
+    .replace(/^\[Nguồn:[^\]\r\n]*\][ \t]*/u, "")
+    .replace(/^\[MÔ PHỎNG[^\]\r\n]*\][ \t]*/u, "")
+    .trim();
 }
 
 function addMessage(role, text) {
-  const section = element("section", undefined, `message ${role}`);
-  section.append(element("div", role === "user" ? "BẠN" : "BẾP BÁNH · TRỢ LÝ THỬ NGHIỆM", "sender"), element("div", text, "bubble"));
+  const section = element("section", undefined, "message " + role);
+  section.append(
+    element("div", role === "user" ? "Bạn" : "Sweet Bakery", "sender"),
+    element("div", role === "user" ? text : displayMessage(text), "bubble")
+  );
   messages.append(section);
   messages.scrollTop = messages.scrollHeight;
   return section;
 }
 
-function showProducts(parent, products) {
+function showProducts(parent, products = []) {
   if (!products.length) return;
   const grid = element("div", undefined, "product-grid");
+  const ids = new Set();
   for (const product of products) {
+    if (ids.has(product.id)) continue;
+    ids.add(product.id);
     const card = element("article", undefined, "product-card");
-    card.append(element("span", product.is_mock ? "SẢN PHẨM MẪU" : "NGUỒN SẢN PHẨM", "mock-tag"), element("h3", product.name), element("p", product.description), element("p", `Mã: ${product.id}`));
-    for (const variant of product.variants) {
-      const stock = {in_stock:"Còn hàng trong mẫu", out_of_stock:"Hết hàng trong mẫu", preorder:"Cần đặt trước / xác minh", unknown:"Chưa biết tình trạng"}[variant.stock_status];
-      card.append(element("p", `${variant.size ?? "Chưa có size"} · ${money(variant.price_vnd)} · ${variant.servings ?? "Chưa biết số"} người · ${stock}`));
+    card.append(element("h3", product.name));
+    const shown = new Set();
+    for (const variant of product.variants || []) {
+      const details = [];
+      if (variant.size) details.push(variant.size);
+      const price = formatMoney(variant.price_vnd);
+      if (price) details.push(price);
+      if (Number.isInteger(variant.servings) && variant.servings > 0) details.push("Khoảng " + variant.servings + " người");
+      if (details.length && !shown.has(details.join(" · "))) {
+        card.append(element("p", details.join(" · "), "price"));
+        shown.add(details.join(" · "));
+      }
+      const stock = {in_stock: "Còn hàng", out_of_stock: "Hết hàng", preorder: "Cần đặt trước"}[variant.stock_status];
+      if (stock) {
+        const note = stock + (product.is_mock ? " (mẫu)" : "");
+        if (!shown.has(note)) card.append(element("p", note, "product-note"));
+        shown.add(note);
+      }
+    }
+    // Không hiển thị các trường null/unknown hay mô tả chung lặp lại của menu nhóm.
+    if (product.source === "group_files" && product.id) {
+      const link = element("a", "Xem bánh →");
+      link.href = "/website/chi-tiet-san-pham-demo.html?id=" + encodeURIComponent(product.id);
+      card.append(link);
     }
     grid.append(card);
   }
   parent.append(grid);
 }
 
-function showSources(parent, sources) {
+function showSources(parent, sources = []) {
+  if (!sources.length) return;
+  const details = element("details", undefined, "source");
+  details.append(element("summary", "Nguồn tham khảo" + (sources.some((source) => source.is_mock) ? " · tài liệu mẫu" : "")));
+  const seen = new Set();
   for (const source of sources) {
-    const card = element("article", undefined, "source");
-    card.append(element("h3", `${source.is_mock ? "NGUỒN MÔ PHỎNG" : "Nguồn"} · ${source.source_id} · v${source.version}`), element("p", source.quote));
-    parent.append(card);
+    const key = JSON.stringify([source.source_id, source.version, source.quote]);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const card = element("article");
+    card.append(element("h3", source.source_id + " · v" + source.version), element("p", source.quote));
+    details.append(card);
   }
+  parent.append(details);
 }
-
-const slotLabels = {cake_need:"Nhu cầu",product_id:"Mã bánh",size:"Size",toppings:"Topping",quantity:"Số lượng",cake_text:"Chữ trên bánh",pickup_at:"Ngày giờ nhận",fulfillment:"Hình thức nhận",name:"Tên giả",phone:"Điện thoại giả",address:"Địa chỉ giả"};
 
 function showReview(data) {
   reviewPanel.replaceChildren();
-  reviewPanel.hidden = !data.review;
+  // Nội dung REVIEW đầy đủ đã có trong tin nhắn bot, không dựng bản sao.
+  reviewPanel.hidden = !data.review || !data.requires_confirmation || Boolean(data.errors?.length);
   if (reviewPanel.hidden) return;
-  const review = data.review;
-  reviewPanel.append(element("h3", "Xem lại yêu cầu · Chưa xác nhận đơn"));
-  if (review.product_name) reviewPanel.append(element("p", `Bánh: ${review.product_name}`));
-  const list = element("dl");
-  for (const [key, value] of Object.entries(review.slots)) {
-    if (value === null) continue;
-    let shown = Array.isArray(value) ? (value.join(", ") || "Không") : value;
-    if (shown === "") shown = "Không viết chữ";
-    if (key === "fulfillment") shown = value === "pickup" ? "Tại cửa hàng (mô phỏng)" : "Giao (mô phỏng)";
-    if (key === "pickup_at") shown = new Intl.DateTimeFormat("vi-VN", {timeZone:"Asia/Ho_Chi_Minh", dateStyle:"short", timeStyle:"short"}).format(new Date(value)) + " (giờ Việt Nam)";
-    const verification = review.verification[key] ?? "unverified";
-    list.append(element("dt", slotLabels[key] ?? key), element("dd", `${shown} [${verification}]`));
-  }
-  reviewPanel.append(list, element("p", review.quote ? `Tổng MÔ PHỎNG: ${money(review.quote.total_vnd)}` : "Chưa đủ nguồn để báo giá. Gửi chỉ là yêu cầu chờ tư vấn."));
-  if (review.issues.length) reviewPanel.append(element("p", `Cần xác minh: ${review.issues.join(", ")}`));
+  const demo = Boolean(data.review.quote && data.review.availability === "available"
+    && ["mock", "local_demo"].includes(data.review.data_mode) && (data.review.items?.length || 1) === 1);
+  reviewPanel.append(element("p", demo ? "Đây là đơn mô phỏng, không thanh toán thật."
+    : "Gửi chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn."));
   const actions = element("div", undefined, "review-actions");
-  const confirm = element("button", review.quote && review.availability === "available" ? "Xác nhận đơn DEMO" : "Gửi yêu cầu chờ tư vấn", "button primary");
+  const confirm = element("button", demo ? "Xác nhận đơn mô phỏng" : "Gửi yêu cầu", "button primary");
   confirm.type = "button";
-  confirm.addEventListener("click", () => send("xác nhận"));
+  confirm.addEventListener("click", () => send("xác nhận gửi yêu cầu"));
   const cancel = element("button", "Hủy bản nháp", "button secondary");
   cancel.type = "button";
-  cancel.addEventListener("click", () => send("hủy"));
-  if (data.requires_confirmation) actions.append(confirm);
-  else reviewPanel.append(element("p", "Nguồn báo không khả dụng; cần sửa yêu cầu trước khi gửi."));
-  actions.append(cancel);
-  reviewPanel.append(actions, element("p", "Muốn sửa? Nhập lại trường trong chat, rồi bấm Xem lại yêu cầu. Chỉ dùng liên hệ giả."));
-}
-
-async function showSavedRecord(parent, data) {
-  const id = data.request_id ?? data.demo_order_id;
-  if (!id) return;
-  const card = element("article", undefined, "record");
-  card.append(element("h3", data.request_id ? "YÊU CẦU CHỜ TƯ VẤN · CHƯA XÁC NHẬN ĐƠN" : "ĐƠN DEMO · MÔ PHỎNG"), element("p", `Mã: ${id}`));
-  parent.append(card);
-  try {
-    const record = await api(`/api/order-requests/${encodeURIComponent(id)}`);
-    card.append(element("p", record.confirmed ? "Đã xác nhận trong bài tập mô phỏng; không thanh toán/giao thật." : "Đã lưu yêu cầu. Chưa có nhân viên nhận hoặc xác nhận đơn."));
-  } catch (error) { card.append(element("p", `Chưa đọc lại được bản ghi: ${error.message}`)); }
+  cancel.addEventListener("click", () => send("hủy bản nháp"));
+  actions.append(confirm, cancel);
+  reviewPanel.append(actions);
 }
 
 async function startConversation() {
@@ -151,52 +210,56 @@ async function startConversation() {
   try {
     const created = await api("/api/conversations", {});
     session = created;
-    messages.replaceChildren();
+    welcome.hidden = false;
+    messages.replaceChildren(welcome);
     reviewPanel.replaceChildren();
     reviewPanel.hidden = true;
     input.value = "";
-    byId("char-count").textContent = "0 / 2000";
     showModes(created);
-    addMessage("bot", "Chào bạn! Đây là chatbot thử nghiệm. Bạn có thể hỏi bánh, chính sách hoặc ghi nhận nhu cầu đặt thử. Xem nhãn nguồn bên cạnh trước khi thử nhé.");
   } catch (error) {
     if (!session) {
-      byId("mode-label").textContent = "CHƯA TẠO ĐƯỢC PHIÊN";
-      byId("data-notice").textContent = "Chưa xác định được nguồn dữ liệu. Xem lỗi và thử tạo lại hội thoại.";
+      byId("mode-label").textContent = "Chưa kết nối";
+      byId("data-notice").textContent = "Bấm Chat mới để thử kết nối lại.";
     }
-    showError(`Chưa tạo được hội thoại: ${error.message}`);
+    showError(error.message);
+  } finally {
+    setBusy(false);
+    if (session) input.focus();
   }
-  finally { setBusy(false); input.focus(); }
 }
 
 async function send(text) {
   if (busy || !session || !text.trim()) return;
   setBusy(true);
   showError("");
+  welcome.hidden = true;
+  reviewPanel.hidden = true;
   addMessage("user", text);
   try {
-    const data = await api("/api/chat", {conversation_id:session.conversation_id, message:text});
+    const data = await api("/api/chat", {conversation_id: session.conversation_id, message: text});
     const parent = addMessage("bot", data.message);
     showModes(data);
     showProducts(parent, data.products);
     showSources(parent, data.sources);
-    parent.append(element("p", `Bộ xử lý: ${data.engine} · Catalog: ${data.catalog_status}${data.errors.length ? ` · Lỗi: ${data.errors.join(", ")}` : ""}`, "diagnostic"));
     showReview(data);
-    await showSavedRecord(parent, data);
     input.value = "";
-    byId("char-count").textContent = "0 / 2000";
     messages.scrollTop = messages.scrollHeight;
   } catch (error) {
-    // Kết nối đứt có thể đã được xử lý ở server. Bỏ nút REVIEW cũ rồi hỏi xem lại.
-    reviewPanel.hidden = true;
-    showError(`${error.message} Nếu vừa sửa bản nháp, hãy gửi “xem lại” trước khi xác nhận.`);
-  } finally { setBusy(false); input.focus(); }
+    // Không tự retry: server có thể đã nhận tin nhắn trước khi mất kết nối.
+    showError(error.message + " Nếu vừa sửa yêu cầu, hãy gửi “xem lại” trước khi xác nhận.");
+  } finally {
+    setBusy(false);
+    input.focus();
+  }
 }
 
 byId("chat-form").addEventListener("submit", (event) => { event.preventDefault(); send(input.value); });
-input.addEventListener("input", () => { byId("char-count").textContent = `${input.value.length} / 2000`; });
+input.addEventListener("input", updateInput);
 input.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); send(input.value); }
 });
 byId("new-conversation").addEventListener("click", startConversation);
-document.querySelectorAll("[data-message]").forEach((button) => button.addEventListener("click", () => send(button.dataset.message)));
+document.querySelectorAll("[data-message]").forEach((button) => {
+  button.addEventListener("click", () => send(button.dataset.message));
+});
 startConversation();

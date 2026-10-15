@@ -1,11 +1,11 @@
 {
-  "version": "intent-context-v1",
-  "annotation_revision": 2,
+  "version": "intent-context-v13",
+  "annotation_revision": 7,
   "split": "dev",
-  "sample_count": 48,
+  "sample_count": 86,
   "source": "manually_labelled_synthetic",
   "is_mock": true,
-  "scope": "Qwen NLU and controller, not overall/production evaluation",
+  "scope": "LLM NLU and controller, not overall/production evaluation",
   "dialogues": [
     {
       "id": "dev_basics",
@@ -33,7 +33,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "draft_unchanged": true
@@ -58,7 +59,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -86,7 +88,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -114,7 +117,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -142,7 +146,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -171,7 +176,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -199,7 +205,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -240,7 +247,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-001",
@@ -266,7 +274,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -293,7 +302,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -322,7 +332,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -363,7 +374,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-001",
@@ -387,7 +399,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -417,7 +430,8 @@
             "requests": [],
             "order_product_mentions": [
               "dâu"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-002",
@@ -455,7 +469,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -507,7 +522,8 @@
                 "size": null
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -558,7 +574,8 @@
                 "size": "20 cm"
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -585,7 +602,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "clarification": true,
@@ -622,7 +640,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -650,7 +669,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -678,7 +698,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -709,7 +730,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -737,7 +759,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -777,7 +800,8 @@
                 "size": null
               }
             ],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -819,7 +843,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "demo-001",
@@ -845,7 +870,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -873,7 +899,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -901,7 +928,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -929,7 +957,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -955,7 +984,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "draft_unchanged": true,
@@ -981,7 +1011,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "slots": {
@@ -1030,7 +1061,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "state": "REVIEW",
@@ -1057,7 +1089,8 @@
             "handoff_reason": "none",
             "order_update": true,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "REVIEW",
@@ -1084,7 +1117,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "REVIEW",
@@ -1123,7 +1157,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": null,
@@ -1149,7 +1184,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [],
@@ -1175,7 +1211,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "CANCELLED",
@@ -1188,7 +1225,7 @@
           "message": "Nhờ nhân viên tư vấn",
           "label": {
             "intents": [
-              "fallback"
+              "handoff"
             ],
             "action": "handoff",
             "product_mentions": [],
@@ -1196,10 +1233,11 @@
             "updates": {},
             "clear_slots": [],
             "ambiguous": false,
-            "handoff_reason": "none",
+            "handoff_reason": "customer_requested",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "HANDOFF",
@@ -1236,7 +1274,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [],
@@ -1267,7 +1306,8 @@
             "order_product_mentions": [
               "dâu",
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "clarification": true,
@@ -1292,7 +1332,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "clarification": true,
@@ -1316,7 +1357,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "CANCELLED",
@@ -1363,7 +1405,8 @@
             "requests": [],
             "order_product_mentions": [
               "socola"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "state": "REVIEW",
@@ -1388,7 +1431,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "state": "HANDOFF",
@@ -1415,7 +1459,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [],
@@ -1453,7 +1498,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -1483,7 +1529,8 @@
             "requests": [],
             "order_product_mentions": [
               "dâu"
-            ]
+            ],
+            "order_negated": false
           },
           "expected": {
             "order_product_id": "mock-002",
@@ -1509,7 +1556,8 @@
             "handoff_reason": "none",
             "order_update": false,
             "requests": [],
-            "order_product_mentions": []
+            "order_product_mentions": [],
+            "order_negated": false
           },
           "expected": {
             "product_ids": [
@@ -1522,6 +1570,1879 @@
           "turn_index": 3
         }
       ]
+    },
+    {
+      "id": "dev_group_order_reference",
+      "mode": "group_files",
+      "tags": [
+        "reference",
+        "ordered_requests",
+        "add_product"
+      ],
+      "turns": [
+        {
+          "message": "đặt bánh kem vàng anh",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [
+              "bánh kem vàng anh"
+            ],
+            "order_product_mentions": [
+              "bánh kem vàng anh"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "order_product_id": "SP0003",
+            "state": "COLLECTING"
+          },
+          "id": "dev-049",
+          "turn_index": 1
+        },
+        {
+          "message": "hai chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "order"
+          },
+          "expected": {
+            "slots": {
+              "quantity": 2
+            }
+          },
+          "id": "dev-050",
+          "turn_index": 2
+        },
+        {
+          "message": "Mousse Hawaii giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-051",
+          "turn_index": 3
+        },
+        {
+          "message": "đặt cho tôi bánh này",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "order_product_id": "SP0001",
+            "slots": {
+              "quantity": 2
+            }
+          },
+          "id": "dev-052",
+          "turn_index": 4
+        },
+        {
+          "message": "thêm bánh kem Mây hồng nữa",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "add_product",
+            "product_mentions": [
+              "bánh kem Mây hồng"
+            ],
+            "order_product_mentions": [
+              "bánh kem Mây hồng"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0001",
+                "quantity": 2
+              },
+              {
+                "product_id": "SP0008",
+                "quantity": null
+              }
+            ]
+          },
+          "id": "dev-053",
+          "turn_index": 5
+        },
+        {
+          "message": "ba chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 3
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "order"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0001",
+                "quantity": 2
+              },
+              {
+                "product_id": "SP0008",
+                "quantity": 3
+              }
+            ]
+          },
+          "id": "dev-054",
+          "turn_index": 6
+        },
+        {
+          "message": "thêm hai bánh này nữa",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "add_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0001",
+                "quantity": 2
+              },
+              {
+                "product_id": "SP0008",
+                "quantity": 5
+              }
+            ]
+          },
+          "id": "dev-055",
+          "turn_index": 7
+        },
+        {
+          "message": "Nhận tại cửa hàng, tên DEMO Khách X và sđt TEST-X1.",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "fulfillment": "pickup",
+              "name": "DEMO Khách X",
+              "phone": "TEST-X1"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "order"
+          },
+          "expected": {
+            "state": "REVIEW",
+            "order_count": 0
+          },
+          "id": "dev-056",
+          "turn_index": 8
+        },
+        {
+          "message": "Đồng ý gửi yêu cầu",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "confirm",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "state": "HANDOFF",
+            "order_count": 0,
+            "confirmed": false
+          },
+          "id": "dev-057",
+          "turn_index": 9
+        }
+      ]
+    },
+    {
+      "id": "dev_group_reference_ambiguous",
+      "mode": "group_files",
+      "tags": [
+        "reference",
+        "ordered_requests",
+        "add_product"
+      ],
+      "turns": [
+        {
+          "message": "Giá Mousse Hawaii và Mousse Chanh leo?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024"
+            ],
+            "draft_unchanged": true
+          },
+          "id": "dev-058",
+          "turn_index": 1
+        },
+        {
+          "message": "đặt bánh này",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "clarification": true,
+            "order_product_id": null
+          },
+          "id": "dev-059",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "dev_group_pending_add",
+      "mode": "group_files",
+      "tags": [
+        "reference",
+        "ordered_requests",
+        "add_product"
+      ],
+      "turns": [
+        {
+          "message": "đặt hai Mousse Hawaii",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "order_product_id": "SP0001"
+          },
+          "id": "dev-060",
+          "turn_index": 1
+        },
+        {
+          "message": "thêm Mousse Hawaii nữa",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "add_product",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "none"
+          },
+          "expected": {
+            "slots": {
+              "quantity": 2
+            }
+          },
+          "id": "dev-061",
+          "turn_index": 2
+        },
+        {
+          "message": "hai chiếc",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 2
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [],
+            "continuation": "order"
+          },
+          "expected": {
+            "slots": {
+              "quantity": 4
+            }
+          },
+          "id": "dev-062",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_multi_questions_order",
+      "mode": "group_files",
+      "tags": [
+        "multi_intent",
+        "query_before_order",
+        "known_slots",
+        "policy"
+      ],
+      "turns": [
+        {
+          "message": "Mousse Hawaii và Mousse Chanh leo giá bao nhiêu, còn hàng không? Tôi muốn đặt hai bánh Mousse Hawaii, nhận tại cửa hàng.",
+          "label": {
+            "intents": [
+              "price",
+              "availability",
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price",
+                  "availability"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii",
+                  "Mousse Chanh leo"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024"
+            ],
+            "order_product_id": "SP0001",
+            "state": "COLLECTING",
+            "slots": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "response_contains": [
+              "320.000",
+              "350.000",
+              "chưa biết tình trạng còn hàng"
+            ],
+            "response_counts": {
+              "320.000": 1,
+              "350.000": 1
+            },
+            "response_absent": [
+              "bao nhiêu bánh?",
+              "ngày giờ"
+            ],
+            "response_order": [
+              [
+                "350.000",
+                "Bạn cho tên"
+              ]
+            ],
+            "order_count": 0
+          },
+          "id": "dev-063",
+          "turn_index": 1
+        },
+        {
+          "message": "Mousse Chanh leo giá bao nhiêu? Tên DEMO Khách X, sđt TEST-X1.",
+          "label": {
+            "intents": [
+              "price",
+              "order_request"
+            ],
+            "action": "none",
+            "order_operation": "update_slots",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "name": "DEMO Khách X",
+              "phone": "TEST-X1"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Chanh leo"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0024"
+            ],
+            "order_product_id": "SP0001",
+            "state": "REVIEW",
+            "slots": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "response_contains": [
+              "350.000"
+            ],
+            "response_absent": [
+              "bao nhiêu bánh?",
+              "Bạn muốn nhận tại cửa hàng"
+            ],
+            "response_order": [
+              [
+                "350.000",
+                "Xem lại"
+              ]
+            ],
+            "order_count": 0
+          },
+          "id": "dev-064",
+          "turn_index": 2
+        },
+        {
+          "message": "Mousse Hawaii vị gì, bảo quản thế nào? Mousse Chanh leo còn không?",
+          "label": {
+            "intents": [
+              "flavor",
+              "storage",
+              "availability"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "flavor",
+                  "storage"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ]
+              },
+              {
+                "intents": [
+                  "availability"
+                ],
+                "product_mentions": [
+                  "Mousse Chanh leo"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024"
+            ],
+            "draft_unchanged": true,
+            "response_contains": [
+              "Hương vị: chưa xác định",
+              "Chưa có thông tin bảo quản",
+              "chưa biết tình trạng"
+            ],
+            "response_absent": [
+              "Bạn cho tên",
+              "bao nhiêu bánh?"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-065",
+          "turn_index": 3
+        },
+        {
+          "message": "Mousse Hawaii giá bao nhiêu? Chính sách giao hàng thế nào? Đặt hai bánh này, nhận tại cửa hàng.",
+          "label": {
+            "intents": [
+              "price",
+              "policy",
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ]
+              },
+              {
+                "intents": [
+                  "policy"
+                ],
+                "product_mentions": [],
+                "question": "Chính sách giao hàng thế nào?"
+              }
+            ],
+            "order_reference": "last"
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001"
+            ],
+            "order_product_id": "SP0001",
+            "state": "REVIEW",
+            "slots": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "response_contains": [
+              "320.000",
+              "Chưa có tài liệu chính sách"
+            ],
+            "response_order": [
+              [
+                "Chưa có tài liệu",
+                "Xem lại"
+              ]
+            ],
+            "response_absent": [
+              "Bạn cho tên"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-066",
+          "turn_index": 4
+        },
+        {
+          "message": "Không đặt thêm, chỉ hỏi giá Mousse Chanh leo và chính sách thanh toán.",
+          "label": {
+            "intents": [
+              "price",
+              "policy"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": true,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Chanh leo"
+                ]
+              },
+              {
+                "intents": [
+                  "policy"
+                ],
+                "product_mentions": [],
+                "question": "chính sách thanh toán."
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0024"
+            ],
+            "draft_unchanged": true,
+            "response_contains": [
+              "350.000",
+              "Chưa có tài liệu chính sách"
+            ],
+            "response_absent": [
+              "Bạn cho tên"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-067",
+          "turn_index": 5
+        }
+      ]
+    },
+    {
+      "id": "dev_partial_order_ambiguity",
+      "mode": "group_files",
+      "tags": [
+        "partial_answers",
+        "pending_slots"
+      ],
+      "turns": [
+        {
+          "message": "Mousse Hawaii giá bao nhiêu? Đặt hai Mousse, nhận tại cửa hàng.",
+          "label": {
+            "intents": [
+              "price",
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse"
+            ],
+            "order_product_mentions": [
+              "Mousse"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001"
+            ],
+            "clarification": true,
+            "response_contains": [
+              "320.000"
+            ],
+            "response_absent": [
+              "bao nhiêu bánh?"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-068",
+          "turn_index": 1
+        },
+        {
+          "message": "Mousse Hawaii",
+          "label": {
+            "intents": [
+              "description"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "continuation": "entity",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "description"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "order_product_id": "SP0001",
+            "slots": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "state": "COLLECTING",
+            "response_absent": [
+              "bao nhiêu bánh?",
+              "Bạn muốn nhận tại cửa hàng"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-069",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "dev_partial_information_ambiguity",
+      "mode": "group_files",
+      "tags": [
+        "partial_answers"
+      ],
+      "turns": [
+        {
+          "message": "Mousse Hawaii giá bao nhiêu, Mousse vị gì? Đặt một Mousse Hawaii, nhận tại cửa hàng.",
+          "label": {
+            "intents": [
+              "price",
+              "flavor",
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse"
+            ],
+            "order_product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 1,
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ]
+              },
+              {
+                "intents": [
+                  "flavor"
+                ],
+                "product_mentions": [
+                  "Mousse"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024",
+              "SP0010",
+              "SP0011"
+            ],
+            "order_product_id": "SP0001",
+            "slots": {
+              "quantity": 1,
+              "fulfillment": "pickup"
+            },
+            "clarification": false,
+            "response_contains": [
+              "320.000"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-070",
+          "turn_index": 1,
+          "annotation_note": "Hành vi mới: câu hỏi thông tin rộng Mousse vị gì được trả cho mọi kết quả đã đối chiếu khi request.ambiguous=False. Không bắt chọn một loại trước khi cung cấp thông tin; thiếu hương vị phải báo chưa xác định. Giữ nguyên sản phẩm và slot đặt Mousse Hawaii."
+        }
+      ]
+    },
+    {
+      "id": "dev_multi_unaccented",
+      "mode": "group_files",
+      "tags": [
+        "multi_intent",
+        "unaccented"
+      ],
+      "turns": [
+        {
+          "message": "mousse hawaii gia bn, mousse chanh leo con ko? dat 2 mousse hawaii nhan tai cua hang",
+          "label": {
+            "intents": [
+              "price",
+              "availability",
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [
+              "mousse hawaii",
+              "mousse chanh leo"
+            ],
+            "order_product_mentions": [
+              "mousse hawaii"
+            ],
+            "reference": "none",
+            "updates": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "mousse hawaii"
+                ]
+              },
+              {
+                "intents": [
+                  "availability"
+                ],
+                "product_mentions": [
+                  "mousse chanh leo"
+                ]
+              }
+            ],
+            "order_reference": null
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024"
+            ],
+            "order_product_id": "SP0001",
+            "slots": {
+              "quantity": 2,
+              "fulfillment": "pickup"
+            },
+            "state": "COLLECTING",
+            "response_contains": [
+              "320.000",
+              "chưa biết tình trạng"
+            ],
+            "response_absent": [
+              "350.000",
+              "bao nhiêu bánh?"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-071",
+          "turn_index": 1
+        }
+      ]
+    },
+    {
+      "id": "dev_reuse_known_quantity",
+      "mode": "group_files",
+      "tags": [
+        "known_slots",
+        "recommendation_to_order"
+      ],
+      "turns": [
+        {
+          "message": "Tư vấn Mousse Hawaii, tôi cần hai chiếc, ngân sách dưới 500k.",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "order_operation": "none",
+            "continuation": "none",
+            "product_mentions": [
+              "Mousse Hawaii"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "updates": {
+              "quantity": 2,
+              "budget_vnd": 500000,
+              "price_inclusive": false
+            },
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii"
+                ],
+                "filters": {
+                  "budget_vnd": 500000,
+                  "price_inclusive": false
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001"
+            ],
+            "state": "BROWSING",
+            "order_count": 0
+          },
+          "id": "dev-072",
+          "turn_index": 1
+        },
+        {
+          "message": "đặt cho tôi bánh này",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "action": "start_order",
+            "order_operation": "select_product",
+            "continuation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "order_reference": "last",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": []
+          },
+          "expected": {
+            "order_product_id": "SP0001",
+            "state": "COLLECTING",
+            "slots": {
+              "quantity": 2
+            },
+            "response_absent": [
+              "bao nhiêu bánh?"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-073",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "dev_group_catalog_many",
+      "mode": "group_files",
+      "tags": [
+        "broad_information",
+        "reference_both",
+        "ordinal",
+        "no_order"
+      ],
+      "turns": [
+        {
+          "message": "Donut còn không?",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Donut"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "availability"
+                ],
+                "product_mentions": [
+                  "Donut"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "state": "BROWSING",
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-074",
+          "turn_index": 1
+        },
+        {
+          "message": "ca2banh nhe",
+          "label": {
+            "intents": [
+              "availability"
+            ],
+            "continuation": "information",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "both",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "availability"
+                ],
+                "product_mentions": [],
+                "reference": "both"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "state": "BROWSING",
+            "clarification": false,
+            "draft_unchanged": true,
+            "slots": {
+              "quantity": null
+            },
+            "order_count": 0
+          },
+          "id": "dev-075",
+          "turn_index": 2
+        },
+        {
+          "message": "bánh thứ nhất giá bn?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "first",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "first"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "response_contains": [
+              "35.000"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-076",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_group_both_order",
+      "mode": "group_files",
+      "tags": [
+        "reference_both",
+        "per_item_quantity",
+        "negated_order"
+      ],
+      "turns": [
+        {
+          "message": "Donut giá bn?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Donut"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Donut"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-077",
+          "turn_index": 1
+        },
+        {
+          "message": "dat ca2loai, moi1c",
+          "label": {
+            "intents": [
+              "order_request"
+            ],
+            "continuation": "none",
+            "action": "start_order",
+            "order_operation": "select_product",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "both",
+            "order_reference": "both",
+            "order_ambiguous": false,
+            "order_items": [
+              {
+                "product_mention": null,
+                "reference": "both",
+                "quantity": 1
+              }
+            ],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": true,
+            "requests": []
+          },
+          "expected": {
+            "items": [
+              {
+                "product_id": "SP0016",
+                "quantity": 1
+              },
+              {
+                "product_id": "SP0017",
+                "quantity": 1
+              }
+            ],
+            "state": "COLLECTING",
+            "slots": {
+              "quantity": 1
+            },
+            "response_absent": [
+              "bao nhiêu bánh?"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-078",
+          "turn_index": 2
+        },
+        {
+          "message": "k dat them, chi hoi gia ca2loai",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "both",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": true,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "both"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "items": [
+              {
+                "product_id": "SP0016",
+                "quantity": 1
+              },
+              {
+                "product_id": "SP0017",
+                "quantity": 1
+              }
+            ],
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-079",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_group_genuine_reference",
+      "mode": "group_files",
+      "tags": [
+        "ambiguous_singular",
+        "reference"
+      ],
+      "turns": [
+        {
+          "message": "Giá Mousse Hawaii và Mousse Chanh leo?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "Mousse Hawaii",
+              "Mousse Chanh leo"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "Mousse Hawaii",
+                  "Mousse Chanh leo"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0001",
+              "SP0024"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-080",
+          "turn_index": 1
+        },
+        {
+          "message": "bánh đó giá bn?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "last",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": true,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "last",
+                "ambiguous": true
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [],
+            "clarification": true,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-081",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "dev_mock_all_information",
+      "mode": "mock",
+      "tags": [
+        "reference_all",
+        "ordinal",
+        "no_order"
+      ],
+      "turns": [
+        {
+          "message": "Giá bánh socola và bánh dâu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh socola",
+              "bánh dâu"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh socola",
+                  "bánh dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001",
+              "mock-002"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-082",
+          "turn_index": 1
+        },
+        {
+          "message": "tat ca gia nhe",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "information",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "all",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "all"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001",
+              "mock-002"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "response_contains": [
+              "250.000",
+              "280.000"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-083",
+          "turn_index": 2
+        },
+        {
+          "message": "bánh đầu tiên giá bao nhiêu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "first",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "first"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "mock-001"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "response_contains": [
+              "250.000"
+            ],
+            "response_absent": [
+              "280.000"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-084",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_group_negated_both",
+      "mode": "group_files",
+      "tags": [
+        "reference_both",
+        "negated_order",
+        "no_order"
+      ],
+      "turns": [
+        {
+          "message": "Giá bánh donut sô cô la và bánh donut sô cô la hương dâu?",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [
+              "bánh donut sô cô la",
+              "bánh donut sô cô la hương dâu"
+            ],
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [
+                  "bánh donut sô cô la",
+                  "bánh donut sô cô la hương dâu"
+                ],
+                "reference": "none"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-085",
+          "turn_index": 1
+        },
+        {
+          "message": "k dat ca2banh, chi hoi gia thoi",
+          "label": {
+            "intents": [
+              "price"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_product_mentions": [],
+            "reference": "both",
+            "order_reference": null,
+            "order_ambiguous": false,
+            "order_items": [],
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": true,
+            "order_update": false,
+            "requests": [
+              {
+                "intents": [
+                  "price"
+                ],
+                "product_mentions": [],
+                "reference": "both"
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0016",
+              "SP0017"
+            ],
+            "state": "BROWSING",
+            "slots": {
+              "product_id": null,
+              "quantity": null
+            },
+            "clarification": false,
+            "draft_unchanged": true,
+            "order_count": 0
+          },
+          "id": "dev-086",
+          "turn_index": 2
+        }
+      ]
     }
-  ]
+  ],
+  "note": "Giữ câu/nhãn cũ; cập nhật handoff và hành vi thêm món. Thêm hội thoại group_files; nhãn test không được gửi vào prompt. Thêm development cho hỏi danh mục nhiều kết quả, both/all, thứ tự, số lượng từng món và phủ định. Giữ nguyên bộ kiểm tra cuối."
 }
