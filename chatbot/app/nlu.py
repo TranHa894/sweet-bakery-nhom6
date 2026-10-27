@@ -4,7 +4,7 @@ import re
 
 from app.repositories.catalog import CatalogRepository, safe_search_products
 from app.schemas import Intent, NLUResult, Product
-from app.text_utils import normalize_text, phrase_spans
+from app.text_utils import normalize_text, phrase_spans, parse_money
 
 # Từ vựng hương vị phổ thông, không phải tên/ID sản phẩm hoặc danh sách đang bán.
 # Nguồn empty vẫn có thể ghi nhận nhu cầu; hương vị của catalog được bổ sung bên dưới.
@@ -65,16 +65,6 @@ def extract_flavors(text: str, products: list[Product]) -> list[tuple[str, int, 
     if explicit and not any(start >= explicit.start(1) and end <= explicit.end(1) for _, start, end in found):
         found.append((explicit.group(1).strip(), explicit.start(1), explicit.end(1)))
     return found
-
-
-def parse_money(amount: str, unit: str | None) -> int:
-    """Đổi 300k, 1,5 triệu, 300.000 đồng thành số nguyên VND."""
-    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", amount):
-        number = float(amount.replace(".", "").replace(",", ""))
-    else:
-        number = float(amount.replace(",", "."))
-    multiplier = 1_000_000 if unit in {"tr", "trieu"} else 1_000 if unit in {"k", "nghin", "ngan"} else 1
-    return round(number * multiplier)
 
 
 def extract_budgets(text: str) -> list[int]:

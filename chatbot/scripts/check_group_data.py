@@ -5,6 +5,7 @@ import json
 
 from app.config import GROUP_CATALOG_PATH, GROUP_PROJECT_ROOT
 from app.repositories.group_catalog import GroupCatalogRepository
+from app.repositories.mock_catalog import canonical_flavors
 
 
 def main() -> None:
@@ -16,10 +17,20 @@ def main() -> None:
         "status": result["status"], "error": result["error"], "data_mode": result["data_mode"],
         "product_count": len(products),
         "categories": dict(Counter(product["category"] for product in products)),
+        "product_types": dict(Counter(product.get("product_type") or "unknown" for product in products)),
+        "known_flavor_count": sum(product["flavor"] is not None for product in products),
+        "unknown_flavor_count": sum(product["flavor"] is None for product in products),
+        "flavors": dict(sorted(Counter(
+            flavor for product in products for flavor in canonical_flavors(product["flavor"])
+        ).items())),
+        "flavor_sources": dict(Counter(product.get("flavor_source") or "unknown" for product in products)),
         "can_accept_real_orders": False, "can_create_demo_orders": False,
         "knowledge_mode": "empty",
         "group_orders_db_exists": (GROUP_PROJECT_ROOT / "orders.db").is_file(),
         "samples": [{"id": product["id"], "name": product["name"],
+                     "product_type": product.get("product_type"),
+                     "flavor": product["flavor"], "flavor_source": product.get("flavor_source"),
+                     "style_tags": product.get("style_tags", []),
                      "price_vnd": product["variants"][0]["price_vnd"],
                      "size": product["variants"][0]["size"],
                      "stock_status": product["variants"][0]["stock_status"]}

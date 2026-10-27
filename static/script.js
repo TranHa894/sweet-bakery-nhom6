@@ -93,8 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const subtotal = () =>
     cart.reduce((n, i) => n + byId.get(i.productId).price * i.quantity, 0);
+  function pageURL(path) {
+    const url = new URL(path, location.href);
+    if (config.pageVersion) url.searchParams.set("site_v", config.pageVersion);
+    return url.href;
+  }
   const detailURL = (id) =>
-    `chi-tiet-san-pham-demo.html?id=${encodeURIComponent(id)}`;
+    pageURL(`chi-tiet-san-pham-demo.html?id=${encodeURIComponent(id)}`);
   function card(p) {
     return `<article class="product-card"><div class="img-wrap"><a href="${detailURL(p.id)}"><img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400"></a><button class="btn-add-cart" data-add="${p.id}" type="button">+ Thêm vào giỏ</button></div><div class="product-info"><h3><a href="${detailURL(p.id)}">${esc(p.name)}</a></h3><p class="price">${money(p.price)}</p></div></article>`;
   }
@@ -164,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     const buy = e.target.closest("[data-buy]");
     if (buy && add(buy.dataset.buy, $("#detail-quantity").value))
-      location.href = "thanh-toan.html";
+      location.href = pageURL("thanh-toan.html");
     const remove = e.target.closest("[data-remove]");
     if (remove) {
       cart = readCart();

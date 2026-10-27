@@ -52,6 +52,11 @@ def summarize_needs(state: ChatState) -> str:
         parts.append("cụm bánh hỏi: " + ", ".join(state["product_terms"]))
     if "flavor" in filters:
         parts.append("vị " + filters["flavor"])
+    if filters.get("product_type") in {"cake", "drink"}:
+        parts.append("loại bánh" if filters["product_type"] == "cake" else "đồ uống")
+    if "min_price_vnd" in filters:
+        operator = "từ" if filters.get("min_price_inclusive", True) else "trên"
+        parts.append(f"{operator} {format_vnd(filters['min_price_vnd'])}/sản phẩm")
     if "max_price_vnd" in filters:
         operator = "tối đa" if filters.get("price_inclusive", True) else "dưới"
         parts.append(f"{operator} {format_vnd(filters['max_price_vnd'])}/bánh")
@@ -73,13 +78,16 @@ def describe_products(products: list[Product]) -> str:
     lines = []
     for product in products:
         if product["source"] == "group_files":
-            category = {"cake": "bánh kem", "mini": "bánh nhỏ", "drink": "đồ uống"}.get(product["category"], product["category"])
+            labels = {"cream_cake": "bánh kem", "mini": "bánh ngọt nhỏ",
+                      "tea": "trà", "coffee": "cà phê", "drink": "đồ uống", "cake": "bánh"}
+            category = labels.get(product.get("product_type"),
+                {"cake": "bánh kem", "mini": "bánh ngọt nhỏ", "drink": "đồ uống"}.get(product["category"], product["category"]))
             lines.append(f"{product['name']} — {category}:")
             for variant in product["variants"]:
                 price = "chưa có giá" if variant["price_vnd"] is None else format_vnd(variant["price_vnd"])
                 lines.append(f"  • {price}.")
             continue
-        lines.append(f"- {product['name']} [{product['id']}], vị {product['flavor'] or 'chưa biết'}:")
+        lines.append(f"- {product['name']}, vị {product['flavor'] or 'chưa biết'}:")
         for variant in product["variants"]:
             price = "chưa có giá" if variant["price_vnd"] is None else format_vnd(variant["price_vnd"])
             servings = "chưa biết số người ăn" if variant["servings"] is None else f"khoảng {variant['servings']} người"

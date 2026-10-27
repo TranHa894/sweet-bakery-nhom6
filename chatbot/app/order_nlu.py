@@ -2,62 +2,20 @@
 
 from copy import deepcopy
 import re
+import unicodedata
 
 from app.order_flow import business_command_text, update_slot
+from app.order_service import normalize_contact_value
 from app.repositories.catalog import safe_search_products
-from app.text_utils import normalize_text, normalize_business_evidence
+from app.repositories.mock_catalog import canonical_flavors, styles_from_name
+from app.text_utils import normalize_text, normalize_business_evidence, normalize_shopping_terms, numeric_evidence_text, budget_evidence, parse_money, mentioned_catalog_groups
 
 NUMBER_WORDS = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "nam": 5,
                 "sau": 6, "bay": 7, "tam": 8, "chin": 9, "muoi": 10}
 
-
-def contains_unsafe_contact(message: str) -> bool:
-    """Không gửi số điện thoại/email thật hoặc trường contact không nhãn giả vào AI."""
-    text = re.sub(r"\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}", "", message)
-    if re.search(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|(?<!\w)(?:\+84|0)\d[\d .-]{7,}\d(?!\w)", text):
-        return True
-    normalized = normalize_text(text)
-    for marker, prefix in [(r"\bten\s+(?:la\s+)?", "demo"),
-                           (r"\bdia chi\s+(?:la\s+)?", "demo"),
-                           (r"\b(?:sdt|dien thoai)\s+(?:la\s+)?", "test")]:
-        for match in re.finditer(marker, normalized):
-            value = normalized[match.end():]
-            if prefix == "demo" and match[0].startswith("ten "):
-                # Tên bánh là thông tin sản phẩm, không phải tên người nhận.
-                product_name = re.match(r"(?:banh|loai|mon|san pham)\b", value)
-                product_name_question = (re.match(r"gi\b", value)
-                                         and re.search(r"\b(?:banh|loai|mon|san pham)\b",
-                                                       normalized[:match.start()]))
-                if product_name or product_name_question:
-                    continue
-                # Chỉ câu hỏi tên cửa hàng; nhắc shop không miễn kiểm tra tên khách.
-                before_clause = re.split(r"[.,;?!]", normalized[:match.start()])[-1]
-                value_clause = re.split(r"[.,;?!]|\b(?:ten|sdt|dien thoai|dia chi)\s+",
-                                        value, maxsplit=1)[0].strip()
-                value_clause = re.sub(r"\s+(?:va|con|roi)$", "", value_clause)
-                store_noun = r"(?:(?:cua\s+)?(?:cua\s+hang|shop|tiem))"
-                question_tail = r"(?:la\s+)?gi(?:\s+(?:vay|the|a|nhi))?"
-                store_name_question = (
-                    re.fullmatch(store_noun + r"\s+" + question_tail, value_clause)
-                    or re.search(r"\b(?:cua hang|shop|tiem)\b", before_clause)
-                    and re.fullmatch(question_tail, value_clause)
-                )
-                if store_name_question:
-                    continue
-            if prefix == "test" or match[0].startswith("dia chi "):
-                # Hỏi thông tin công khai của cửa hàng không cung cấp liên hệ khách.
-                before_clause = re.split(r"[.,]", normalized[:match.start()])[-1]
-                value_clause = re.split(r"\b(?:ten|sdt|dien thoai|dia chi)\s+", value, maxsplit=1)[0]
-                store_context = (re.match(r"(?:cua\s+)?(?:cua hang|shop|tiem)\b", value_clause)
-                                 or re.search(r"\b(?:cua hang|shop|tiem)\b", before_clause))
-                store_question = (re.search(r"\b(?:la gi|o dau|cho nao|so nao)\b", value_clause)
-                                  or match[0].rstrip().endswith("la") and re.match(r"gi\b", value_clause)
-                                  or "?" in message and re.search(r"\bgi\b", value_clause))
-                if store_context and store_question:
-                    continue
-            if not value.startswith(prefix):
-                return True
-    return False
+# Chỉ kiểm chứng quyền dùng tham chiếu của Qwen; "trên 100k" không phải "ở trên".
+_QUERY_REFERENCE_CUES = (r"\b(?:nay|do|ay|vua|truoc|trong so|giu|van|nhu cu|re hon|dat hon|"
+                         r"thu\s*(?:nhat|hai|1|2)|dau tien|ca\s*(?:hai|2)|tat ca|toan bo|ben tren|o tren)\b")
 
 
 def resolve_mentions(mentions: list[str], repository, shown: list[dict], reference: str, selected_id=None, focus_ids=None, choice_ids=None) -> dict:
@@ -73,11 +31,13 @@ def resolve_mentions(mentions: list[str], repository, shown: list[dict], referen
     ambiguous = False
     for mention in mentions:
         text = normalize_text(mention)
+        # Đơn vị đếm không phải một phần tên món; vẫn đối chiếu alias trong nguồn.
+        text = re.sub(r"^(?:[0-9]+\s+)?(?:coc|ly|cai|chiec)\s+", "", text)
         short = re.sub(r"^(?:banh\s+)?(?:kem\s+)?", "", text)
         exact = [p["id"] for p in products if text == normalize_text(p["id"]) or
                  any(text == normalize_text(x) or short == normalize_text(x) for x in [p["name"], *p["aliases"]])]
         if not exact:
-            matches = safe_search_products(repository, {"query": mention})
+            matches = safe_search_products(repository, {"query": text})
             if matches["status"] == "error":
                 return {"status": "error", "ids": [], "ambiguous": False, "error": matches["error"]}
             exact = [p["id"] for p in matches["products"]]
@@ -217,6 +177,7 @@ def each_quantity_values(text: str) -> set[int]:
 def check_turn_grounding(message: str, proposal, repository=None, conversation=None, *, _check_omissions=True) -> str | None:
     """Kiểm chứng tên literal/nguồn và viết tắt; không thay intent của AI."""
     raw = normalize_text(message)
+    numeric_raw = numeric_evidence_text(message)
     business_raw = normalize_text(business_command_text(message))
     evidence = normalize_business_evidence(message)
     business_evidence = normalize_business_evidence(business_command_text(message))
@@ -228,6 +189,15 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     active_order = (not proposal.order_negated and "order_request" in proposal.intents
                     and (proposal.action == "start_order" or proposal.order_operation != "none"
                          or bool(proposal.order_items)))
+    # Chỉ kiểm chứng yêu cầu đặt thuần: "bánh đang đặt" phải dùng namespace của draft.
+    # Không áp lên câu hỏi thông tin xen trong một tin nhắn nhiều ý định.
+    if (active_order and not proposal.requests
+            and re.search(r"\b(?:banh|mon|loai|cai|chiec)\s+dang\s+dat\b", business_evidence)):
+        if proposal.order_items:
+            if not any(item.reference == "order" for item in proposal.order_items):
+                return "ungrounded_order_reference"
+        elif proposal.order_product_mentions or (proposal.order_reference or proposal.reference) != "order":
+            return "ungrounded_order_reference"
     references = [proposal.reference,
                   *(request.reference for request in proposal.requests),
                   *(item.reference for item in proposal.order_items)]
@@ -236,6 +206,12 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     if any(reference in {"both", "all"} and not plural_reference_evidence(message, reference, offered_count)
            for reference in references):
         return "ungrounded_plural_reference"
+    for reference, pattern in (
+        ("first", r"\b(?:thu\s*(?:nhat|mot|1)|dau\s*tien|(?:banh|loai|cai|chiec)\s*(?:dau|so\s*1|1))\b"),
+        ("second", r"\b(?:thu\s*(?:hai|2)|(?:banh|loai|cai|chiec)\s*(?:so\s*)?2)\b"),
+    ):
+        if reference in references and not re.search(pattern, business_evidence):
+            return "ungrounded_ordinal_reference"
     order_plural = (proposal.order_reference in {"both", "all"}
                     or proposal.reference in {"both", "all"}
                     or any(item.reference in {"both", "all"} for item in proposal.order_items))
@@ -247,7 +223,7 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     pending_order = context.get("pending_order_request")
     order_continuation = proposal.continuation == "order" or bool(pending_order)
     explicit_order = re.search(
-        r"(?<!\w)(?:dat|mua|lay|them|doi)(?=\s|ca(?:2|hai)|tat\s*ca|toan\s*bo|banh|$)|"
+        r"(?<!\w)(?:dat|mua|lay|them|doi|tao\s+(?:don|yeu\s*cau))(?=\s|ca(?:2|hai)|tat\s*ca|toan\s*bo|banh|$)|"
         r"(?<!\w)cho\s+(?:toi|minh|em)\s+(?!(?:biet|xem|hoi)\b)",
         business_evidence,
     )
@@ -256,16 +232,43 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
         return "information_choice_is_not_order"
     recommendation_active = ("recommendation" in proposal.intents
                              or any("recommendation" in request.intents for request in proposal.requests))
-    explicit_budget = re.search(
-        r"(?<!\w)(?:duoi|toi\s*da|khong\s*qua|ngan\s*sach)(?=\s|\d|:)"
-        r"[^;?!]{0,80}(?<!\w)\d+(?:[.,]\d+)*\s*(?:k|ngan|nghin|vnd|dong|trieu|tr)(?!\w)",
-        raw,
-    )
-    has_budget = (proposal.updates.budget_vnd is not None
+    money = budget_evidence(message)
+    has_budget = (proposal.updates.budget_vnd is not None or proposal.updates.min_budget_vnd is not None
                   or any("recommendation" in request.intents
-                         and request.filters.budget_vnd is not None for request in proposal.requests))
-    if _check_omissions and recommendation_active and explicit_budget and not has_budget:
+                         and (request.filters.budget_vnd is not None or request.filters.min_budget_vnd is not None)
+                         for request in proposal.requests))
+    # Một câu có "sản phẩm" + cận tiền tuyệt đối là tìm menu, không phải
+    # chọn thẻ trước đó. Chỉ bác output trái bằng chứng; không tự trích intent.
+    shopping_clause = normalize_shopping_terms(message)
+    generic_money_search = (money["expected"] and re.search(r"\bsan pham\b", shopping_clause)
+                            and not re.search(_QUERY_REFERENCE_CUES, shopping_clause)
+                            and not proposal.product_mentions
+                            and not any(request.product_mentions for request in proposal.requests))
+    if _check_omissions and generic_money_search and not recommendation_active:
+        return "missing_catalog_budget_query"
+    if _check_omissions and generic_money_search and any(
+            request.reference != "none" for request in proposal.requests if "recommendation" in request.intents):
+        return "unrequested_budget_reference"
+    if _check_omissions and recommendation_active and money["expected"] and not has_budget:
         return "missing_budget_constraint"
+    if _check_omissions and recommendation_active:
+        candidates = [(request.question or (message if len(proposal.requests) == 1 else ""), request.filters)
+                      for request in proposal.requests if "recommendation" in request.intents]
+        if not proposal.requests:
+            candidates = [(message, proposal.updates)]
+        for clause, constraints in candidates:
+            expected = budget_evidence(clause)["expected"]
+            if expected:
+                for field, value in expected.items():
+                    actual = getattr(constraints, field)
+                    if field.endswith("inclusive"):
+                        actual = True if actual is None else actual
+                    if actual != value:
+                        return "budget_direction_mismatch"
+                # Không được biến trần ngân sách thành mức giá chính xác/range tự bịa.
+                for bound in ("budget_vnd", "min_budget_vnd"):
+                    if bound not in expected and getattr(constraints, bound) is not None:
+                        return "budget_direction_mismatch"
     available_filter = (proposal.updates.available_only is True
                         or any(request.filters.available_only is True for request in proposal.requests))
     if available_filter and not re.search(
@@ -324,7 +327,8 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     delivery_pattern = r"\b(?:giao|ship|delivery)\b"
     updating_order = (active_order and (proposal.action == "start_order"
                       or proposal.order_operation in {"select_product", "add_product", "update_slots"}))
-    if _check_omissions and updating_order:
+    disabled_fields = context.get("order", {}).get("disabled_fields", [])
+    if _check_omissions and updating_order and "fulfillment" not in disabled_fields:
         # Kiểm chứng phần AI bỏ sót, không tự chọn/ghi slot. Phủ định hoặc
         # câu hỏi policy rõ được tách khỏi bằng chứng hình thức nhận.
         def has_fulfillment_evidence(pattern):
@@ -352,11 +356,122 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     mentions = [*proposal.product_mentions, *proposal.order_product_mentions,
                 *(item.product_mention for item in proposal.order_items if item.product_mention)]
     for request in proposal.requests:
-        if request.question and normalize_text(request.question) not in raw:
+        # Kiểm chứng yêu cầu xếp/so giá của AI, không tự phân loại hoặc chọn sản phẩm.
+        clause = normalize_shopping_terms(request.question or (message if len(proposal.requests) == 1 else ""))
+        if "recommendation" in request.intents and not request.product_mentions:
+            # Chỉ từ chối loại trái cụm nhóm rõ; không gán type hoặc suy từ tên bánh.
+            type_cues = {"cream_cake": r"\bbanh\s+kem\b",
+                         "mini": r"\b(?:banh\s+(?:ngot\s+)?nho|banh\s+mini)\b"}
+            explicit_types = {kind for kind, pattern in type_cues.items() if re.search(pattern, clause)}
+            full_catalog = (re.search(r"\bsan pham\b", clause)
+                and not re.search(r"\b(?:banh|tra|ca phe|do uong)\b", clause)
+                and not re.search(_QUERY_REFERENCE_CUES, clause)
+                and request.price_preference not in {"cheaper_than", "more_expensive_than"})
+            if full_catalog and request.filters.product_type is not None:
+                return "product_type_mismatch"
+            inherited_scope = any(
+                context.get("needs", {}).get("filters", {}).get(field) is not None
+                and field not in proposal.clear_slots
+                for field in ("product_type", "flavor", "servings", "size", "occasion"))
+            if (full_catalog and budget_evidence(clause)["expected"]
+                    and request.search_scope != "new" and inherited_scope):
+                return "missing_new_search_scope"
+            generic_cake = (re.search(r"\bbanh\b", clause)
+                            and not explicit_types and request.reference == "none"
+                            and request.price_preference not in {"cheaper_than", "more_expensive_than"}
+                            and not re.search(r"\bbanh\s+(?:do|nay|vua|dang)\b", clause))
+            if generic_cake:
+                # "Bánh" gồm cả bánh kem và bánh nhỏ. Không chấp nhận AI tự
+                # thu hẹp thành bánh kem; câu rút gọn/tham chiếu vẫn dùng context.
+                explicit_types.add("cake")
+            if not re.search(r"\bbanh\b", clause):
+                beverage_clause = clause
+                if request.filters.flavor:
+                    # Model có thể nói matcha trong khi khách nói trà xanh.
+                    # So cả tên tương đương trước khi kiểm tra nhóm đồ uống.
+                    flavor_names = {request.filters.flavor, *canonical_flavors(request.filters.flavor)}
+                    for flavor_name in flavor_names:
+                        beverage_clause = re.sub(r"(?<!\w)" + re.escape(normalize_text(flavor_name)) +
+                                                 r"(?!\w)", "", beverage_clause)
+                if request.filters.taste_family in {"matcha", "coffee_cream"}:
+                    # Đây là vị của bánh đang hỏi, không phải đổi sang đồ uống.
+                    # Enum và bằng chứng vị vẫn được validate riêng bên dưới.
+                    beverage_clause = re.sub(r"\b(?:tra xanh|ca phe(?: va)? kem)\b", "", beverage_clause)
+                for kind, pattern in {"tea": r"\btra\b", "coffee": r"\bca\s+phe\b"}.items():
+                    if re.search(pattern, beverage_clause):
+                        explicit_types.add(kind)
+            negated_type = re.search(r"\b(?:khong(?:\s+(?:can|muon|lay|chon|xem|tim))?|bo|xoa)\s+"
+                                     r"(?:loai\s+)?(?:banh\s+(?:kem|nho)|tra|ca\s+phe)\b", clause)
+            effective_type = request.filters.product_type
+            if len(explicit_types) == 1 and effective_type is None and request.search_scope == "refine":
+                # None ở refine là giữ nhóm thật (bánh chung/nhỏ/kem/trà/cà phê).
+                # Chỉ chấp nhận nếu khớp đúng nhóm đã lưu; không sửa proposal/draft.
+                effective_type = (proposal.updates.product_type
+                                  or context.get("needs", {}).get("filters", {}).get("product_type"))
+            if len(explicit_types) == 1 and not negated_type and effective_type not in explicit_types:
+                return "product_type_mismatch"
+            # Hỏi gợi ý nhóm đầy đủ là tìm mới; không vô tình kế thừa giá/vị cũ.
+            # Câu nối giữ/vẫn/như cũ được refine. Chỉ bác output sai để Qwen sửa.
+            old_filters = context.get("needs", {}).get("filters", {})
+            price_is_replaced = (bool(budget_evidence(clause)["expected"])
+                or bool({"budget_vnd", "min_budget_vnd"}.intersection(proposal.clear_slots))
+                or request.filters.budget_vnd is not None or request.filters.min_budget_vnd is not None)
+            inherited_price = not price_is_replaced and any(
+                old_filters.get(key) is not None for key in ("min_price_vnd", "max_price_vnd"))
+            inherited_flavor = (old_filters.get("flavor") and request.filters.flavor is None
+                and "flavor" not in proposal.clear_slots and budget_evidence(clause)["expected"])
+            if (_check_omissions and explicit_types and not negated_type
+                    and request.reference == "none" and request.price_preference == "none"
+                    and request.search_scope != "new" and (inherited_price or inherited_flavor)
+                    and not re.search(_QUERY_REFERENCE_CUES, clause)):
+                return "missing_new_search_scope"
+            known_group = (context.get("needs", {}).get("filters", {}).get("product_type")
+                           or context.get("discussion_context", {}).get("product_type"))
+            group_clause = clause
+            for flavor in (request.filters.flavor, proposal.updates.flavor):
+                if flavor:
+                    group_clause = re.sub(r"(?<!\w)" + re.escape(normalize_text(flavor))
+                                          + r"(?!\w)", "", group_clause)
+            changed_groups = {kind for kind in (request.filters.product_type, proposal.updates.product_type)
+                              if kind and kind != known_group}
+            if (clause and known_group and changed_groups
+                    and not re.search(r"\b(?:banh|tra|ca\s+phe|cafe|do\s+uong|san\s+pham)\b", group_clause)):
+                return "unmentioned_query_group"
+        price_cues = {
+            "lowest": r"\b(?:re\s*nhat|gia\s*(?:thap|be)\s*nhat)\b",
+            "highest": r"\b(?:(?:dat|mac)\s*nhat|gia\s*cao\s*nhat)\b",
+            "cheaper_than": r"\b(?:re\s*hon|gia\s*thap\s*hon|it\s*tien\s*hon)\b",
+            "more_expensive_than": r"\b(?:(?:dat|mac)\s*hon|gia\s*cao\s*hon|nhieu\s*tien\s*hon)\b",
+        }
+        price_clause = re.sub(r"\b(?:khong|chua|dung)(?:\s+(?:can|muon|chon))*\s+"
+                              r"(?:loai\s+)?(?:re|dat|mac)\s+(?:nhat|hon)\b", "", clause)
+        # "Giá cao hơn 40000đ" là ngưỡng tiền, không phải so với bánh cũ.
+        # Chỉ bỏ cụm so sánh khi theo ngay bằng số; trường hợp "đắt hơn
+        # loại vừa xem, dưới 400k" vẫn phải giữ yêu cầu so sánh sản phẩm.
+        price_clause = re.sub(r"\b(?:(?:re|dat|mac)\s*hon|gia\s*(?:cao|thap)\s*hon|(?:nhieu|it)\s*tien\s*hon)(?=\s*\d)",
+                              "", price_clause)
+        detected = {mode for mode, pattern in price_cues.items() if re.search(pattern, price_clause)}
+        # Từ chối hướng trái bằng chứng rõ; cách nói đồng nghĩa khác vẫn do Qwen hiểu.
+        if request.price_preference != "none" and detected and request.price_preference not in detected:
+            return "ungrounded_price_preference"
+        if (_check_omissions and "recommendation" in request.intents
+                and request.price_preference == "none" and request.reference != "cheaper" and detected):
+            return "missing_price_preference"
+        if (request.question and normalize_text(request.question) not in raw
+                and normalize_shopping_terms(request.question) not in normalize_shopping_terms(message)):
             return "ungrounded_question_clause"
         mentions.extend(request.product_mentions)
         mentions.extend(request.excluded_product_mentions)
         constraints = request.filters.model_dump(exclude_none=True)
+        if (_check_omissions and len(proposal.requests) == 1
+                and "recommendation" in request.intents and not request.product_mentions
+                and request.filters.product_type == "coffee"):
+            # Kiểm tra thiếu điều kiện, không tự phân loại intent hay gán filter.
+            # Giữ dấu khi kiểm chứng: "đến 50k" không phải kiểu "đen".
+            styles = set(styles_from_name(message, "coffee"))
+            negated_style = re.search(r"\b(?:khong|tranh|bo|ngoai tru)\b[^,.;?!]*\b(?:den|u lanh|cold brew|coldbrew)\b", business_evidence)
+            if len(styles) == 1 and not negated_style and not styles.issubset(canonical_flavors(request.filters.flavor)):
+                return "missing_beverage_style"
         if constraints:
             query = proposal.model_copy(deep=True)
             query.requests = []
@@ -393,9 +508,28 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
             if not literal_short and grounded_names is not None and normalize_text(mention) not in grounded_names:
                 return "invalid_turn_mention"
     updates = proposal.updates.model_dump(exclude_none=True)
+    preference_evidence = {
+        "sweetness": {"low": r"\bit ngot\b", "medium": r"\bngot vua\b", "high": r"\bngot (?:nhieu|dam)\b"},
+        "taste_family": {"fruit": r"\btrai cay\b", "chocolate": r"\b(?:chocolate|choco|socola|so co la)\b",
+            "cream": r"\b(?:vi kem|kem sua|vani|vanilla|trang tri)\b", "milk_tea": r"\btra sua\b",
+            "fruit_tea": r"\btra trai cay\b", "matcha": r"\b(?:tra xanh|matcha)\b",
+            "vanilla": r"\b(?:vani|vanilla)\b", "coffee_cream": r"\bca phe\s+(?:va\s+)?kem\b"},
+        "coffee_style": {"strong": r"\b(?:dam|dang|tinh tao)\b", "creamy": r"\b(?:beo|man|de uong)\b",
+            "mild": r"\b(?:diu|mat|it dang)\b"},
+    }
+    for field, patterns in preference_evidence.items():
+        if updates.get(field) and not re.search(patterns[updates[field]], raw):
+            return "ungrounded_advice_preference"
     for field in ("cake_need", "flavor", "occasion", "name", "phone", "address"):
         if field in updates and normalize_text(updates[field]) not in business_raw:
-            return "ungrounded_slot"
+            # Chấp nhận tên vị tương đương (vanilla/vani, chanh dây/chanh leo);
+            # đây là kiểm chứng delta của Qwen, không tự gán intent hoặc sản phẩm.
+            if field == "flavor" and canonical_flavors(updates[field]).issubset(canonical_flavors(message)):
+                continue
+            # Model được bỏ dấu phân cách số, không được đổi mã quốc gia/chữ số.
+            candidates = re.findall(r"(?<!\w)\+?[0-9](?:[ .-]*[0-9]){7,14}(?!\w)", message) if field == "phone" else []
+            if not any(normalize_contact_value("phone", candidate) == updates[field] for candidate in candidates):
+                return "ungrounded_slot"
     if updates.get("cake_text") and any(normalize_text(updates["cake_text"]) == normalize_text(m) for m in mentions) and business_command_text(message) == message:
         pending = (conversation or {}).get("pending_order_question") or {}
         if pending.get("field") != "cake_text":
@@ -411,17 +545,16 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
         if compact not in raw.replace(" ", "") and not (digits and re.search(r"\b" + digits[1] + r"\b", raw)):
             return "ungrounded_size"
     numbers = set(NUMBER_WORDS[word] for word in raw.split() if word in NUMBER_WORDS)
-    for match in re.finditer(r"(?<!\w)(\d+(?:[.,]\d+)*)(?:\s*(k|nghin|ngan|trieu|tr))?", raw):
+    for match in re.finditer(r"(?<!\w)(\d+(?:[.,]\d+)*)(?:\s*(k|nghin|ngan|trieu|tr)(?!\w))?", numeric_raw):
         value = match[1]
         unit = match[2]
-        if unit:
-            number = float(value.replace(",", ".")) * (1000 if unit in {"k", "nghin", "ngan"} else 1000000)
-        else:
-            number = float(value.replace(".", "").replace(",", ""))
-        numbers.add(int(number))
+        numbers.add(parse_money(value, unit))
     numbers.update(each_quantities)
-    for field in ("quantity", "servings", "budget_vnd"):
-        if field in updates and updates[field] not in numbers:
+    budget_numbers = set(numbers)
+    budget_numbers.update(money["values"])
+    for field in ("quantity", "servings", "budget_vnd", "min_budget_vnd"):
+        evidence_numbers = budget_numbers if field in {"budget_vnd", "min_budget_vnd"} else numbers
+        if field in updates and updates[field] not in evidence_numbers:
             return "ungrounded_number"
     for item in proposal.order_items:
         if item.quantity is not None:
@@ -460,7 +593,7 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
             return "confirmation_not_explicit"
     if proposal.action == "cancel":
         # Model chọn hành động; code chỉ kiểm chứng căn cứ trước khi bỏ bản nháp.
-        negated_cancel = re.search(r"\b(?:khong|chua|dung)\b[^.!?]*\b(?:huy|cancel)\b", business_evidence)
+        negated_cancel = re.search(r"\b(?:khong|chua|dung)\s+(?:(?:muon|can|dong y)\s+)?(?:huy|cancel)\b", business_evidence)
         cancel_evidence = re.search(
             r"\b(?:huy|cancel|bo het|xoa het|xoa toan bo)\b|"
             r"\b(?:khong(?:\s+(?:muon|can))?|dung)\s+(?:dat|mua|lay)\s+nua\b",
@@ -494,8 +627,17 @@ def check_catalog_grounding(message: str, proposal, repository) -> str | None:
         if any(set(normalize_text(m) for m in request.product_mentions) & excluded.get(intent, set()) for intent in request.intents):
             return "contradictory_included_and_excluded_query_targets"
     result = safe_search_products(repository, {})
+    if result["status"] == "error":
+        return None  # Controller xử lý lỗi nguồn riêng, không gọi là lỗi model.
+    names = [name for product in result["products"] for name in [product["name"], *product["aliases"]]]
+    expected_groups = mentioned_catalog_groups(message, names)
+    if len(expected_groups) >= 2 and "recommendation" in proposal.intents:
+        covered = {request.filters.product_type for request in proposal.requests
+                   if "recommendation" in request.intents}
+        if not expected_groups.issubset(covered):
+            return "missing_catalog_group_request"
     if result["status"] != "success":
-        return None  # Controller sẽ xử lý lỗi nguồn, không gọi là lỗi model.
+        return None  # Empty vẫn kiểm tra đủ nhóm, không tự xác nhận sản phẩm.
     raw = normalize_text(business_command_text(message))
     mentions = [normalize_text(x) for x in all_mentions]
     if "order_request" in proposal.intents and proposal.updates.cake_need:
@@ -510,8 +652,48 @@ def check_catalog_grounding(message: str, proposal, repository) -> str | None:
         for term in [product["name"], *product["aliases"]]:
             normalized = normalize_text(term)
             represented = any(normalized in mention or mention in product_terms for mention in mentions)
-            if re.search(r"(?<!\w)" + re.escape(normalized) + r"(?!\w)", raw) and not represented:
+            if normalized == "tra sua" and any(
+                    r.intents == ["recommendation"] and r.filters.taste_family == "milk_tea"
+                    and r.filters.product_type == "tea" and not r.product_mentions for r in proposal.requests):
+                represented = True
+            matched = re.search(r"(?<!\w)" + re.escape(normalized) + r"(?!\w)", raw)
+            if matched and not represented:
+                for request in proposal.requests:
+                    # Tên dạng "cà phê đen"/"trà đào" có thể được AI biểu diễn
+                    # đầy đủ bằng nhóm + vị tương đương (black = đen).
+                    # Chỉ chấp nhận khi toàn bộ phần tên còn lại khớp, không
+                    # bỏ qua tên riêng hoặc làm việc này cho yêu cầu đặt món.
+                    if (request.intents == ["recommendation"] and not request.product_mentions
+                            and request.filters.product_type in {"tea", "coffee"} and request.filters.flavor):
+                        base = "cà phê" if request.filters.product_type == "coffee" else "trà"
+                        remaining_name = canonical_flavors(term) - canonical_flavors(base)
+                        if remaining_name and remaining_name == canonical_flavors(request.filters.flavor):
+                            represented = True
+            if matched and not represented:
                 return "missing_catalog_mention"
+            # Bác bỏ thiếu/gán sai câu hỏi vị có liên kết tên rõ ràng.
+            # Đây là kiểm chứng output Qwen, không tự tạo intent/slot hay câu trả lời.
+            if matched and proposal.requests:
+                before, after = raw[:matched.start()], raw[matched.end():]
+                clause_before = re.split(r"[,.;]", before)[-1].strip()
+                preposed = re.fullmatch(
+                    r"(?:huong vi|(?:hoi|xem|cho (?:toi|minh|em) biet) (?:huong )?vi)(?:\s+cua)?",
+                    clause_before)
+                negated = re.search(r"\b(?:khong|chua|dung)(?:\s+(?:can|muon))?\s+hoi\s*$", before)
+                explicit_flavor_question = (not negated and (
+                    preposed or re.match(r"\s+(?:(?:co|la)\s+)?(?:huong\s+)?vi\s+(?:gi|nao)\b", after)))
+                linked = any("flavor" in request.intents
+                             and any(normalize_text(name) in product_terms for name in request.product_mentions)
+                             for request in proposal.requests)
+                if explicit_flavor_question and not linked:
+                    return "missing_catalog_flavor_question"
+                explicit_stock_question = (not negated and re.match(
+                    r"\s+con(?:\s+(?:hang|ban|banh))?\s+(?:khong|ko|k)\b", after))
+                stock_linked = any("availability" in request.intents
+                                   and any(normalize_text(name) in product_terms for name in request.product_mentions)
+                                   for request in proposal.requests)
+                if explicit_stock_question and not stock_linked:
+                    return "missing_catalog_availability_question"
     return None
 
 
@@ -724,6 +906,8 @@ def apply_turn_updates(message: str, draft: dict, proposal, product_ids: list[st
                 changed = True
                 continue
             updated.pop("pending_pickup_date", None)
+        if field in {"name", "phone"}:
+            value = normalize_contact_value(field, value)
         if updated["slots"][field] != value:
             updated = update_slot(updated, field, value, now)
             changed = True

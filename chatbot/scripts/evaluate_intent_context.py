@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 from time import perf_counter
+from unittest.mock import patch
 
 from app import config, llm_client
 from app.conversation import handle_message, new_conversation
@@ -19,7 +20,7 @@ from app.storage import open_storage, utc_now
 from app.text_utils import normalize_text
 from scripts.database import seed_database
 from pydantic import ValidationError
-from app.schemas import OrderItemSelection
+from app.schemas import OrderItemSelection, QueryConstraints
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -37,9 +38,16 @@ def load_dataset(split):
 
 
 def request_signature(item):
-    """Tên có/không tiền tố bánh vẫn cùng mention, không đo accuracy bằng dấu."""
-    names = [re.sub(r"^(?:banh\s+)?(?:kem\s+)?", "", normalize_text(x)) for x in item["product_mentions"]]
-    return (tuple(sorted(item["intents"])), tuple(sorted(names)), item.get("reference", "none"), normalize_text(item.get("size") or ""))
+    """Đối chiếu đối tượng, điều kiện từng câu hỏi và các bánh bị loại trừ."""
+    def names(values):
+        return tuple(sorted(re.sub(r"^(?:banh\s+)?(?:kem\s+)?", "", normalize_text(value))
+                            for value in values))
+    constraints = QueryConstraints.model_validate(item.get("filters") or {}).model_dump(exclude_none=True)
+    return (tuple(sorted(item["intents"])), names(item["product_mentions"]),
+            item.get("reference", "none"), normalize_text(item.get("size") or ""),
+            json.dumps(constraints, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+            names(item.get("excluded_product_mentions", [])), item.get("price_preference", "none"),
+            item.get("search_scope", "refine"))
 
 
 def order_item_signature(items):
@@ -52,7 +60,7 @@ def order_item_signature(items):
         return None
 
 
-def score_turn(item, result, proposal, previous_draft, order_count):
+def score_turn(item, result, proposal, previous_draft, order_count, previous_products=()):
     """Chấm sau inference: tách extraction với hành vi/đơn, không sửa output."""
     label, expected = item["label"], item["expected"]
     proposal = proposal or {}
@@ -65,8 +73,13 @@ def score_turn(item, result, proposal, previous_draft, order_count):
         "updates_exact": proposal.get("updates", {}) == label["updates"],
         "clear_slots_exact": set(proposal.get("clear_slots", [])) == set(label["clear_slots"]),
     }
-    if label.get("requests"):
-        extraction["request_links_exact"] = sorted(request_signature(x) for x in proposal.get("requests", [])) == sorted(request_signature(x) for x in label["requests"])
+    if "requests_overflow" in label:
+        extraction["requests_overflow_exact"] = proposal.get("requests_overflow", False) == label["requests_overflow"]
+    if "requests" in label:
+        try:
+            extraction["request_links_exact"] = sorted(request_signature(x) for x in proposal.get("requests", [])) == sorted(request_signature(x) for x in label["requests"])
+        except (ValidationError, KeyError, TypeError, ValueError):
+            extraction["request_links_exact"] = False
     if "order_negated" in label:
         extraction["order_negated_exact"] = proposal.get("order_negated", False) == label["order_negated"]
     if "continuation" in label:
@@ -77,9 +90,85 @@ def score_turn(item, result, proposal, previous_draft, order_count):
         actual_items = order_item_signature(proposal.get("order_items", []))
         extraction["order_items_exact"] = (actual_items is not None
             and actual_items == order_item_signature(label["order_items"]))
-    behavior = {}
+    # Bộ nhãn hiện tại đều là lượt hợp lệ; giữ draft khi model lỗi không phải xử lý thành công.
+    behavior = {"processing_ok": result.get("engine") not in {"llm_error", "source_error"}
+                and not response.get("error") and not result.get("llm_error")}
     if "product_ids" in expected:
         behavior["query_products_exact"] = set(p["id"] for p in response["products"]) == set(expected["product_ids"])
+    if "recommendation_pool" in expected:
+        identifiers = [p["id"] for p in response["products"]]
+        behavior["recommendation_pool"] = (len(identifiers) == len(set(identifiers))
+            and set(identifiers).issubset(expected["recommendation_pool"]))
+        behavior["recommendation_count"] = len(identifiers) == expected["recommendation_count"]
+    if "distinct_groups_min" in expected:
+        behavior["diverse_groups"] = len({p.get("product_type") for p in response["products"]}) >= expected["distinct_groups_min"]
+    if expected.get("exclude_previous_products"):
+        behavior["new_choices"] = not set(previous_products).intersection(p["id"] for p in response["products"])
+    if "filters_include" in expected:
+        actual_filters = result["conversation"]["needs"]["filters"]
+        behavior["filters_include"] = all(actual_filters.get(k) == v for k, v in expected["filters_include"].items())
+    if "filters_any" in expected:
+        actual_filters = result["conversation"]["needs"]["filters"]
+        behavior["equivalent_filters"] = any(
+            all(actual_filters.get(k) == v for k, v in option.items()) for option in expected["filters_any"])
+    if "filters_absent" in expected:
+        behavior["filters_absent"] = not set(expected["filters_absent"]).intersection(result["conversation"]["needs"]["filters"])
+    if "nlu_attempts" in expected:
+        behavior["nlu_attempts"] = result["nlu_attempts"] == expected["nlu_attempts"]
+    if "quick_replies" in expected:
+        behavior["quick_replies"] = response.get("quick_replies", []) == expected["quick_replies"]
+    if "advice_pending" in expected:
+        behavior["advice_pending"] = (result["conversation"].get("advice_pending") or {}).get("field") == expected["advice_pending"]
+    if "advice_modes" in expected:
+        extraction["advice_modes"] = [r.get("advice", "none") for r in proposal.get("requests", [])] == expected["advice_modes"]
+    if expected.get("no_product_codes"):
+        behavior["no_product_codes"] = not bool(re.search(r"SP[0-9]{4}", response["text"]))
+    if "variant_ids" in expected:
+        variants = [variant["id"] for product in response["products"] for variant in product["variants"]]
+        behavior["query_variants_exact"] = sorted(variants) == sorted(expected["variant_ids"])
+    if "filters" in expected:
+        behavior["filters_exact"] = result["conversation"]["needs"]["filters"] == expected["filters"]
+    pending = result["conversation"].get("pending_order_request") or {}
+    if "pending_quantity" in expected:
+        behavior["pending_quantity"] = pending.get("quantity") == expected["pending_quantity"]
+    if "pending_candidate_ids" in expected:
+        behavior["pending_candidates"] = sorted(candidate["id"] for candidate in pending.get("candidates", [])) == sorted(expected["pending_candidate_ids"])
+    if "request_scopes" in expected:
+        # Chấm liên kết từng ý với đúng sản phẩm/bộ lọc, không chỉ đủ ID toàn lượt.
+        from app.repositories.mock_catalog import canonical_flavors
+        actual_scopes = list((result["conversation"].get("current_request") or {}).get("requests", []))
+        def matches_scope(actual, wanted):
+            if set(actual["intents"]) != set(wanted["intents"]):
+                return False
+            if "product_ids" in wanted and set(actual["product_ids"]) != set(wanted["product_ids"]):
+                return False
+            for key, value in wanted.get("filters", {}).items():
+                found = actual["filters"].get(key)
+                if key == "flavor":
+                    if canonical_flavors(found) != canonical_flavors(value):
+                        return False
+                elif found != value:
+                    return False
+            ids = actual.get("result_product_ids", [])
+            if "result_ids" in wanted and set(ids) != set(wanted["result_ids"]):
+                return False
+            if "result_pool" in wanted and (
+                    len(ids) != wanted["result_count"] or len(ids) != len(set(ids))
+                    or not set(ids).issubset(wanted["result_pool"])):
+                return False
+            return wanted.get("status", actual.get("status")) == actual.get("status")
+        scoped_ok = len(actual_scopes) == len(expected["request_scopes"])
+        for wanted in expected["request_scopes"]:
+            matched = next((index for index, actual in enumerate(actual_scopes)
+                            if matches_scope(actual, wanted)), None)
+            if matched is None:
+                scoped_ok = False
+                break
+            actual_scopes.pop(matched)
+        behavior["request_scopes"] = scoped_ok and not actual_scopes
+    if "remembered_questions" in expected:
+        memory = result["conversation"].get("request_memory", [])
+        behavior["remembered_questions"] = bool(memory) and len(memory[-1]["questions"]) == expected["remembered_questions"]
     if "order_product_id" in expected:
         behavior["draft_target"] = draft["slots"]["product_id"] == expected["order_product_id"]
     if expected.get("draft_unchanged"):
@@ -147,7 +236,7 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
         "limit": limit, "scope": "Intent/context/order behavior; knowledge empty, no RAG generation score",
         "database": ":memory:", "completed": False, "steps": [],
         "code_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
-            ["app/schemas.py", "app/llm_client.py", "app/conversation.py", "app/order_nlu.py", "data/nlu_few_shots.json"]}}
+            ["app/schemas.py", "app/llm_client.py", "app/conversation.py", "app/order_nlu.py", "data/nlu_few_shots.json", "scripts/evaluate_intent_context.py"]}}
     target = None
     if output is not None:
         target = Path(output)
@@ -186,7 +275,7 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
                     repository = LocalCatalogRepository(":memory:").using_connection(connection)
                 elif mode == "group_files":
                     from app.repositories.group_catalog import GroupCatalogRepository
-                    repository = GroupCatalogRepository(config.GROUP_CATALOG_PATH)
+                    repository = GroupCatalogRepository(config.GROUP_CATALOG_PATH, database_path=":memory:")
                 elif mode in {"empty", "mock"}:
                     repository = {"empty": EmptyCatalogRepository, "mock": MockCatalogRepository}[mode]()
                 else:
@@ -208,23 +297,31 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
                         # Đây là injection nhãn để kiểm tra controller, không phải inference.
                         gold = LLMTurn.model_validate(item["label"])
                         def fake_extract(*args, **kwargs):
+                            if "wire_output" in item:
+                                # JSON giả đi qua chính parser/validation/retry của client.
+                                # Nhánh ollama không bao giờ đọc wire_output hoặc label.
+                                with patch.object(llm_client, "chat", return_value={
+                                    "ok": True, "content": json.dumps(item["wire_output"], ensure_ascii=False),
+                                    "error": None, "model": selected["model"], "http_status": 200}):
+                                    return traced_extract(*args, **kwargs)
                             trace["proposal"] = gold.model_dump(exclude_none=True)
                             return {"data": gold, "error": None, "attempts": 0}
                         llm_client.extract_turn = fake_extract
                     else:
                         llm_client.extract_turn = traced_extract
                     previous = deepcopy(current["order"])
+                    previous_products = [p["id"] for p in current.get("shown_products", [])]
                     started = perf_counter()
                     result = handle_message(item["message"], repository, current, chat_mode=chat_mode, base_url=base_url,
                         model=selected["model"], timeout=timeout, storage_connection=connection,
                         order_tools=create_order_tools(repository, connection, current["id"]))
                     current = result["conversation"]
                     count = connection.execute("SELECT count(*) FROM orders WHERE conversation_id=?", (current["id"],)).fetchone()[0]
-                    score = score_turn(item, result, trace.get("proposal"), previous, count)
+                    score = score_turn(item, result, trace.get("proposal"), previous, count, previous_products)
                     row = {"id": item["id"], "dialogue_id": dialogue["id"], "mode": mode,
                         "label": item["label"], "proposal": trace.get("proposal"), "score": score,
                         "engine": result["engine"], "error": result["llm_error"],
-                        "seconds": round(perf_counter() - started, 2)}
+                        "seconds": round(perf_counter() - started, 2), "nlu_attempts": result["nlu_attempts"]}
                     report["steps"].append(row)
                     print(item["id"], "logic" if engine == "fake" else engine,
                         "NLU", score["extraction_pass"], "behavior", score["behavior_pass"],

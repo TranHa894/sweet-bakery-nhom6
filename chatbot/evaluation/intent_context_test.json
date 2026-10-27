@@ -1,8 +1,8 @@
 {
-  "version": "intent-context-v12",
-  "annotation_revision": 3,
+  "version": "intent-context-v35-cake-choice",
+  "annotation_revision": 32,
   "split": "test",
-  "sample_count": 33,
+  "sample_count": 56,
   "source": "manually_labelled_synthetic",
   "is_mock": true,
   "scope": "Qwen NLU and controller, not overall/production evaluation",
@@ -1154,6 +1154,1740 @@
           },
           "id": "test-033",
           "turn_index": 7
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_1",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-034",
+          "message": "Bạn tư vấn giúp tôi nên thử loại nào với",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {},
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [],
+            "advice_pending": "product_type",
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_2",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-035",
+          "message": "Tôi thích bánh kem, tư vấn giúp",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [],
+            "advice_pending": "sweetness",
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_3",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-036",
+          "message": "Tìm bánh kem trái cây, ít ngọt, tối đa 360 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 360000,
+                  "price_inclusive": true,
+                  "product_type": "cream_cake",
+                  "sweetness": "low",
+                  "taste_family": "fruit"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0024"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_4",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-037",
+          "message": "Tư vấn một loại trà ngọt đậm",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "high"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0019"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_5",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-038",
+          "message": "Trà trái cây ít ngọt, tầm 30k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 30000,
+                  "price_inclusive": true,
+                  "product_type": "tea",
+                  "sweetness": "low",
+                  "taste_family": "fruit_tea"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0020"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_6",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-039",
+          "message": "Cà phê vị đậm đắng, trong 50 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 50000,
+                  "price_inclusive": true,
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0022"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_7",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-040",
+          "message": "Tôi thích cà phê dịu và mát",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "mild"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0025"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_8",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-041",
+          "message": "Tư vấn cà phê dễ uống, béo nhẹ",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "creamy"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0023"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_9",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-042",
+          "message": "Bánh nhỏ vị matcha, chưa tới 40k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 40000,
+                  "price_inclusive": false,
+                  "product_type": "mini",
+                  "taste_family": "matcha"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0014"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_10",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-043",
+          "message": "Bánh nhỏ vani không quá 35000",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 35000,
+                  "price_inclusive": true,
+                  "product_type": "mini",
+                  "taste_family": "vanilla"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0015"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_11",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-044",
+          "message": "Tư vấn bánh kem chocolate ngọt nhiều",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "high",
+                  "taste_family": "chocolate"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0012"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_holdout_12",
+      "mode": "group_files",
+      "tags": [
+        "guided_advice",
+        "preference_memory",
+        "v51"
+      ],
+      "turns": [
+        {
+          "id": "test-045",
+          "message": "Bánh nhỏ vị cà phê và kem, dưới 40 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 40000,
+                  "price_inclusive": false,
+                  "product_type": "mini",
+                  "taste_family": "coffee_cream"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [
+              "SP0018"
+            ],
+            "advice_modes": [
+              "guided"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_mixed_budget_holdout_1",
+      "mode": "group_files",
+      "tags": [
+        "multi_budget",
+        "v52"
+      ],
+      "turns": [
+        {
+          "id": "test-046",
+          "message": "Trong tầm chưa tới 400 nghìn tôi muốn bánh kem và cà phê thì hơn 40 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "Trong tầm chưa tới 400 nghìn tôi muốn bánh kem",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 400000,
+                  "price_inclusive": false,
+                  "product_type": "cream_cake"
+                },
+                "excluded_product_mentions": []
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "cà phê thì hơn 40 nghìn",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "min_budget_vnd": 40000,
+                  "min_price_inclusive": false,
+                  "product_type": "coffee"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "remembered_questions": 2,
+            "recommendation_pool": [
+              "SP0001",
+              "SP0024",
+              "SP0005",
+              "SP0007",
+              "SP0008",
+              "SP0009",
+              "SP0012",
+              "SP0003",
+              "SP0006",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 7,
+            "request_scopes": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "cream_cake",
+                  "max_price_vnd": 400000,
+                  "price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0001",
+                  "SP0024",
+                  "SP0005",
+                  "SP0007",
+                  "SP0008",
+                  "SP0009",
+                  "SP0012",
+                  "SP0003",
+                  "SP0006"
+                ],
+                "result_count": 4
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "coffee",
+                  "min_price_vnd": 40000,
+                  "min_price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0022",
+                  "SP0023",
+                  "SP0025"
+                ],
+                "result_count": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_mixed_budget_holdout_2",
+      "mode": "group_files",
+      "tags": [
+        "multi_budget",
+        "v52"
+      ],
+      "turns": [
+        {
+          "id": "test-047",
+          "message": "Lọc giúp bánh kem thấp hơn 400000đ và cà phê giá cao hơn 40000đ",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "Lọc giúp bánh kem thấp hơn 400000đ",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 400000,
+                  "price_inclusive": false,
+                  "product_type": "cream_cake"
+                },
+                "excluded_product_mentions": []
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "cà phê giá cao hơn 40000đ",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "min_budget_vnd": 40000,
+                  "min_price_inclusive": false,
+                  "product_type": "coffee"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "remembered_questions": 2,
+            "recommendation_pool": [
+              "SP0001",
+              "SP0024",
+              "SP0005",
+              "SP0007",
+              "SP0008",
+              "SP0009",
+              "SP0012",
+              "SP0003",
+              "SP0006",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 7,
+            "request_scopes": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "cream_cake",
+                  "max_price_vnd": 400000,
+                  "price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0001",
+                  "SP0024",
+                  "SP0005",
+                  "SP0007",
+                  "SP0008",
+                  "SP0009",
+                  "SP0012",
+                  "SP0003",
+                  "SP0006"
+                ],
+                "result_count": 4
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "coffee",
+                  "min_price_vnd": 40000,
+                  "min_price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0022",
+                  "SP0023",
+                  "SP0025"
+                ],
+                "result_count": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_mixed_budget_holdout_3",
+      "mode": "group_files",
+      "tags": [
+        "multi_budget",
+        "v52"
+      ],
+      "turns": [
+        {
+          "id": "test-048",
+          "message": "Tôi cần bánh kem không quá 390k và cà phê ít nhất 45k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "Tôi cần bánh kem không quá 390k",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 390000,
+                  "price_inclusive": true,
+                  "product_type": "cream_cake"
+                },
+                "excluded_product_mentions": []
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "cà phê ít nhất 45k",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "min_budget_vnd": 45000,
+                  "min_price_inclusive": true,
+                  "product_type": "coffee"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "remembered_questions": 2,
+            "recommendation_pool": [
+              "SP0001",
+              "SP0024",
+              "SP0005",
+              "SP0007",
+              "SP0008",
+              "SP0009",
+              "SP0012",
+              "SP0003",
+              "SP0006",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 7,
+            "request_scopes": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "cream_cake",
+                  "max_price_vnd": 390000,
+                  "price_inclusive": true
+                },
+                "result_pool": [
+                  "SP0001",
+                  "SP0024",
+                  "SP0005",
+                  "SP0007",
+                  "SP0008",
+                  "SP0009",
+                  "SP0012",
+                  "SP0003",
+                  "SP0006"
+                ],
+                "result_count": 4
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "coffee",
+                  "min_price_vnd": 45000,
+                  "min_price_inclusive": true
+                },
+                "result_pool": [
+                  "SP0022",
+                  "SP0023",
+                  "SP0025"
+                ],
+                "result_count": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_mixed_budget_holdout_4",
+      "mode": "group_files",
+      "tags": [
+        "multi_budget",
+        "v52"
+      ],
+      "turns": [
+        {
+          "id": "test-049",
+          "message": "Bánh nhỏ dưới 36 nghìn và trà trên 24 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "Bánh nhỏ dưới 36 nghìn",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 36000,
+                  "price_inclusive": false,
+                  "product_type": "mini"
+                },
+                "excluded_product_mentions": []
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "question": "trà trên 24 nghìn",
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "none",
+                "search_scope": "new",
+                "filters": {
+                  "min_budget_vnd": 24000,
+                  "min_price_inclusive": false,
+                  "product_type": "tea"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "remembered_questions": 2,
+            "recommendation_pool": [
+              "SP0013",
+              "SP0014",
+              "SP0015",
+              "SP0016",
+              "SP0017",
+              "SP0018",
+              "SP0019",
+              "SP0020",
+              "SP0021"
+            ],
+            "recommendation_count": 7,
+            "request_scopes": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "mini",
+                  "max_price_vnd": 36000,
+                  "price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0013",
+                  "SP0014",
+                  "SP0015",
+                  "SP0016",
+                  "SP0017",
+                  "SP0018"
+                ],
+                "result_count": 4
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "filters": {
+                  "product_type": "tea",
+                  "min_price_vnd": 24000,
+                  "min_price_inclusive": false
+                },
+                "result_pool": [
+                  "SP0019",
+                  "SP0020",
+                  "SP0021"
+                ],
+                "result_count": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_restart_context_1",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "test-050",
+          "message": "Gợi ý bánh kem ngọt vừa vị kem sữa dưới 400k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 400000,
+                  "price_inclusive": false,
+                  "product_type": "cream_cake",
+                  "sweetness": "medium",
+                  "taste_family": "cream"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "recommendation_pool": [
+              "SP0005",
+              "SP0007",
+              "SP0008",
+              "SP0009"
+            ],
+            "recommendation_count": 3
+          }
+        },
+        {
+          "id": "test-051",
+          "message": "Gợi ý các sản phẩm cho mình với",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {},
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [],
+            "filters": {},
+            "advice_pending": "product_type",
+            "quick_replies": [
+              "Bánh kem",
+              "Trà",
+              "Cà phê",
+              "Bánh nhỏ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_advice_restart_context_2",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "test-052",
+          "message": "Gợi ý bánh kem ngọt vừa vị kem sữa dưới 400k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "budget_vnd": 400000,
+                  "price_inclusive": false,
+                  "product_type": "cream_cake",
+                  "sweetness": "medium",
+                  "taste_family": "cream"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "recommendation_pool": [
+              "SP0005",
+              "SP0007",
+              "SP0008",
+              "SP0009"
+            ],
+            "recommendation_count": 3
+          }
+        },
+        {
+          "id": "test-053",
+          "message": "Tư vấn cho tôi sản phẩm nói chung",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {},
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0,
+            "draft_unchanged": true,
+            "no_product_codes": true,
+            "product_ids": [],
+            "filters": {},
+            "advice_pending": "product_type",
+            "quick_replies": [
+              "Bánh kem",
+              "Trà",
+              "Cà phê",
+              "Bánh nhỏ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_broad_cake_choice_1",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "test-054",
+          "message": "Mình muốn được tư vấn các loại bánh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cake"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "product_ids": [],
+            "filters": {
+              "product_type": "cake"
+            },
+            "quick_replies": [
+              "Bánh kem",
+              "Bánh nhỏ"
+            ],
+            "advice_pending": "product_type"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_broad_cake_choice_2",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "test-055",
+          "message": "Bạn gợi ý vài bánh giúp tôi nhé",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cake"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "product_ids": [],
+            "filters": {
+              "product_type": "cake"
+            },
+            "quick_replies": [
+              "Bánh kem",
+              "Bánh nhỏ"
+            ],
+            "advice_pending": "product_type"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_broad_cake_choice_3",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "test-056",
+          "message": "goi y giup minh may loai banh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "continuation": "none",
+            "action": "none",
+            "order_operation": "none",
+            "product_mentions": [],
+            "order_ambiguous": false,
+            "order_product_mentions": [],
+            "reference": "none",
+            "order_items": [],
+            "response_opening": "",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "order_negated": false,
+            "order_update": false,
+            "requests_overflow": false,
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "ambiguous": false,
+                "product_mentions": [],
+                "reference": "none",
+                "price_preference": "none",
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cake"
+                },
+                "excluded_product_mentions": []
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "product_ids": [],
+            "filters": {
+              "product_type": "cake"
+            },
+            "quick_replies": [
+              "Bánh kem",
+              "Bánh nhỏ"
+            ],
+            "advice_pending": "product_type"
+          }
         }
       ]
     }

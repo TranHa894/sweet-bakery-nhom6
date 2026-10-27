@@ -45,6 +45,9 @@ a:focus-visible, button:focus-visible, textarea:focus-visible { outline: 3px sol
 .message { margin-bottom: 20px; }
 .sender { margin-bottom: 5px; color: var(--muted); font-size: 11px; }
 .bubble { width: fit-content; max-width: 90%; padding: 12px 15px; background: #f3f6ef; border-radius: 4px 12px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pending .bubble { color: var(--muted); background: #f8faf5; }
+.waiting-elapsed { display: block; font-size: 11px; }
+.waiting-elapsed:empty { display: none; }
 .user { display: flex; flex-direction: column; align-items: flex-end; }
 .user .bubble { background: var(--primary); color: white; border-radius: 12px 4px 12px 12px; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 10px; margin-top: 12px; max-width: 680px; }
@@ -90,3 +93,72 @@ textarea::placeholder { color: #7d877e; }
   .composer { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
 }
 @media (pointer: coarse) { .input-hint > span:first-child { display: none; } }
+
+/* Chế độ nhúng dùng cùng UI và service với trang chat độc lập. */
+html.embedded, html.embedded body { height: 100%; overflow: hidden; }
+.embedded .site-header { display: none; }
+.embedded .workspace { width: 100%; height: 100%; margin: 0; }
+.embedded .chat-panel { height: 100%; min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+.embedded .chat-header { padding: 9px 14px; }
+.embedded .chat-header h1 { display: none; }
+.embedded #connection-status { margin: 0; }
+.embedded .chat-header .button { padding: 6px 9px; font-size: 11px; }
+.embedded .mode-line { padding: 8px 14px; gap: 5px 8px; }
+.embedded .messages { padding: 16px 14px; }
+.embedded .welcome { margin: 22px auto; }
+.embedded .welcome h2 { font-size: 24px; }
+.embedded .product-grid { grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr)); }
+.embedded .bubble { max-width: 96%; }
+.embedded .review-panel { padding: 10px 14px; }
+.embedded .error { margin-inline: 14px; }
+.embedded .composer { padding: 10px 14px max(10px, env(safe-area-inset-bottom)); }
+.embedded .input-hint > span:first-child { display: none; }
+.history-note { color: var(--muted); font-size: 11px; text-align: center; }
+
+/* Ảnh menu có sẵn, không kéo giãn khung widget. */
+.product-image { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; display: block; margin-bottom: 10px; }
+.reply-actions { margin-top: 10px; flex-wrap: wrap; }
+
+
+/* Form nằm trong vùng chat cuộn, dùng chiều rộng iframe thay vì màn hình ngoài. */
+#messages .review-panel { width: 100%; max-width: 880px; margin: 16px auto;
+  border: 1px solid var(--line); border-radius: 10px; padding: clamp(12px, 2vw, 24px); }
+.review-panel h2 { margin: 0 0 14px; font-size: 19px; }
+.checkout-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+.checkout-wide { grid-column: 1 / -1; }
+.checkout-form label { display: grid; gap: 6px; min-width: 0; font-size: 13px; }
+.checkout-form input, .checkout-form select, .checkout-form textarea {
+  box-sizing: border-box; width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line);
+  border-radius: 6px; background: white; color: var(--ink); font: inherit; }
+.checkout-form textarea { min-height: 72px; }
+.checkout-item { display: grid; grid-template-columns: minmax(0, 1fr) 86px auto;
+  gap: 8px; margin-bottom: 12px; align-items: end; }
+.checkout-consent { display: flex !important; align-items: flex-start; margin: 14px 0; }
+.checkout-consent input { width: 18px; flex: 0 0 18px; margin-top: 3px; }
+.checkout-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.checkout-line > strong:first-child { grid-column: 1 / -1; }
+.review-panel .checkout-total { color: var(--ink); font-size: 16px; font-weight: 700; margin-top: 12px; }
+.checkout-details { display: grid; grid-template-columns: minmax(100px, .6fr) minmax(0, 1fr);
+  gap: 7px 14px; font-size: 13px; overflow-wrap: anywhere; }
+.checkout-details dt { color: var(--muted); }
+.checkout-details dd { margin: 0; white-space: pre-wrap; }
+@media (max-width: 540px) {
+  .checkout-grid { grid-template-columns: minmax(0, 1fr); }
+  .checkout-item { grid-template-columns: minmax(0, 1fr) 76px; }
+  .checkout-item > button { grid-column: 1 / -1; justify-self: end; }
+  .checkout-details { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .checkout-details dd { margin-bottom: 8px; }
+  .review-actions .button { white-space: normal; }
+}
+
+
+.checkout-thumbnail { display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 48px; width: 48px; height: 48px; overflow: hidden; border-radius: 6px;
+  background: #e6eee2; color: var(--muted); font-size: 10px; }
+.checkout-thumbnail img { display: block; width: 48px; height: 48px; object-fit: cover; }
+.checkout-product { display: flex; align-items: flex-end; gap: 8px; min-width: 0; }
+.checkout-product > label { flex: 1; min-width: 0; }
+.checkout-product-heading { display: flex; align-items: center; gap: 10px;
+  min-width: 0; grid-column: 1 / -1; }
+.checkout-product-heading > strong { min-width: 0; overflow-wrap: anywhere; }

@@ -56,12 +56,22 @@ CATALOG_MODE = DATA_SOURCE
 ORDER_PROVIDER = os.getenv("ORDER_PROVIDER", "local_demo").strip().lower()
 TIMEZONE = os.getenv("TIMEZONE", "Asia/Ho_Chi_Minh").strip()
 CHAT_MODE = os.getenv("CHAT_MODE", "ollama").strip().lower()
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").strip()
+# Windows máy hiện tại: localhost mất ~2 giây/lần; IPv4 loopback đã đối chiếu cùng Ollama.
+if OLLAMA_BASE_URL.rstrip("/") == "http://localhost:11434":
+    OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "").strip()
 OLLAMA_TIMEOUT_SECONDS = float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "60"))
+try:
+    OLLAMA_KEEP_ALIVE_SECONDS = int(os.getenv("OLLAMA_KEEP_ALIVE_SECONDS", "900"))
+except ValueError:
+    raise ValueError("OLLAMA_KEEP_ALIVE_SECONDS phải là số nguyên từ 0 đến 1800.") from None
+if not 0 <= OLLAMA_KEEP_ALIVE_SECONDS <= 1800:
+    raise ValueError("OLLAMA_KEEP_ALIVE_SECONDS phải từ 0 đến 1800; 0 giải phóng model sau mỗi lượt.")
+
 
 def get_llm_settings(chat_mode=None):
-    """Endpoint/model/timeout local dùng chung CLI, API và script."""
+    """Endpoint/model/timeout local dùng chung API web và script kiểm tra."""
     return OLLAMA_BASE_URL, OLLAMA_MODEL, OLLAMA_TIMEOUT_SECONDS
 
 

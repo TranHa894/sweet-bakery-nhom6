@@ -4,14 +4,53 @@ from typing import Callable, Literal, TypedDict, NotRequired, Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+MAX_INFORMATION_REQUESTS = 4
+INFORMATION_INTENTS = frozenset({
+    "price", "size", "flavor", "availability", "recommendation", "policy",
+    "allergen", "topping", "storage", "description",
+})
+
 QueryStatus = Literal["unconfigured", "no_results", "success", "error"]
 StockStatus = Literal["in_stock", "out_of_stock", "preorder", "unknown"]
+ProductType = Literal["cake", "drink", "cream_cake", "mini", "tea", "coffee"]
 Intent = Literal[
     "greeting", "price", "size", "flavor", "availability",
     "recommendation", "policy", "order_request", "fallback",
     "allergen", "topping", "storage", "description",
     "acknowledgement", "out_of_scope", "handoff", "complaint",
 ]
+
+
+def validate_budget_range(lower, upper, lower_inclusive, upper_inclusive) -> None:
+    """Hai cận phải tạo khoảng giá có thể thỏa; None là cận chưa được nêu."""
+    if lower is None or upper is None:
+        return
+    if lower > upper or (lower == upper and (lower_inclusive is False or upper_inclusive is False)):
+        raise ValueError("Khoảng ngân sách không hợp lệ: cận dưới phải nhỏ hơn cận trên, hoặc hai cận bằng nhau và đều bao gồm biên.")
+
+
+def normalize_advice_values(value):
+    """Chuẩn hóa nhãn vị từ JSON của model, không đọc/phân loại tin nhắn khách."""
+    from app.text_utils import normalize_text
+    if not isinstance(value, dict) or not isinstance(value.get("flavor"), str):
+        return value
+    aliases = {
+        "fruit": ("taste_family", "fruit"), "milk_tea": ("taste_family", "milk_tea"),
+        "fruit_tea": ("taste_family", "fruit_tea"), "coffee_cream": ("taste_family", "coffee_cream"),
+        "trai cay": ("taste_family", "fruit"), "tra sua": ("taste_family", "milk_tea"),
+        "tra trai cay": ("taste_family", "fruit_tea"),
+        "kem vani trang tri": ("taste_family", "cream"),
+        "ca phe kem": ("taste_family", "coffee_cream"), "ca phe va kem": ("taste_family", "coffee_cream"),
+        "it ngot": ("sweetness", "low"), "ngot vua": ("sweetness", "medium"), "ngot nhieu": ("sweetness", "high"),
+    }
+    normalized = normalize_text(value["flavor"]).replace(",", " ").replace(".", " ")
+    pair = aliases.get(" ".join(normalized.split()))
+    if pair:
+        field, chosen = pair
+        if value.get(field) not in {None, chosen}:
+            raise ValueError("Conflicting advice filters.")
+        value = {**value, field: chosen, "flavor": None}
+    return value
 
 
 class TurnUpdates(BaseModel):
@@ -30,14 +69,30 @@ class TurnUpdates(BaseModel):
     address: str | None = Field(default=None, max_length=300)
     budget_vnd: int | None = Field(default=None, ge=0)
     price_inclusive: bool | None = None
+    min_budget_vnd: int | None = Field(default=None, ge=0)
+    min_price_inclusive: bool | None = None
+    product_type: ProductType | None = None
     flavor: str | None = Field(default=None, max_length=100)
+    sweetness: Literal["high", "medium", "low"] | None = None
+    taste_family: Literal["fruit", "chocolate", "cream", "milk_tea", "fruit_tea", "matcha", "vanilla", "coffee_cream"] | None = None
+    coffee_style: Literal["strong", "creamy", "mild"] | None = None
     servings: int | None = Field(default=None, ge=1)
     occasion: str | None = Field(default=None, max_length=100)
     allergens: list[str] | None = Field(default=None, max_length=10)
     available_only: bool | None = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_advice(cls, value):
+        return normalize_advice_values(value)
 
-SlotName = Literal["product", "cake_need", "size", "quantity", "toppings", "cake_text", "pickup_at", "fulfillment", "name", "phone", "address", "budget_vnd", "flavor", "servings", "occasion", "allergens"]
+    @model_validator(mode="after")
+    def valid_budget_range(self):
+        validate_budget_range(self.min_budget_vnd, self.budget_vnd, self.min_price_inclusive, self.price_inclusive)
+        return self
+
+
+SlotName = Literal["product", "cake_need", "size", "quantity", "toppings", "cake_text", "pickup_at", "fulfillment", "name", "phone", "address", "budget_vnd", "min_budget_vnd", "product_type", "flavor", "servings", "occasion", "allergens"]
 
 Reference = Literal["none", "last", "first", "second", "cheaper", "order", "both", "all"]
 
@@ -66,12 +121,28 @@ class QueryConstraints(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
     budget_vnd: int | None = Field(default=None, ge=0)
     price_inclusive: bool | None = None
+    min_budget_vnd: int | None = Field(default=None, ge=0)
+    min_price_inclusive: bool | None = None
+    product_type: ProductType | None = None
     flavor: str | None = Field(default=None, max_length=100)
+    sweetness: Literal["high", "medium", "low"] | None = None
+    taste_family: Literal["fruit", "chocolate", "cream", "milk_tea", "fruit_tea", "matcha", "vanilla", "coffee_cream"] | None = None
+    coffee_style: Literal["strong", "creamy", "mild"] | None = None
     servings: int | None = Field(default=None, ge=1)
     occasion: str | None = Field(default=None, max_length=100)
     allergens: list[str] | None = Field(default=None, max_length=10,
         description="Customer's explicit AVOIDANCE constraints, not ingredients merely asked about. None when unmentioned.")
     available_only: bool | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_advice(cls, value):
+        return normalize_advice_values(value)
+
+    @model_validator(mode="after")
+    def valid_budget_range(self):
+        validate_budget_range(self.min_budget_vnd, self.budget_vnd, self.min_price_inclusive, self.price_inclusive)
+        return self
 
 
 class InformationRequest(BaseModel):
@@ -80,13 +151,35 @@ class InformationRequest(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
     intents: list[Literal["price", "size", "flavor", "availability", "recommendation", "policy", "allergen", "topping", "storage", "description"]] = Field(min_length=1, max_length=10)
     question: str | None = Field(default=None, min_length=1, max_length=2000,
-        description="Exact current-message clause for this question, especially policy; never include an order clause.")
+        description="Current-message clause (literal or known spelling alias), especially policy; never add a topic or order clause.")
     ambiguous: bool = Field(default=False, description="ONLY this request has an unclear target or attribute link.")
     product_mentions: list[str] = Field(max_length=10)
     reference: Reference = "none"
+    price_preference: Literal["none", "lowest", "highest", "cheaper_than", "more_expensive_than"] = "none"
+    advice: Literal["none", "guided", "any", "more"] = "none"
+    search_scope: Literal["refine", "new"] = "refine"
     size: str | None = Field(default=None, max_length=100)
     filters: QueryConstraints = Field(default_factory=QueryConstraints)
     excluded_product_mentions: list[str] = Field(default_factory=list, max_length=10)
+
+    @model_validator(mode="after")
+    def valid_price_preference(self):
+        if self.advice != "none" and ("recommendation" not in self.intents or self.reference != "none" or self.product_mentions):
+            raise ValueError("Advice is a catalog search, not a product reference or order action.")
+        if self.search_scope == "new":
+            if "recommendation" not in self.intents:
+                raise ValueError("New search scope needs recommendation intent.")
+            if self.reference != "none" or self.price_preference in {"cheaper_than", "more_expensive_than"}:
+                raise ValueError("New search scope cannot reuse an old product reference or price anchor; use refine.")
+        if "recommendation" not in self.intents and any(
+                getattr(self.filters, field) is not None
+                for field in ("product_type", "flavor", "budget_vnd", "min_budget_vnd")):
+            raise ValueError("Search filters need recommendation intent. Named information must omit category/flavor/budget inferred from product names; do not add recommendation to bypass this.")
+        if self.price_preference != "none" and "recommendation" not in self.intents:
+            raise ValueError("Price preference needs recommendation intent.")
+        if self.price_preference in {"cheaper_than", "more_expensive_than"} and self.reference == "cheaper":
+            raise ValueError("Use an anchor such as last/first/second for a new catalog price comparison.")
+        return self
 
 
 class LLMTurn(BaseModel):
@@ -111,16 +204,22 @@ class LLMTurn(BaseModel):
     response_opening: Literal["", "Mình kiểm tra thông tin cho bạn nhé.",
         "Mình đã ghi nhận nhu cầu này.", "Mình chưa đủ thông tin để kết luận."] = ""
     updates: TurnUpdates
-    clear_slots: list[SlotName] = Field(max_length=17)
+    clear_slots: list[SlotName] = Field(max_length=20)
     ambiguous: bool
     handoff_reason: Literal["none", "customer_requested", "severe_allergy", "complaint", "unsupported_business"]
     order_negated: bool = Field(default=False, description="True ONLY when declining an order action, e.g. không đặt A, chỉ hỏi giá. The named cake can still be the query target. No order mutations allowed.")
     order_update: bool = Field(default=False, description="True only for an explicit order change or missing-slot answer; asking price/storage about another cake is NOT an order change.")
+    requests_overflow: bool = False
+    # Giữ đọc payload nội bộ cũ; output LLM mới được chặn ở LLMWireTurn.
     requests: list[InformationRequest] = Field(default_factory=list, max_length=16,
         description="ONLY explicitly asked information queries. [] for order-only messages, including named cakes or slot answers. Each request intent MUST be declared in top-level intents. Bind its own names/reference/size; no negated targets or order edits.")
 
     @model_validator(mode="after")
     def declared_request_intents(self):
+        if self.requests_overflow and (self.requests or self.action != "none" or
+                self.order_operation != "none" or self.order_items or self.order_update or
+                (self.updates if isinstance(self.updates, list) else self.updates.model_dump(exclude_none=True)) or self.clear_slots):
+            raise ValueError("Overflow must be neutral: no requests or order updates.")
         self.intents = list(dict.fromkeys(self.intents))
         if len(self.intents) > 1 and "fallback" in self.intents:
             self.intents.remove("fallback")
@@ -129,8 +228,14 @@ class LLMTurn(BaseModel):
             raise ValueError("negated order must not perform an order action")
         if self.order_items and "order_request" not in self.intents:
             raise ValueError("order_items needs order_request intent")
+        if self.order_items and self.order_operation not in {"select_product", "add_product", "remove_product"}:
+            raise ValueError("order_items requires explicit select_product/add_product/remove_product operation; information-only cakes must not be included.")
         if any(not set(request.intents).issubset(self.intents) for request in self.requests):
             raise ValueError("request intents must also be declared in top-level intents")
+        if len(self.requests) > 1 and any(
+                "recommendation" in request.intents and not request.question
+                for request in self.requests):
+            raise ValueError("Each recommendation in a multi-request message needs its exact current question clause, so group/flavor/budget are checked independently.")
         if self.requests:
             information_intents = {"price", "size", "flavor", "availability", "recommendation", "allergen", "topping", "storage", "description"}
             covered = {intent for request in self.requests for intent in request.intents}
@@ -150,12 +255,12 @@ class SlotChange(BaseModel):
 
 
 class TextSlotChange(SlotChange):
-    field: Literal["cake_need", "size", "cake_text", "pickup_at", "fulfillment", "name", "phone", "address", "flavor", "occasion"]
+    field: Literal["cake_need", "size", "cake_text", "pickup_at", "fulfillment", "name", "phone", "address", "flavor", "occasion", "product_type"]
     value: str
 
 
 class NumberSlotChange(SlotChange):
-    field: Literal["quantity", "budget_vnd", "servings"]
+    field: Literal["quantity", "budget_vnd", "min_budget_vnd", "servings"]
     value: int = Field(ge=0)
 
 
@@ -165,21 +270,54 @@ class ListSlotChange(SlotChange):
 
 
 class BoolSlotChange(SlotChange):
-    field: Literal["price_inclusive", "available_only"]
+    field: Literal["price_inclusive", "min_price_inclusive", "available_only"]
     value: bool
 
 
 class LLMWireTurn(LLMTurn):
-    # HTTP phải có dòng món, kể cả []; internal LLMTurn vẫn đọc nhãn/phiên cũ.
-    order_items: list[OrderItemSelection] = Field(max_length=6)
-    order_reference: Reference | None
-    order_operation: Literal["none", "select_product", "add_product", "remove_product", "update_slots"]
-    order_product_mentions: list[str] = Field(max_length=10)
-    requests: list[InformationRequest] = Field(max_length=16)
-    order_negated: bool
-    continuation: Literal["none", "information", "order", "entity"]
+    """Hỏi thông tin bỏ field rỗng; lượt đặt vẫn phải xuất đủ dữ liệu thao tác."""
+
+    action: Literal["none", "start_order", "review", "confirm", "cancel", "handoff"] = "none"
+    continuation: Literal["none", "information", "order", "entity"] = "none"
+    order_operation: Literal["none", "select_product", "add_product", "remove_product", "update_slots"] = "none"
+    product_mentions: list[str] = Field(default_factory=list, max_length=10)
+    order_reference: Reference | None = None
+    order_product_mentions: list[str] = Field(default_factory=list, max_length=10)
+    order_items: list[OrderItemSelection] = Field(default_factory=list, max_length=6)
+    reference: Reference = "none"
+    clear_slots: list[SlotName] = Field(default_factory=list, max_length=20)
+    ambiguous: bool = False
+    handoff_reason: Literal["none", "customer_requested", "severe_allergy", "complaint", "unsupported_business"] = "none"
+    requests_overflow: bool = Field(default=False,
+        description="True when more than four information request parts or intent types; neutral fallback, no order action.")
+    requests: list[InformationRequest] = Field(max_length=MAX_INFORMATION_REQUESTS)
     updates: list[Annotated[TextSlotChange | NumberSlotChange | ListSlotChange | BoolSlotChange,
-                           Field(discriminator="field")]] = Field(max_length=17)
+                           Field(discriminator="field")]] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode="before")
+    @classmethod
+    def enforce_information_limit(cls, value):
+        """Chặn theo cấu trúc do LLM khai báo, không đếm ý định bằng từ khóa."""
+        if not isinstance(value, dict):
+            return value
+        intents, requests = value.get("intents"), value.get("requests")
+        valid_intents = (isinstance(intents, list)
+            and all(isinstance(intent, str) and intent in Intent.__args__ for intent in intents))
+        overflow = ((valid_intents and len(set(intents) & INFORMATION_INTENTS) > MAX_INFORMATION_REQUESTS)
+                    or isinstance(requests, list) and len(requests) > MAX_INFORMATION_REQUESTS)
+        if overflow:
+            # Toàn lượt là trung tính, không thực hiện đơn một phần hoặc bỏ sót im lặng.
+            return {"intents": ["fallback"], "requests_overflow": True, "requests": [],
+                    "updates": [], "action": "none", "product_mentions": [], "order_items": []}
+        return value
+
+    @model_validator(mode="after")
+    def explicit_order_wire_fields(self):
+        if "order_request" in self.intents:
+            required = {"action", "product_mentions", "order_items", "updates"}
+            if not required.issubset(self.model_fields_set):
+                raise ValueError("Order output must explicitly include action, product_mentions, order_items and updates.")
+        return self
 
 
 class SourceQuote(BaseModel):
@@ -194,6 +332,22 @@ class RAGAnswer(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
     supported: bool
     quotes: list[SourceQuote] = Field(max_length=3)
+
+
+class RAGSentenceSelection(BaseModel):
+    """Wire nội bộ: model chọn số câu; Python lấy nguyên văn từ nguồn."""
+
+    model_config = ConfigDict(strict=True, extra="forbid")
+    source_id: str = Field(min_length=1, max_length=100)
+    sentence_ids: list[Annotated[int, Field(ge=1)]] = Field(min_length=1, max_length=8)
+
+
+class RAGWireAnswer(BaseModel):
+    """Giảm token sinh; không đổi RAGAnswer/citations trả cho chatbot/API."""
+
+    model_config = ConfigDict(strict=True, extra="forbid")
+    supported: bool
+    selections: list[RAGSentenceSelection] = Field(max_length=3)
 
 
 PolicyClause = TypedDict("PolicyClause", {
@@ -237,6 +391,8 @@ Variant = TypedDict("Variant", {
 Product = TypedDict("Product", {
     "id": str, "name": str, "aliases": list[str], "category": str,
     "description": str, "flavor": str | None, "variants": list[Variant],
+    "product_type": NotRequired[ProductType], "flavor_source": NotRequired[str],
+    "style_tags": NotRequired[list[str]], "advice_profile": NotRequired[dict], "image_url": NotRequired[str],
     "allergen": list[str] | None, "customization": list[str] | None,
     "min_lead_hours": int | None, "source": str, "is_mock": bool,
     "active": NotRequired[bool], "is_demo": NotRequired[bool],
@@ -245,8 +401,9 @@ Product = TypedDict("Product", {
     "topping_options": NotRequired[list[dict]],
 })
 SearchFilters = TypedDict("SearchFilters", {
-    "query": str, "product_ids": list[str], "flavor": str,
-    "max_price_vnd": int, "price_inclusive": bool, "servings": int, "size": str,
+    "query": str, "product_ids": list[str], "flavor": str, "sweetness": str, "taste_family": str, "coffee_style": str,
+    "max_price_vnd": int, "price_inclusive": bool, "min_price_vnd": int,
+    "min_price_inclusive": bool, "product_type": ProductType, "servings": int, "size": str,
     "occasion": str, "exclude_allergens": list[str], "available_only": bool, "exclude_product_ids": list[str],
 }, total=False)
 CurrentTurn = TypedDict("CurrentTurn", {
@@ -254,6 +411,8 @@ CurrentTurn = TypedDict("CurrentTurn", {
     "product_ids": list[str], "filters": SearchFilters,
     "requests": NotRequired[list[dict]], "order_product_ids": NotRequired[list[str]],
     "question": NotRequired[str], "ambiguous": NotRequired[bool],
+    "price_preference": NotRequired[str], "comparison_product_ids": NotRequired[list[str]],
+    "search_scope": NotRequired[str], "result_product_ids": NotRequired[list[str]],
     "status": NotRequired[Literal["answered", "insufficient_data", "awaiting_clarification"]],
 })
 ConversationContext = TypedDict("ConversationContext", {
@@ -331,6 +490,13 @@ def validate_product(product: Product) -> None:
         raise ValueError("is_mock phải là boolean.")
     if product["flavor"] is not None and not isinstance(product["flavor"], str):
         raise ValueError("flavor phải là chuỗi hoặc None.")
+    if product.get("product_type") not in {None, "cake", "drink", "cream_cake", "mini", "tea", "coffee"}:
+        raise ValueError("product_type không hợp lệ.")
+    if "flavor_source" in product and not isinstance(product["flavor_source"], str):
+        raise ValueError("flavor_source phải là chuỗi.")
+    if "style_tags" in product and (not isinstance(product["style_tags"], list) or
+            any(not isinstance(tag, str) or not tag.strip() for tag in product["style_tags"])):
+        raise ValueError("style_tags phải là danh sách chuỗi có nội dung.")
     for key in ("aliases", "allergen", "customization"):
         value = product[key]
         if value is None and key != "aliases":

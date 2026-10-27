@@ -1,5 +1,23 @@
 # Sweet Bakery — giao diện Nhóm 6
 
+## Khung chat tích hợp
+
+Cả 9 trang HTML nạp trực tiếp chatbot-widget.js?v=20261024-3, dùng chatbot-widget.css riêng. Widget không phụ thuộc bản script.js đã cache hoặc logic giỏ hàng.
+
+Cách thử nhanh từ thư mục gốc dự án:
+
+```powershell
+.\chatbot\.venv\Scripts\python.exe -B -X utf8 chatbot/run_web.py
+```
+
+Mở **http://127.0.0.1:8000/website/?site_v=20261024-3**; giữ terminal đang chạy. Link phiên bản tránh HTML danh mục cũ trong cache, không cần F5 khi chuyển trang. HTML mới không lưu HTTP cache; JS/CSS vẫn dùng ETag và ảnh giữ cache. Nút tròn ở dưới bên phải mở khung; nút phóng to/khôi phục đổi giữa toàn màn hình và cửa sổ, dấu trừ/Escape thu về nút tròn. Lịch sử và phiên được khôi phục trong cùng tab khi chuyển trang, reload hoặc quay lại; Chat mới bắt đầu cuộc khác.
+
+Nếu dùng Live Server hoặc trang /static/index.html của Flask, vẫn cần chạy chatbot server. Mặc định widget tìm chatbot cùng hostname ở cổng 8000. Đổi chatbotUrl trong config.js thành URL trang chat nếu dùng cổng/host khác, ví dụ http://127.0.0.1:8001/chatbot/. Để trống sẽ tự dùng cùng origin khi website nằm ở /website/ của run_web. Không đưa API key vào file cấu hình frontend.
+
+Token giữ trong sessionStorage theo tab (không URL/localStorage); API khôi phục kiểm tra quyền, không chỉ dựa vào ID. Hiển thị tối đa 100 tin gần nhất. Server restart hoặc phiên hết hạn cần Chat mới; không đăng nhập production. Không thay mode demo/API của giỏ hàng, không nối đơn chatbot vào endpoint thanh toán.
+
+Các file quan trọng: chatbot-widget.js, chatbot-widget.css, config.js và thẻ script widget trong mỗi trang HTML. Logic hiểu câu/đặt hàng vẫn nằm trong chatbot. Xem ../chatbot/README.md để biết API, giới hạn và kết quả kiểm tra.
+
 ## Chạy thử
 
 1. Giải nén toàn bộ `Sweet-Bakery-hoan-thien.zip`, giữ nguyên các thư mục.
@@ -61,3 +79,5 @@ Database, xác minh tồn kho/giá, phí vận chuyển, lưu đơn, trạng th�
 
 Giữ banner người dùng cung cấp; ảnh lấy từ các URL đã có trong các file gốc và đóng gói thành WebP để chạy ổn định. URL gốc nằm trong trường `sourceImage`. Một số ảnh/banner vẫn có dấu thương hiệu Fresh Garden. Đây là giao diện bài tập Sweet Bakery; nhóm nên thay bằng ảnh riêng khi triển khai thương hiệu thực tế.
 Tham khảo tổ chức danh mục, tìm kiếm và giỏ hàng tại https://www.freshgarden.vn/ (10/10/2026).
+
+Đã kiểm tra chuyển danh mục trên Cốc Cốc sau khi nạp sẵn 9 trang HTML cũ: 12 lần bấm danh mục không F5, phân trang/giỏ/checkout/tìm kiếm giữ widget và phiên chat. pageVersion trong config.js chỉ là mã phiên bản trang, không phải token; link vẫn giữ id/q/page. Script sản phẩm và mua ngay chỉ đổi URL điều hướng, không đổi nghiệp vụ giỏ hàng.

@@ -1,28 +1,81 @@
-"""Một controller cho CLI/API: mô hình hiểu mọi lượt; repository/tool kiểm soát nghiệp vụ."""
+"""Controller cho API web và script kiểm tra: mô hình hiểu câu; repository/tool kiểm soát nghiệp vụ."""
 
 from copy import deepcopy
 from contextlib import nullcontext
 import re
 import json
+import random
 import sqlite3
 from uuid import uuid4
+from time import monotonic
 
 from app import llm_client
+from app.advice import resolve_advice_selection, expand_advice_selection, apply_advice_selection, advice_question, advice_summary, diverse_products, next_advice_page, save_advice_pages, more_advice_selection, MORE_ADVICE_LABEL
 from app.chatbot import create_state, respond, make_response, describe_products, summarize_needs
 from app.config import CHAT_MODE, CONTEXT_MAX_TURNS, get_llm_settings
 from app.nlu import analyze_message
 from app.repositories.catalog import safe_search_products
+from app.repositories.mock_catalog import canonical_flavors, _matches_product_type
 from app.retrieval import retrieve, make_policy_response, validate_rag_answer
 from app.order_flow import (
     new_draft, handle_order_message, request_handoff, collect_instructions,
     create_review, confirm_review, missing_slots, missing_draft_slots, pending_order_slot, order_items, business_command_text, configure_order_fields,
 )
-from app.order_nlu import resolve_mentions, check_turn_grounding, apply_turn_updates, apply_cart_operation, contains_unsafe_contact, without_disabled_order_fields, plural_reference_evidence
+from app.order_nlu import resolve_mentions, check_turn_grounding, apply_turn_updates, apply_cart_operation, without_disabled_order_fields, plural_reference_evidence
 from app.storage import safe_history_text, save_conversation, record_messages
 from app.text_utils import normalize_text, format_vnd
 from app.schemas import CurrentTurn, InformationRequest, TurnUpdates
 
 PRODUCT_INFORMATION_INTENTS = {"price", "size", "flavor", "availability", "allergen", "topping", "storage", "description"}
+
+# Bộ lọc tư vấn riêng với slot đặt hàng; mọi query dùng cùng mapping.
+QUERY_FILTER_MAP = {
+    "budget_vnd": "max_price_vnd", "price_inclusive": "price_inclusive",
+    "min_budget_vnd": "min_price_vnd", "min_price_inclusive": "min_price_inclusive",
+    "product_type": "product_type", "flavor": "flavor", "servings": "servings",
+    "size": "size", "occasion": "occasion", "allergens": "exclude_allergens",
+    "available_only": "available_only",
+    "sweetness": "sweetness", "taste_family": "taste_family", "coffee_style": "coffee_style",
+}
+PRICE_FILTER_KEYS = ("max_price_vnd", "price_inclusive", "min_price_vnd", "min_price_inclusive")
+
+
+def apply_query_updates(filters, updates, *, new_search=False):
+    """Tìm mới bỏ nhóm/vị/giá cũ; refine giữ điều kiện, dị ứng vẫn được giữ."""
+    if new_search:
+        for key in (*PRICE_FILTER_KEYS, "product_type", "flavor", "servings", "occasion", "size", "sweetness", "taste_family", "coffee_style"):
+            filters.pop(key, None)
+    if ("product_type" in updates and filters.get("product_type")
+            and updates["product_type"] != filters["product_type"]):
+        # Một nhóm mới không mặc nhiên mang vị/số người của nhóm cũ.
+        # Điều kiện được nhắc lại rõ (kể cả tham chiếu model hiểu) vẫn giữ.
+        for key in ("flavor", "servings", "occasion", "sweetness", "taste_family", "coffee_style"):
+            if key not in updates:
+                filters.pop(key, None)
+    # Vị cụ thể, nhóm vị và kiểu cà phê là ba cách mô tả cùng sở thích.
+    # Khi khách đổi cách mô tả, bỏ giá trị cũ; chỉ kết hợp nếu lượt này
+    # nêu rõ cả hai. Giữ ngân sách, độ ngọt và ràng buộc dị ứng.
+    taste_fields = {"flavor", "taste_family", "coffee_style"}
+    if taste_fields.intersection(updates):
+        for key in taste_fields.difference(updates):
+            filters.pop(key, None)
+    if {"budget_vnd", "min_budget_vnd"}.intersection(updates):
+        for key in PRICE_FILTER_KEYS:
+            filters.pop(key, None)
+    for field, target in QUERY_FILTER_MAP.items():
+        if field in updates:
+            if field == "allergens" and not updates[field]:
+                filters.pop(target, None)
+            else:
+                filters[target] = updates[field]
+    for field, inclusive in (("budget_vnd", "price_inclusive"), ("min_budget_vnd", "min_price_inclusive")):
+        if field in updates:
+            filters[inclusive] = updates.get(inclusive, True)
+    # Cờ biên không có cận tiền tương ứng không phải một điều kiện tìm kiếm.
+    for bound, inclusive in (("max_price_vnd", "price_inclusive"), ("min_price_vnd", "min_price_inclusive")):
+        if bound not in filters:
+            filters.pop(inclusive, None)
+
 
 
 def is_information_question(proposal) -> bool:
@@ -56,18 +109,46 @@ def initialize_memory(current) -> None:
     current.setdefault("request_memory", [])
     current.setdefault("request_sequence", 0)
     current.setdefault("pending_order_request", None)
+    current.setdefault("advice_pending", None)
+    current.setdefault("advice_page", None)
+    current.setdefault("quick_replies", [])
     current["order"].setdefault("extra_items", [])
 
 
 def remember_request(current, proposal, scope, needs_clarification=False) -> None:
     """Bộ nhớ theo thứ tự và theo phiên; chỉ giữ ý định/ID, không lưu liên hệ."""
     current["request_sequence"] += 1
+    order_related = (("order_request" in proposal.intents and not proposal.order_negated)
+                     or proposal.continuation == "order"
+                     or proposal.order_operation != "none"
+                     or proposal.action in {"start_order", "review", "confirm", "cancel"})
+    pending = (current.get("pending_order_request") or {}) if order_related else {}
+    resolved_ids = set(scope.get("order_product_ids", []))
+    if not current.get("pending_order_request"):
+        for previous in current["request_memory"]:
+            if previous.get("status") != "awaiting_clarification" or "order_request" not in previous["intents"]:
+                continue
+            if proposal.action == "cancel":
+                previous["status"] = "cancelled"
+            elif resolved_ids.intersection(previous.get("pending_candidate_ids", [])):
+                previous["status"] = "resolved"
     current["request_memory"].append({
         "sequence": current["request_sequence"], "intents": list(proposal.intents),
         "action": proposal.action, "operation": proposal.order_operation, "continuation": proposal.continuation,
         "query_product_ids": list(dict.fromkeys(i for request in scope.get("requests", []) for i in request.get("product_ids", []))),
         "order_product_ids": list(scope.get("order_product_ids", [])),
-        "status": "awaiting_clarification" if needs_clarification else "handled",
+        "questions": [{"intents": list(request["intents"]),
+            "mentions": list(request.get("product_mentions", [])),
+            "filters": {k: v for k, v in request.get("filters", {}).items()
+                        if k in {"product_type", "flavor", "min_price_vnd", "max_price_vnd", "servings"}},
+            "status": request.get("status", "answered")} for request in scope.get("requests", [])[:5]],
+        "pending_candidate_ids": [candidate["id"] for candidate in
+                                  pending.get("candidates", [])],
+        "order_mentions": list(proposal.order_product_mentions or
+                               (proposal.product_mentions if "order_request" in proposal.intents else [])),
+        "quantity": (pending.get("quantity") if pending
+                     else current["order"]["slots"].get("quantity") if order_related else None),
+        "status": "awaiting_clarification" if needs_clarification or pending else "handled",
     })
     current["request_memory"] = current["request_memory"][-8:]
 
@@ -77,13 +158,17 @@ def finish_turn(current, message, response, storage_connection=None) -> None:
     draft = current["order"]
     current["pending_order_question"] = pending_order_slot(draft) if draft["state"] == "COLLECTING" else None
     response["text"] = response["text"].strip()
+    current["quick_replies"] = list(response.get("quick_replies", []))
+    if "show_checkout" in response:
+        current["checkout_visible"] = response["show_checkout"]
+    contacts = [draft["slots"].get(key) for key in ("name", "phone", "address")]
     if storage_connection is not None:
         # Parent phải có trước messages foreign key; lưu cùng transaction của cả lượt.
         save_conversation(storage_connection, current)
-        record_messages(storage_connection, current["id"], message, response["text"])
+        record_messages(storage_connection, current["id"], message, response["text"], contact_values=contacts)
     current["history"].extend([
-        {"role": "user", "content": safe_history_text(message)},
-        {"role": "assistant", "content": safe_history_text(response["text"])},
+        {"role": "user", "content": safe_history_text(message, contacts)},
+        {"role": "assistant", "content": safe_history_text(response["text"], contacts)},
     ])
     current["history"] = current["history"][-2 * current["max_turns"]:]
     if storage_connection is not None:
@@ -118,11 +203,13 @@ def turn_result(current, response, *, engine=None, error=None, attempts=0, curre
 def failed_turn(message, repository, conversation, error, attempts=0, *, source=False, http_status=None) -> dict:
     current = deepcopy(conversation)
     response = response_shell(message, repository, current)
+    response["show_checkout"] = False
     notices = {
         "invalid_api_request": "Ollama chưa chấp nhận request. Kiểm tra phiên bản Ollama và cấu hình model.",
         "invalid_response": "Chưa đọc được phản hồi hợp lệ từ dịch vụ model. Bạn có thể thử lại.",
         "invalid_turn_json": "Model chưa trả kết quả đúng cấu trúc. Bạn có thể thử lại.",
         "service_unavailable": "Dịch vụ model tạm thời chưa sẵn sàng. Bạn có thể thử lại sau.",
+        "model_runtime_missing": "Không khởi động được AI trên máy chủ do thiếu thành phần chạy model. Cần sửa cài đặt Ollama.",
         "content_blocked": "Dịch vụ model chưa xử lý được nội dung này. Bạn có thể diễn đạt lại.",
         "invalid_config": "Cấu hình dịch vụ model chưa hợp lệ. Cần kiểm tra cấu hình chatbot.",
         "invalid_model": "Tên model chưa hợp lệ. Cần kiểm tra cấu hình chatbot.",
@@ -137,7 +224,7 @@ def failed_turn(message, repository, conversation, error, attempts=0, *, source=
     if valid_http_status:
         if error == "service_unavailable":
             notice = {
-                500: "Máy chủ model trả lỗi nội bộ (HTTP 500). Bạn có thể thử lại; nếu vẫn lỗi cần kiểm tra request API.",
+                500: "Máy chủ model trả lỗi nội bộ (HTTP 500). Cần kiểm tra trạng thái và log Ollama.",
                 501: "API model chưa hỗ trợ yêu cầu này (HTTP 501). Cần kiểm tra cấu hình client.",
                 502: "Cổng kết nối tới model trả lỗi (HTTP 502). Bạn có thể thử lại sau.",
                 503: "Dịch vụ model tạm thời chưa sẵn sàng (HTTP 503). Bạn có thể thử lại sau.",
@@ -147,7 +234,7 @@ def failed_turn(message, repository, conversation, error, attempts=0, *, source=
             notice += f" (HTTP {http_status})"
     response["text"] += notice
     if current.get("order", {}).get("state") in {"COLLECTING", "REVIEW"}:
-        response["text"] += " Bản nháp và REVIEW được giữ nguyên; chưa tạo đơn."
+        response["text"] += " Thông tin bạn đã cung cấp được giữ nguyên; chưa gửi yêu cầu."
     response["error"] = error
     if source:
         response.update(error=error, catalog_status="error")
@@ -184,14 +271,15 @@ def merge_preferences(current, proposal, resolution, mode) -> dict:
             shared = {key: value for key, value in shared.items()
                       if key in constraints and constraints[key] == value}
         updates = {**shared, **updates}
-    mapping = {"budget_vnd": "max_price_vnd", "flavor": "flavor", "servings": "servings",
-               "size": "size", "occasion": "occasion", "allergens": "exclude_allergens",
-               "available_only": "available_only"}
+    mapping = QUERY_FILTER_MAP
     for field in proposal.clear_slots:
         if field == "product":
             filters.pop("product_ids", None)
             filters.pop("query", None)
             needs["product_terms"] = []
+        elif field in {"budget_vnd", "min_budget_vnd"}:
+            for key in PRICE_FILTER_KEYS:
+                filters.pop(key, None)
         elif field in mapping:
             filters.pop(mapping[field], None)
         elif field == "quantity":
@@ -200,13 +288,13 @@ def merge_preferences(current, proposal, resolution, mode) -> dict:
         # Dị ứng khách nêu rõ vẫn là ràng buộc an toàn cho các lượt tư vấn sau;
         # điều này không đổi sản phẩm/slot trong draft của một câu hỏi thông tin.
         # Nếu khách bỏ điều kiện cũ rồi nêu giá trị mới cùng lượt, giữ delta mới.
-        for field in proposal.clear_slots:
-            if field in mapping and field in updates:
-                filters[mapping[field]] = updates[field]
-                if field == "budget_vnd":
-                    filters["price_inclusive"] = updates.get("price_inclusive", True)
-            elif field == "quantity" and field in updates:
-                needs["quantity"] = updates[field]
+        explicit = {field: updates[field] for field in proposal.clear_slots if field in updates}
+        if {"budget_vnd", "min_budget_vnd"}.intersection(proposal.clear_slots):
+            explicit.update({k: v for k, v in updates.items()
+                if k in {"budget_vnd", "min_budget_vnd", "price_inclusive", "min_price_inclusive"}})
+        apply_query_updates(filters, explicit)
+        if "quantity" in explicit:
+            needs["quantity"] = explicit["quantity"]
         if "allergens" in updates:
             if updates["allergens"]:
                 filters["exclude_allergens"] = list(updates["allergens"])
@@ -215,31 +303,47 @@ def merge_preferences(current, proposal, resolution, mode) -> dict:
         elif "allergens" in proposal.clear_slots:
             filters.pop("exclude_allergens", None)
         return needs
-    if proposal.product_mentions or proposal.reference != "none":
+    query_mentions = list(proposal.product_mentions) or list(dict.fromkeys(
+        name for request in proposal.requests if "recommendation" in request.intents
+        and request.reference == "none" for name in request.product_mentions))
+    advice_requests = [request for request in proposal.requests if "recommendation" in request.intents]
+    if advice_requests and all(request.price_preference in {"cheaper_than", "more_expensive_than"}
+                               for request in advice_requests):
+        # Tên ở đây là mốc so giá, không phải đổi chủ đề để xóa ngân sách đã có.
+        query_mentions = []
+    new_search = bool(advice_requests) and all(
+        request.search_scope == "new" and request.price_preference not in {"cheaper_than", "more_expensive_than"}
+        for request in advice_requests)
+    if ("flavor" in updates and "product_type" not in updates and not query_mentions
+            and "recommendation" in proposal.intents and not new_search):
+        # Câu hỏi thông tin có thể đổi chủ đề mà không đổi preferences/draft.
+        # Đổi vị tiếp theo dùng nhóm đã đối chiếu của chủ đề gần nhất.
+        topic = current.get("discussion_context", {})
+        if "product_type" in topic:
+            if topic["product_type"]:
+                updates["product_type"] = topic["product_type"]
+            else:
+                filters.pop("product_type", None)
+    if query_mentions or proposal.reference != "none":
         if proposal.reference == "none":
-            # Hỏi tên mới thay chủ đề; bộ lọc mới lấy từ đúng lượt hiện tại.
+            # Tên mới ở câu hỏi con cũng thay chủ đề tư vấn; không đổi draft.
             allergens = deepcopy(filters.get("exclude_allergens"))
             filters.clear()
             if allergens and "allergens" not in proposal.clear_slots:
                 filters["exclude_allergens"] = allergens
-        needs["product_terms"] = list(proposal.product_mentions)
+        needs["product_terms"] = query_mentions
     elif "flavor" in updates:
         # Tìm theo vị/browse mới không giữ tên cũ như lỗi người dùng đã báo.
         filters.pop("query", None)
         filters.pop("product_ids", None)
         needs["product_terms"] = []
-    elif "recommendation" in proposal.intents and "budget_vnd" in updates and not proposal.order_update:
+    elif ("recommendation" in proposal.intents
+          and {"budget_vnd", "min_budget_vnd", "product_type"}.intersection(updates)
+          and not proposal.order_update):
         filters.pop("query", None)
         filters.pop("product_ids", None)
         needs["product_terms"] = []
-    for field, target in mapping.items():
-        if field in updates:
-            if field == "allergens" and not updates[field]:
-                filters.pop(target, None)
-            else:
-                filters[target] = updates[field]
-    if "budget_vnd" in updates:
-        filters["price_inclusive"] = updates.get("price_inclusive", True)
+    apply_query_updates(filters, updates, new_search=new_search)
     if "quantity" in updates:
         needs["quantity"] = updates["quantity"]
     filters.pop("product_ids", None)
@@ -255,18 +359,7 @@ def build_current_turn(current, proposal, resolution, reference) -> CurrentTurn:
         filters["product_ids"] = list(resolution["ids"])
     elif proposal.product_mentions:
         filters["query"] = " ".join(proposal.product_mentions)
-    mapping = {"budget_vnd": "max_price_vnd", "flavor": "flavor", "servings": "servings",
-               "size": "size", "occasion": "occasion", "allergens": "exclude_allergens",
-               "available_only": "available_only", "price_inclusive": "price_inclusive"}
-    updates = proposal.updates.model_dump(exclude_none=True)
-    for field, target in mapping.items():
-        if field in updates:
-            if field == "allergens" and not updates[field]:
-                filters.pop(target, None)
-            else:
-                filters[target] = updates[field]
-    if "budget_vnd" in updates:
-        filters.setdefault("price_inclusive", True)
+    apply_query_updates(filters, proposal.updates.model_dump(exclude_none=True))
     return {"intents": list(proposal.intents), "product_mentions": list(proposal.product_mentions),
             "reference": reference, "product_ids": list(resolution["ids"]), "filters": filters}
 
@@ -288,7 +381,15 @@ def continue_order_request(current, proposal, message=""):
         return text.removeprefix("banh kem ").removeprefix("banh ")
     entity_answer = (set(proposal.intents) == {"description"} and len(names) == 1
                      and bare_name(message) == bare_name(names[0]))
-    if not names or not (proposal.continuation in {"entity", "order"} or entity_answer):
+    reference = proposal.order_reference or proposal.reference
+    if reference == "none" and len(proposal.order_items) == 1:
+        reference = proposal.order_items[0].reference
+    reference_answer = (reference != "none" and is_choice_only(message)
+                        and not any(set(request.intents) - {"description"} for request in proposal.requests))
+    flavor_answer = (proposal.continuation == "order" and proposal.updates.flavor is not None
+                     and not any(set(request.intents) - {"description"} for request in proposal.requests))
+    if not ((names and (proposal.continuation in {"entity", "order"} or entity_answer))
+            or reference_answer or flavor_answer):
         return proposal
     result = proposal.model_copy(deep=True)
     result.intents = ["order_request"]
@@ -297,6 +398,7 @@ def continue_order_request(current, proposal, message=""):
     result.action = "start_order" if pending["operation"] == "select_product" else "none"
     result.product_mentions = names
     result.order_product_mentions = list(names)
+    result.order_reference = reference if not names else "none"
     result.order_update, result.requests = True, []
     return result
 
@@ -320,7 +422,19 @@ def continue_information(current, proposal, message=""):
         return proposal
     if proposal.action != "none" or "order_request" in proposal.intents or proposal.order_update:
         return proposal
+    # Câu nối vẫn có thể nêu điều kiện mới: không thay bằng bộ lọc cũ.
+    if any(request.filters.model_dump(exclude_none=True) or request.size is not None
+           or request.price_preference != "none" or request.search_scope == "new"
+           for request in proposal.requests):
+        return proposal
     pending = current.get("pending_information_request")
+    if not pending and proposal.product_mentions:
+        previous = (current.get("current_request") or {}).get("requests", [])
+        if previous and all(request["intents"] == ["recommendation"] for request in previous):
+            # Sau khi đã gợi ý xong, tên món là đối tượng đang xem mới.
+            # Không phát lại bộ lọc giá cũ như một câu tư vấn chưa giải quyết.
+            # Câu hỏi đang chờ làm rõ và chọn bằng thứ tự vẫn dùng nhánh cũ.
+            return proposal
     if not pending:
         pending = (current.get("current_request") or {}).get("requests", [])
     if not pending:
@@ -341,13 +455,17 @@ def continue_information(current, proposal, message=""):
     result = proposal.model_copy(deep=True)
     result.intents = previous_intents
     previous = pending[0]
-    filters = previous.get("filters", {})
-    mapping = {"max_price_vnd": "budget_vnd", "exclude_allergens": "allergens"}
-    constraints = {mapping.get(k, k): v for k, v in filters.items()
-        if mapping.get(k, k) in {"budget_vnd", "price_inclusive", "flavor", "servings", "occasion", "allergens", "available_only"}}
+    filters = deepcopy(previous.get("filters", {}))
+    apply_query_updates(filters, proposal.updates.model_dump(exclude_none=True))
+    mapping = {target: field for field, target in QUERY_FILTER_MAP.items()}
+    constraints = {mapping[k]: v for k, v in filters.items()
+        if k in mapping and k != "size"}
     # clear_slots là delta hiện tại: không mang điều kiện đã bỏ từ request cũ.
     for field in proposal.clear_slots:
         constraints.pop(field, None)
+        if field in {"budget_vnd", "min_budget_vnd"}:
+            for key in ("budget_vnd", "min_budget_vnd", "price_inclusive", "min_price_inclusive"):
+                constraints.pop(key, None)
     previous_size = None if "size" in proposal.clear_slots else previous.get("size") or filters.get("size")
     result.requests = [InformationRequest(intents=previous_intents,
         product_mentions=list(proposal.product_mentions), reference=proposal.reference,
@@ -415,8 +533,13 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
     order_proposal = proposal.model_copy(deep=True)
     order_proposal.product_mentions = order_mentions
     order_reference = "none" if order_mentions else (proposal.order_reference or proposal.reference)
+    pending = current.get("pending_order_request")
+    order_choices = choice_ids
+    if (pending and pending.get("revision") == current["order"]["revision"]
+            and proposal.continuation == "order"):
+        order_choices = [candidate["id"] for candidate in pending.get("candidates", [])] or choice_ids
     order_resolution = resolve_mentions(order_mentions, repository, current["shown_products"],
-                                        order_reference, selected, topic, choice_ids=choice_ids)
+                                        order_reference, selected, topic, choice_ids=order_choices)
     if proposal.order_operation == "update_slots" and order_resolution["status"] != "error":
         shared_fields = {"pickup_at", "fulfillment", "name", "phone", "address"}
         delta_fields = set(order_proposal.updates.model_dump(exclude_none=True))
@@ -484,7 +607,7 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
             constraints = {}
             if len(proposal.requests) == 1 and is_information_question(proposal):
                 constraints = {k: v for k, v in proposal.updates.model_dump(exclude_none=True).items()
-                    if k in {"budget_vnd", "price_inclusive", "flavor", "servings", "size", "occasion", "allergens", "available_only"}}
+                    if k in QUERY_FILTER_MAP}
             constraints.update(request.filters.model_dump(exclude_none=True))
             query.updates = TurnUpdates(**constraints)
         if request.size is not None:
@@ -493,6 +616,8 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
             # Hỏi bánh hết/còn phải thấy cả out_of_stock/unknown, không lọc còn hàng.
             query.updates.available_only = None
         reference = "none" if request.product_mentions else request.reference
+        if request.price_preference in {"cheaper_than", "more_expensive_than"} and reference == "none" and not request.product_mentions:
+            reference = "last"  # Anchor đã được AI yêu cầu so giá; ID/giá do nguồn xác minh.
         if reference == "none" and not request.product_mentions and "recommendation" not in query.intents and is_information_question(query) and not query.updates.flavor:
             reference = "last"
         local_ambiguous = False
@@ -511,8 +636,13 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
             resolution = resolve_current_choice(current_resolution, reference, repository, current["shown_products"],
                                                 ambiguous=current_names_ambiguous)
         else:
+            query_choices = choice_ids
+            if (pending and pending.get("revision") == current["order"]["revision"]
+                    and not query.product_mentions and reference in {"first", "second"}
+                    and len(choice_ids) < (2 if reference == "second" else 1)):
+                query_choices = [candidate["id"] for candidate in pending.get("candidates", [])]
             resolution = resolve_mentions(query.product_mentions, repository, current["shown_products"], reference, selected, reference_focus,
-                                          choice_ids=choice_ids)
+                                          choice_ids=query_choices)
         # Một tên nhóm khớp nhiều bánh vẫn trả được thông tin từng bánh.
         # Mơ hồ do liên kết thuộc tính/tham chiếu vẫn phải hỏi lại.
         if (query.product_mentions and len(query.product_mentions) == 1 and not request.ambiguous
@@ -525,7 +655,25 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
         if local_ambiguous:
             resolution.update(ids=[],ambiguous=True)
         scope = build_current_turn(current, query, resolution, reference)
-        scope.update(ambiguous=request.ambiguous)
+        if request.search_scope == "new" and request.price_preference not in {"cheaper_than", "more_expensive_than"}:
+            apply_query_updates(scope["filters"], query.updates.model_dump(exclude_none=True), new_search=True)
+            scope["search_scope"] = "new"
+        if request.price_preference != "none":
+            scope["price_preference"] = request.price_preference
+        if request.price_preference in {"cheaper_than", "more_expensive_than"}:
+            # ID tham chiếu chỉ là mốc giá, KHÔNG khóa kết quả tìm kiếm vào bánh cũ.
+            scope["comparison_product_ids"] = list(resolution["ids"])
+            scope["product_ids"] = []
+            scope["filters"] = deepcopy(current["needs"]["filters"])
+            for key in ("product_ids", "query"):
+                scope["filters"].pop(key, None)
+            apply_query_updates(scope["filters"], query.updates.model_dump(exclude_none=True))
+            resolution = {**resolution, "ids": []}
+        advice_mode = request.advice
+        if (advice_mode == "none" and current.get("advice_pending")
+                and request.intents == ["recommendation"] and not request.product_mentions and request.reference == "none"):
+            advice_mode = "guided"  # FSM tiếp tục bảng tư vấn; intent/filter vẫn do Qwen.
+        scope.update(ambiguous=request.ambiguous, advice=advice_mode if len(requests) == 1 else "none")
         if request.question:
             scope["question"] = request.question
         if request.excluded_product_mentions:
@@ -562,8 +710,9 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
             for identifier in order_resolution["ids"]]
     if proposal.order_items and not is_information_question(proposal):
         current_candidates = list(dict.fromkeys(identifier for task in tasks for identifier in task["resolution"]["ids"]))
-        offered = current_candidates or choice_ids
+        offered = order_choices if proposal.continuation == "order" else current_candidates or choice_ids
         selections = []
+        item_candidates, unresolved_items = [], []
         item_error = None
         ambiguous_item = False
         for item in proposal.order_items:
@@ -574,6 +723,8 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
             else:
                 found = resolve_mentions(mentions, repository, current["shown_products"],
                                          item.reference, selected, topic, choice_ids=offered)
+            item_candidates.extend(found.get("candidates", []))
+            unresolved_items.extend(found.get("unresolved_mentions", []))
             if found["status"] == "error":
                 item_error = found["error"] or "source_error"
             if found["status"] == "unconfigured" and item.product_mention:
@@ -590,7 +741,23 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
         order_resolution = {"status": "error" if item_error else "success" if selections else "no_results",
                             "ids": list(dict.fromkeys(item["product_id"] for item in selections if item["product_id"])),
                             "ambiguous": ambiguous_item or len(selections) > 6, "error": item_error,
-                            "item_selections": selections}
+                            "item_selections": selections,
+                            "candidates": list({candidate["id"]: candidate for candidate in item_candidates}.values()),
+                            "unresolved_mentions": list(dict.fromkeys(unresolved_items))}
+    if (pending and pending.get("revision") == current["order"]["revision"]
+            and proposal.continuation == "order" and not order_mentions and proposal.updates.flavor):
+        # Model trích vị trong câu hiện tại; chỉ lọc những lựa chọn của yêu cầu
+        # đang chờ, không chọn bánh khác từ lần hỏi giá xen ngang.
+        candidates = [candidate["id"] for candidate in pending.get("candidates", [])]
+        if candidates:
+            found = safe_search_products(repository, {"product_ids": candidates, "flavor": proposal.updates.flavor})
+            products = found["products"]
+            order_resolution = {
+                "status": found["status"], "error": found["error"],
+                "ids": [product["id"] for product in products] if len(products) == 1 else [],
+                "ambiguous": len(products) != 1,
+                "candidates": [{"id": product["id"], "name": product["name"]} for product in products] or deepcopy(pending["candidates"]),
+            }
     scope = deepcopy(tasks[0]["scope"]) if tasks else build_current_turn(current, proposal, order_resolution, order_reference)
     scope["intents"] = list(proposal.intents)
     scope["requests"] = [deepcopy(task["scope"]) for task in tasks]
@@ -603,7 +770,7 @@ def resolve_message_scopes(current, proposal, repository, message: str = ""):
 def deduplicate_information_tasks(tasks):
     """Mỗi bộ lọc/sản phẩm/intent chỉ trả một lần, kể cả model sinh request lặp."""
     from app.storage import fingerprint
-    seen, result = {}, []
+    seen, result, grouped = {}, [], {}
     for task in tasks:
         scope, resolution = task["scope"], task["resolution"]
         if scope["intents"] == ["policy"] or scope.get("ambiguous") or resolution["ambiguous"] or not resolution["ids"]:
@@ -614,15 +781,27 @@ def deduplicate_information_tasks(tasks):
             continue
         for identifier in resolution["ids"]:
             filters = {**scope["filters"], "product_ids": [identifier]}
-            key = fingerprint(filters)
+            # Tra cứu thông tin cùng món/cùng điều kiện chỉ làm một lần.
+            # Tư vấn/xếp giá giữ riêng vì ID có thể là mốc so sánh.
+            information = "recommendation" not in scope["intents"]
+            key = fingerprint({"filters": filters, "information": information,
+                               "price_preference": scope.get("price_preference", "none")})
             new_intents = [intent for intent in scope["intents"] if intent not in seen.get(key, set())]
             if not new_intents:
                 continue
             seen.setdefault(key, set()).update(new_intents)
+            if information and key in grouped:
+                existing = grouped[key]
+                existing["scope"]["intents"].extend(new_intents)
+                existing["proposal"] = existing["proposal"].model_copy(
+                    update={"intents": list(existing["scope"]["intents"])})
+                continue
             child = {**task, "scope": {**scope, "intents": new_intents, "product_ids": [identifier], "filters": filters},
                 "resolution": {**resolution, "ids": [identifier]},
                 "proposal": task["proposal"].model_copy(update={"intents": new_intents})}
             result.append(child)
+            if information:
+                grouped[key] = child
     return result
 
 
@@ -652,12 +831,99 @@ def describe_requested_products(products, intents):
                 prefix = variant["size"] + ": " if variant["size"] else ""
                 lines.append(f"  • {prefix}{labels[variant['stock_status']]}.")
         if "flavor" in intents:
-            lines.append("  Hương vị: " + (product["flavor"] or "chưa xác định") + ".")
+            label = "  Vị ghi trong tên: " if product.get("flavor_source") == "product_name" else "  Hương vị: "
+            lines.append(label + (product["flavor"] or "chưa xác định") + ".")
+            if product.get("style_tags"):
+                lines.append("  Đặc điểm: " + "; ".join(product["style_tags"]) + ".")
     return "\n".join(lines)
 
 
-def product_answer(repository, current, proposal, response, current_turn) -> None:
-    result = safe_search_products(repository, current_turn["filters"], response["data_mode"])
+def recommendation_result(repository, current, scope, data_mode):
+    """Lọc điều kiện trước, xếp giá hoặc lấy ngẫu nhiên; không nhờ LLM tính giá."""
+    filters = deepcopy(scope["filters"])
+    preference = scope.get("price_preference", "none")
+    relative = preference in {"cheaper_than", "more_expensive_than"}
+    notice = ""
+    preferred_flavors = set()
+    if relative:
+        anchor_ids = scope.get("comparison_product_ids", [])
+        anchor_filters = {"product_ids": anchor_ids}
+        if filters.get("size"):
+            anchor_filters["size"] = filters["size"]
+        anchors = safe_search_products(repository, anchor_filters, data_mode)
+        if anchors["status"] in {"error", "unconfigured"}:
+            return anchors, notice
+        if len(anchors["products"]) != 1:
+            return {**anchors, "status": "no_results", "products": []}, "Chưa xác định được một sản phẩm làm mốc so giá. Bạn muốn so với sản phẩm nào?"
+        anchor = anchors["products"][0]
+        variants = anchor["variants"]
+        # Tham chiếu tới thẻ đã xem giữ đúng biến thể, nhưng giá phải đọc lại từ nguồn.
+        previous = next((p for p in current["shown_products"] if p["id"] == anchor["id"]), None)
+        if previous and not scope["product_mentions"] and not filters.get("size"):
+            variant_ids = {v["id"] for v in previous["variants"]}
+            variants = [v for v in variants if v["id"] in variant_ids]
+        prices = {v["price_vnd"] for v in variants if v["price_vnd"] is not None}
+        if not prices:
+            return {**anchors, "status": "no_results", "products": []}, "Chưa có giá đã xác minh của sản phẩm làm mốc nên chưa thể so sánh."
+        if len(prices) != 1 or any(v["price_vnd"] is None for v in variants):
+            return {**anchors, "status": "no_results", "products": []}, "Sản phẩm làm mốc có nhiều mức giá hoặc giá chưa rõ. Bạn muốn so với biến thể nào?"
+        price = next(iter(prices))
+        if not filters.get("product_type"):
+            filters["product_type"] = next((kind for kind in ("cream_cake", "mini", "tea", "coffee", "cake", "drink")
+                                            if _matches_product_type(anchor, kind)), None)
+            if filters["product_type"] is None:
+                filters.pop("product_type")
+        filters["exclude_product_ids"] = list(dict.fromkeys([*filters.get("exclude_product_ids", []), anchor["id"]]))
+        if preference == "cheaper_than":
+            # Giao với ngân sách nêu rõ trong lượt này, không âm thầm nới điều kiện.
+            if filters.get("max_price_vnd", price) >= price:
+                filters.update(max_price_vnd=price, price_inclusive=False)
+        elif filters.get("min_price_vnd", price) <= price:
+            filters.update(min_price_vnd=price, min_price_inclusive=False)
+        if not filters.get("flavor"):
+            preferred_flavors = canonical_flavors(anchor["flavor"])
+        scope["filters"] = filters
+    result = safe_search_products(repository, filters, data_mode)
+    if result["status"] != "success":
+        return result, notice
+    products = result["products"]
+    def price_of(product):
+        values = [v["price_vnd"] for v in product["variants"] if v["price_vnd"] is not None]
+        if not values:
+            return None
+        return max(values) if preference in {"highest", "cheaper_than"} else min(values)
+    if preference != "none":
+        products = [p for p in products if price_of(p) is not None]
+        if not products:
+            return {**result, "products": [], "status": "no_results"}, "Menu chưa có đủ giá đã xác minh để xếp hạng sản phẩm."
+
+    if relative and preferred_flavors:
+        same_flavor = [p for p in products if preferred_flavors.issubset(canonical_flavors(p["flavor"]))]
+        if same_flavor:
+            products = same_flavor
+            notice = "Ưu tiên sản phẩm cùng hương vị với loại vừa xem."
+        elif products:
+            notice = "Chưa tìm thấy sản phẩm được ghi nhận cùng hương vị ở mức giá này; bạn có thể thử các lựa chọn khác dưới đây."
+    if preference != "none" or any(key in filters for key in ("min_price_vnd", "max_price_vnd")):
+        reverse = preference in {"highest", "cheaper_than"}
+        products = sorted(products, key=lambda p: (price_of(p) is None, price_of(p) or 0), reverse=reverse)
+        if products and preference in {"lowest", "highest"}:
+            extreme = price_of(products[0])
+            products = [{**p, "variants": [v for v in p["variants"] if v["price_vnd"] == extreme]}
+                        for p in products if price_of(p) == extreme]
+            notice = "Các lựa chọn " + ("rẻ nhất" if preference == "lowest" else "đắt nhất") + " theo giá đã có trong menu và các điều kiện bạn yêu cầu."
+    else:
+        products = random.sample(products, len(products))
+    return {**result, "products": products, "status": "success" if products else "no_results"}, notice
+
+
+def product_answer(repository, current, proposal, response, current_turn, *, pagination_pages=None) -> None:
+    current_turn["result_product_ids"] = []
+    if "recommendation" in proposal.intents:
+        result, notice = recommendation_result(repository, current, current_turn, response["data_mode"])
+    else:
+        result = safe_search_products(repository, current_turn["filters"], response["data_mode"])
+        notice = ""
     response.update(catalog_status=result["status"], error=result["error"])
     if result["status"] == "error":
         raise ValueError(result["error"] or "source_error")
@@ -676,24 +942,75 @@ def product_answer(repository, current, proposal, response, current_turn) -> Non
         response["text"] += "Chưa có menu để đối chiếu thông tin bạn hỏi."
         return
     if result["status"] == "no_results":
+        if current_turn.get("advice") == "more":
+            next_advice_page(current, current_turn, [],
+                response.get("catalog_source", response["data_mode"]), pages=pagination_pages)
+        if notice:
+            response["text"] += notice
+            response["requires_clarification"] = notice.endswith("?")
+            current["shown_products"] = []
+            return
         unsupported = repository.get_capabilities().get("unsupported_search_filters", [])
         labels = {"size": "size", "servings": "số người ăn", "flavor": "hương vị",
                   "occasion": "dịp sử dụng", "available_only": "tồn kho", "exclude_allergens": "thành phần/dị ứng"}
-        missing_metadata = [labels.get(field, field) for field in unsupported if current_turn["filters"].get(field) is not None]
+        missing_metadata = [labels.get(field, field) for field in unsupported
+                            if current_turn["filters"].get(field) is not None
+                            and not (field == "available_only" and current_turn["filters"][field] is False)]
         if missing_metadata:
             response["text"] += "Menu chưa cung cấp " + ", ".join(missing_metadata) + "; chưa thể tìm bánh theo điều kiện này. "
             response["text"] += ("Cần nhân viên xác minh thành phần trước khi tư vấn theo yêu cầu tránh nguyên liệu."
                                  if current_turn["filters"].get("exclude_allergens")
                                  else "Bạn có thể tìm theo tên, nhóm hoặc ngân sách.")
         else:
-            response["text"] += "Nguồn hoạt động nhưng không tìm thấy sản phẩm phù hợp. Bạn có thể điều chỉnh tên hoặc ngân sách; mình không tự tạo sản phẩm."
+            response["text"] += "Menu hiện tại chưa có món phù hợp với yêu cầu này."
+            if current_turn.get("advice") in {"guided", "any"}:
+                fallback_filters = deepcopy(current_turn["filters"])
+                # Chỉ mời xem VỊ KHÁC; giữ nguyên ngân sách/nhóm/độ ngọt/dị ứng.
+                removed = [fallback_filters.pop(key) for key in ("flavor", "taste_family", "coffee_style") if key in fallback_filters]
+                alternatives = safe_search_products(repository, fallback_filters, response["data_mode"]) if removed else None
+                if alternatives and alternatives["status"] == "error":
+                    raise ValueError(alternatives["error"] or "source_error")
+                if alternatives and alternatives["status"] == "success":
+                    offered = diverse_products(alternatives["products"])
+                    response["text"] += "\nNếu bạn muốn thử vị khác, có thể tham khảo:\n" + advice_summary(offered)
+                    response["products"] = offered
+                    current_turn["result_product_ids"] = [p["id"] for p in offered]
+                    current["shown_products"] = deepcopy(offered)
+                    current["advice_pending"] = None
+                    response["quick_replies"] = []
+                    return
+            response["text"] += " Bạn có thể đổi hương vị hoặc ngân sách để mình tìm tiếp."
         current["shown_products"] = []
         return
-    # Trả đủ các bánh được hỏi rõ; browse chung vẫn giới hạn 5 thẻ.
-    shown = result["products"] if current_turn["product_ids"] else result["products"][:5]
+    guided = proposal.intents == ["recommendation"] and current_turn.get("advice") in {"guided", "any", "more"}
+    if guided:
+        question = advice_question(current, current_turn, result["products"])
+        if question:
+            response["text"] += question
+            response["quick_replies"] = [o["label"] for o in current["advice_pending"]["options"]]
+            current["shown_products"] = []
+            return
+    # Câu hỏi tên rõ vẫn trả đủ; tư vấn theo bước tối đa ba món.
+    shown = (result["products"][:4] if "recommendation" in proposal.intents
+             else result["products"] if current_turn["product_ids"] else result["products"][:5])
+    has_more = False
+    if "recommendation" in proposal.intents:
+        shown, has_more = next_advice_page(current, current_turn, result["products"],
+            response.get("catalog_source", response["data_mode"]),
+            limit=3 if guided else 4, pages=pagination_pages)
+        current["advice_pending"] = None
+        response["quick_replies"] = [MORE_ADVICE_LABEL] if has_more else []
+        if not shown:
+            current["shown_products"] = []
+            current_turn["result_product_ids"] = []
+            response["text"] += "Mình đã giới thiệu hết các sản phẩm phù hợp với điều kiện này. Bạn có thể đổi loại, hương vị hoặc ngân sách để xem thêm."
+            return
     current["shown_products"] = deepcopy(shown)
     response["products"] = shown
-    response["text"] += describe_requested_products(shown, proposal.intents)
+    current_turn["result_product_ids"] = [product["id"] for product in shown]
+    if notice:
+        response["text"] += notice + "\n"
+    response["text"] += advice_summary(shown, has_more=has_more) if guided else describe_requested_products(shown, proposal.intents)
     for product in shown:
         if "topping" in proposal.intents:
             options = product.get("topping_options")
@@ -713,7 +1030,7 @@ def product_answer(repository, current, proposal, response, current_turn) -> Non
                 response["text"] += f" Hạn dùng mẫu: {product['shelf_life_hours']} giờ."
         if "description" in proposal.intents:
             response["text"] += "\n" + product["description"]
-    if len(result["products"]) > len(shown):
+    if not guided and len(result["products"]) > len(shown):
         response["text"] += f"\nHiển thị {len(shown)}/{len(result['products'])} sản phẩm phù hợp; bạn có thể lọc thêm."
     # Nhãn mô phỏng đã có ở đầu response; không lặp lại sau từng yêu cầu.
 
@@ -796,6 +1113,17 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
     if reason:
         current["order"], text = request_handoff(draft, tools, reason, current["needs"])
         return text
+    # Đặt thêm sau bản đã gửi là bản mới; sửa/hủy bản đã gửi vẫn qua hỗ trợ.
+    new_request = (proposal.action == "start_order" or proposal.order_operation == "add_product") and bool(
+        resolution["ids"] or resolution.get("item_selections") or proposal.product_mentions)
+    if new_request and draft.get("submission") and not draft.get("submission_pending"):
+        previous_slots = draft["slots"]
+        draft = new_draft(current["id"], draft.get("optional_fields", []), draft.get("disabled_fields", []))
+        for field in ("name", "phone"):
+            draft["slots"][field] = previous_slots.get(field)
+        current["order"] = draft
+        current["pending_order_request"] = None
+        current["pending_order_question"] = None
     if draft["submission"] and draft["submission"]["confirmed"]:
         if proposal.action == "confirm" and not edit_with_consent:
             current["order"], text = confirm_review(draft, tools, current["needs"])
@@ -858,8 +1186,18 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
             else:
                 draft, changed = apply_cart_operation(message, draft, proposal, resolution["ids"], repository, current.get("pending_order_question"))
         except ValueError as exception:
+            if outcome is not None:
+                outcome["requires_clarification"] = True
             if current["order"].get("review") and not current["order"].get("submission"):
                 current["order"].update(state="COLLECTING", review=None, revision=current["order"]["revision"] + 1)
+            # Sai liên hệ không phải là chưa chọn rõ bánh; giữ bước đang hỏi.
+            from app.order_service import normalize_contact_value
+            for field in ("name", "phone"):
+                if field in slot_updates:
+                    try:
+                        normalize_contact_value(field, slot_updates[field])
+                    except ValueError as contact_error:
+                        return str(contact_error) + " Thông tin trước đó được giữ nguyên."
             current["pending_order_request"] = {
                 "operation": proposal.order_operation, "product_ids": list(resolution["ids"]),
                 "product_mentions": list(proposal.product_mentions), "revision": current["order"]["revision"],
@@ -871,6 +1209,9 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
         current["pending_order_request"] = None
         if draft.get("pending_pickup_date") and "pickup_at" not in draft.get("disabled_fields", []):
             return f"Mình ghi nhận ngày {draft['pending_pickup_date']} theo giờ Việt Nam. Bạn muốn nhận lúc mấy giờ? Chưa tự chọn giờ và chưa xác nhận đơn."
+        if current.get("web_checkout"):
+            draft.pop("checkout_token", None)
+            return "Mình đã ghi nhận sản phẩm. Bạn kiểm tra và điền thông tin trong form bên dưới nhé."
         if not missing_draft_slots(draft):
             current["order"], text = create_review(draft, tools)
             if current["order"].get("review") and current["order"]["review"]["mode"] == "local_demo" and any(
@@ -879,13 +1220,26 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
                 current["order"], ticket_text = request_handoff(current["order"], tools, "needs_verification", current["needs"])
                 return text + "\n" + ticket_text
             if proposal.action == "confirm" or changed:
-                text += "\nThông tin vừa thay đổi: cần đồng ý rõ ràng với REVIEW mới."
+                text += "\nThông tin vừa thay đổi: cần đồng ý rõ ràng với bản tóm tắt mới trước khi gửi."
             return text
         return collect_instructions(draft)
+    if current.get("web_checkout") and not draft.get("submission") and proposal.action in {"review", "confirm"}:
+        from app.checkout import verify_checkout
+        if proposal.action == "review":
+            return "Bạn kiểm tra thông tin trong form và bấm Xem lại yêu cầu nhé."
+        try:
+            verify_checkout(draft, repository)
+        except ValueError as error:
+            return str(error)
     if proposal.action == "review":
         current["order"], text = create_review(draft, tools)
         return text
     if proposal.action == "confirm":
+        current["order"], text = confirm_review(draft, tools, current["needs"])
+        return text
+    if draft["submission"] and ("order_request" in proposal.intents or "acknowledgement" in proposal.intents):
+        # Model có thể không trả action=confirm khi REVIEW đã được gửi.
+        # Chỉ nhắc lại kết quả đã lưu; confirm_review trả sớm, không gọi tool.
         current["order"], text = confirm_review(draft, tools, current["needs"])
         return text
     if "acknowledgement" in proposal.intents:
@@ -902,13 +1256,14 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
 def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, base_url=None,
                    model=None, timeout=None, knowledge_repository=None,
                    order_tools=None, storage_connection=None) -> dict:
-    """Điểm gọi chung CLI/API. Model lỗi giữ nguyên state; rule phải chọn chủ động."""
+    """Điểm gọi của API web/script kiểm tra. Model lỗi giữ nguyên state; rule phải chọn chủ động."""
     if chat_mode not in {"rule", "ollama"}:
         raise ValueError("chat_mode chỉ nhận rule hoặc ollama.")
     endpoint, configured_model, configured_timeout = get_llm_settings(chat_mode)
     base_url = endpoint if base_url is None else base_url
     model = configured_model if model is None else model
     timeout = configured_timeout if timeout is None else timeout
+    deadline = monotonic() + timeout
     current = deepcopy(conversation)
     current.setdefault("order", new_draft(current["id"]))
     current.setdefault("shown_products", [])
@@ -923,15 +1278,17 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
         return failed_turn(message, repository, conversation, "source_error", source=True)
     if chat_mode == "rule":
         return rule_turn(message, repository, current, knowledge_repository, order_tools, storage_connection)
-    if contains_unsafe_contact(message):
-        return failed_turn(message, repository, conversation, "fake_contact_required")
     if current.get("llm_provider") != "ollama" or not current["model"] or (model and current["model"] != model):
         selected = llm_client.select_model(base_url, model, timeout)
         if selected["error"]:
             return failed_turn(message, repository, conversation, selected["error"])
         current["model"] = selected["model"]
     current["llm_provider"] = chat_mode
-    extraction = llm_client.extract_turn(message, current, base_url, current["model"], timeout, repository)
+    original_message = message
+    advice_selection = resolve_advice_selection(current, message)
+    message = expand_advice_selection(current, message)
+    extraction = llm_client.extract_turn(message, current, base_url, current["model"],
+        max(0, deadline - monotonic()), repository)
     attempts = extraction["attempts"]
     if extraction["error"] or extraction["data"] is None:
         return failed_turn(message, repository, conversation, extraction["error"] or "invalid_turn_json", attempts,
@@ -939,12 +1296,31 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
     # Kiểm chứng delta của model TRƯỚC khi bổ sung các điều kiện đã xác minh
     # từ lượt trước. Điều kiện cũ không phải thông tin model tự bịa trong câu mới.
     proposal = without_disabled_order_fields(extraction["data"], current["order"])
+    if proposal.requests_overflow:
+        response = response_shell(message, repository, current, ["fallback"])
+        response["show_checkout"] = False
+        response["text"] += ("Mỗi tin nhắn mình xử lý tối đa 4 yêu cầu hoặc loại thông tin. "
+            "Bạn chia thành hai tin giúp mình nhé. Mình chưa thay đổi hoặc gửi yêu cầu đặt bánh.")
+        with storage_connection if storage_connection is not None else nullcontext():
+            finish_turn(current, original_message, response, storage_connection)
+        return turn_result(current, response, attempts=attempts)
     grounding = check_turn_grounding(message, proposal, repository, current)
     if grounding:
         return failed_turn(message, repository, conversation, grounding, attempts)
+    if (advice_selection is None and len(proposal.requests) == 1
+            and proposal.requests[0].advice == "more"
+            and not proposal.requests[0].filters.model_dump(exclude_none=True)):
+        advice_selection = more_advice_selection(current)
+    try:
+        proposal = apply_advice_selection(proposal, advice_selection, filter_map=QUERY_FILTER_MAP)
+    except ValueError:
+        return failed_turn(message, repository, conversation, "invalid_advice_selection", attempts)
     proposal = continue_order_request(current, proposal, message)
     # Ý nối tiếp do mô hình phân loại; code chỉ kiểm tra quyền dùng ngữ cảnh.
-    if proposal.continuation == "order" and current["order"]["state"] not in {"COLLECTING", "REVIEW"} and not current.get("pending_order_request"):
+    if (proposal.continuation == "order" and current["order"]["state"] not in {"COLLECTING", "REVIEW"}
+            and not current.get("pending_order_request")
+            and not (current["order"].get("submission") and
+                     (proposal.action == "start_order" or proposal.order_operation == "add_product"))):
         return failed_turn(message, repository, conversation, "no_pending_order", attempts)
     if proposal.continuation in {"information", "entity"} and (
         proposal.action != "none" or proposal.order_update or proposal.order_operation != "none"
@@ -959,6 +1335,11 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
     current["needs"] = merge_preferences(current, proposal, None, response["data_mode"])
     current_turn, query_tasks, order_proposal, order_resolution = resolve_message_scopes(current, proposal, repository, message)
     query_tasks = deduplicate_information_tasks(query_tasks)
+    selected_page = (advice_selection or {}).get("page")
+    if selected_page is not None and len(query_tasks) == 1:
+        # Điều kiện từ trang trước đã được kiểm chứng, không nhờ model đoán lại.
+        query_tasks[0]["scope"]["filters"] = deepcopy(selected_page["filters"])
+        query_tasks[0]["scope"].update(deepcopy(selected_page.get("ranking", {})))
     # Số lượng trong nhu cầu tư vấn là dữ liệu đã được validate ở lượt trước.
     # Không buộc khách nhắc lại, và không nhờ model chép số cũ vào delta mới.
     known_quantity = current["needs"].get("quantity")
@@ -984,6 +1365,9 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
             and order_proposal.order_operation == pending_request["operation"]):
         order_proposal.updates = TurnUpdates(**{**pending_request.get("updates", {}),
             **order_proposal.updates.model_dump(exclude_none=True)})
+        selections = order_resolution.get("item_selections", [])
+        if len(selections) == 1 and selections[0]["quantity"] is None:
+            selections[0]["quantity"] = pending_request.get("quantity")
     resolutions = [order_resolution, *(task["resolution"] for task in query_tasks)]
     source_error = next((r for r in resolutions if r["status"] == "error"), None)
     if source_error:
@@ -1010,6 +1394,7 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
     policy_llm_error = None
     policy_texts = set()
     product_texts = set()
+    pagination_pages = []
     opening_used = False
     try:
         for task in query_tasks:
@@ -1022,7 +1407,7 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 continue
             if scope["intents"] == ["policy"]:
                 policy, error = answer_policy_request(scope.get("question") or message,
-                    knowledge_repository, base_url, current["model"], timeout)
+                    knowledge_repository, base_url, current["model"], max(0, deadline - monotonic()))
                 response["policy"] = merge_policy_responses(response["policy"], policy)
                 if policy["text"] not in policy_texts:
                     response["text"] += policy["text"] + "\n"
@@ -1036,11 +1421,20 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 continue
             reply = deepcopy(response)
             reply.update(text="", products=[], error=None)
-            product_answer(repository, current, task["proposal"], reply, scope)
+            product_answer(repository, current, task["proposal"], reply, scope, pagination_pages=pagination_pages)
             if reply["text"] not in product_texts:
+                if len(query_tasks) > 1 and "recommendation" in task["scope"]["intents"]:
+                    group_label = {"cream_cake": "Bánh kem", "mini": "Bánh ngọt nhỏ", "tea": "Trà",
+                                   "coffee": "Cà phê", "cake": "Các loại bánh", "drink": "Đồ uống"}.get(
+                                       task["scope"]["filters"].get("product_type"))
+                    if group_label:
+                        response["text"] += group_label + ":\n"
                 response["text"] += reply["text"] + "\n"
                 product_texts.add(reply["text"])
+            if reply.get("quick_replies"):
+                response["quick_replies"] = reply["quick_replies"]
             response["catalog_status"] = reply["catalog_status"]
+            response["requires_clarification"] |= reply["requires_clarification"]
             scope["status"] = "answered" if reply["catalog_status"] == "success" else "insufficient_data"
             answered_tasks.append(task)
             for product in reply["products"]:
@@ -1052,6 +1446,9 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                     response["products"].append(deepcopy(product))
             if resolution["ids"] and resolution.get("unresolved_mentions"):
                 response["text"] += "Chưa tìm thấy dữ liệu cho: " + ", ".join(resolution["unresolved_mentions"]) + ". Chưa đủ thông tin để báo giá hoặc xác nhận bánh này.\n"
+        if pagination_pages:
+            has_more = save_advice_pages(current, pagination_pages, advice_selection)
+            response["quick_replies"] = [MORE_ADVICE_LABEL] if has_more else []
         # Chỉ giữ câu cần chọn/làm rõ. Thiếu dữ liệu nguồn không yêu cầu khách lặp lại câu đã rõ.
         if query_tasks:
             current["pending_information_request"] = pending_information or None
@@ -1061,8 +1458,13 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 if not focused and "recommendation" in proposal.intents:
                     focused = [p["id"] for p in response["products"]]
                 current["shown_products"] = deepcopy(response["products"])
+                # Nhóm được hỏi rõ vẫn là chủ đề khi chưa có kết quả.
+                product_types = {task["scope"]["filters"].get("product_type") for task in product_tasks}
+                if product_types == {None}:
+                    product_types = {product.get("product_type") for product in response["products"]}
                 current["discussion_context"] = {"focus_product_ids": focused,
-                    "focus_product_terms": [name for task in product_tasks for name in task["scope"]["product_mentions"]]}
+                    "focus_product_terms": [name for task in product_tasks for name in task["scope"]["product_mentions"]],
+                    "product_type": next(iter(product_types)) if len(product_types) == 1 else None}
             information_tasks = [task for task in query_tasks if task["scope"]["intents"] != ["policy"]]
             if information_tasks:
                 offered = list(dict.fromkeys(
@@ -1072,7 +1474,8 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 if not offered and not pending_information:
                     offered = [p["id"] for p in response["products"]]
                 if (current["product_choices"]["product_ids"] and all(
-                        not task["scope"]["product_mentions"] and task["scope"]["reference"] != "none"
+                        "recommendation" not in task["scope"]["intents"]
+                        and not task["scope"]["product_mentions"] and task["scope"]["reference"] != "none"
                         for task in information_tasks)):
                     offered = list(current["product_choices"]["product_ids"])
                 current["product_choices"] = {
@@ -1101,6 +1504,13 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
             response["text"] += "Bánh yêu cầu xóa không trùng bánh trong bản nháp; mình chưa xóa món nào.\n"
         else:
             choices = "; ".join(dict.fromkeys(product["name"] for product in order_resolution.get("candidates", [])))
+            quantity = proposal.updates.quantity
+            if len(proposal.order_items) == 1 and proposal.order_items[0].reference not in {"both", "all"}:
+                quantity = proposal.order_items[0].quantity or quantity
+            if quantity is None and pending_request:
+                quantity = pending_request.get("quantity")
+            if quantity is not None:
+                response["text"] += f"Mình giữ số lượng {quantity} đã ghi nhận. "
             response["text"] += ("Phần đặt bánh: bạn chọn sản phẩm nào trong " + choices + "?\n" if choices
                 else "Phần đặt bánh còn chưa rõ sản phẩm hoặc thông tin cần đổi; mình giữ bản nháp hiện tại.\n")
         if current["order"].get("review") and not current["order"].get("submission"):
@@ -1112,8 +1522,26 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
             remembered = {k: v for k, v in order_proposal.updates.model_dump(exclude_none=True).items()
                 if k in current["order"]["slots"] and k not in {"cake_need", "product_id", "size", "toppings", "cake_text"}
                 and (k != "quantity" or len(order_proposal.product_mentions) <= 1)}
+            previous_pending = current.get("pending_order_request") or {}
+            quantity = proposal.updates.quantity
+            if len(proposal.order_items) == 1 and proposal.order_items[0].reference not in {"both", "all"}:
+                quantity = proposal.order_items[0].quantity or quantity
+            same_request = (previous_pending.get("operation") == proposal.order_operation
+                and (proposal.continuation == "order"
+                     or previous_pending.get("product_mentions") == list(order_proposal.product_mentions)))
+            if same_request:
+                remembered = {**previous_pending.get("updates", {}), **remembered}
+                quantity = quantity or previous_pending.get("quantity")
+            if quantity is not None:
+                remembered["quantity"] = quantity
+            candidates = order_resolution.get("candidates", [])
+            if not candidates and same_request:
+                candidates = previous_pending.get("candidates", [])
             current["pending_order_request"] = {"operation": proposal.order_operation,
                 "product_ids": list(order_resolution["ids"]), "revision": current["order"]["revision"],
+                "product_mentions": list(order_proposal.product_mentions),
+                "candidates": deepcopy(candidates), "quantity": quantity,
+                "items": [item.model_dump(exclude_none=True) for item in proposal.order_items],
                 "updates": remembered}
     current["unknown_streak"] = current["unknown_streak"] + 1 if list(proposal.intents) == ["fallback"] else 0
     current_turn["requests"] = [deepcopy(task["scope"]) for task in query_tasks]
@@ -1129,6 +1557,12 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 order_text = advance_order(current, order_proposal, order_resolution, message, order_tools, repository, outcome=order_outcome)
                 if order_text:
                     response["text"] += "\n" + order_text
+                if order_outcome.get("requires_clarification"):
+                    response["requires_clarification"] = True
+                if order_outcome["changed"] and not query_tasks and order_resolution["ids"]:
+                    current["discussion_context"] = {
+                        "focus_product_ids": list(order_resolution["ids"]),
+                        "focus_product_terms": list(order_proposal.product_mentions)}
                 if current["unknown_streak"] >= 2:
                     current["order"], text = request_handoff(current["order"], order_tools, "two_unknown_turns", current["needs"])
                     response["text"] += "\n" + text
@@ -1147,8 +1581,10 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 opening_used = True
                 label, separator, body = response["text"].partition("\n")
                 response["text"] = label + separator + opening + "\n" + body
-            remember_request(current, proposal, current_turn, response["requires_clarification"] or bool(current.get("pending_order_request")))
-            finish_turn(current, message, response, storage_connection)
+            response["show_checkout"] = bool(not proposal.order_negated and (
+                "order_request" in proposal.intents or proposal.action in {"review", "confirm", "cancel"}))
+            remember_request(current, proposal, current_turn, response["requires_clarification"])
+            finish_turn(current, original_message, response, storage_connection)
     except sqlite3.Error:
         return failed_turn(message, repository, conversation, "storage_error", attempts, source=True)
     result = turn_result(current, response, engine="llm_error" if policy_llm_error else ("source_error" if response["error"] else chat_mode), error=policy_llm_error, attempts=attempts, current_turn=current_turn)

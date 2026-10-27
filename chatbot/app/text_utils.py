@@ -2,6 +2,7 @@
 
 import re
 import unicodedata
+from decimal import Decimal
 
 
 def normalize_text(text: str) -> str:
@@ -53,3 +54,131 @@ def phrase_spans(text: str, phrase: str) -> list[tuple[int, int]]:
 def format_vnd(value: int) -> str:
     """Định dạng số nguyên tiền Việt; không dùng để suy giá."""
     return f"{value:,}".replace(",", ".") + " đ"
+
+
+# Chỉ dùng để chọn ví dụ/kiểm chứng. Không sửa message gốc hoặc tự chọn intent.
+_SHOPPING_ALIASES = {
+    "banh kem": ("banh sinh nhat", "birthday cake", "ga to", "gato", "gateau"),
+    "banh nho": ("banh ngot nho", "banh mini", "mini cake", "banh an vat"),
+    "ca phe": ("coffee", "cafe", "caphe", "ca fe", "cf"),
+    "bao nhieu": ("bao nhiu", "bao nhieu", "bnhieu", "bn"),
+    "gia": ("gia ca",),
+    "san pham": ("sp",),
+    "goi y": ("gioi thieu", "de xuat", "tu van"),
+}
+_SHOPPING_PATTERNS = [
+    (canonical, re.compile(r"(?<!\w)" + re.escape(alias) + r"(?!\w)"))
+    for canonical, aliases in _SHOPPING_ALIASES.items() for alias in sorted(aliases, key=len, reverse=True)
+]
+
+
+def normalize_shopping_terms(text: str) -> str:
+    """Chuẩn hóa cách gọi đồng nghĩa cho bằng chứng; raw text vẫn được giữ."""
+    value = normalize_business_evidence(text)
+    for canonical, pattern in _SHOPPING_PATTERNS:
+        value = pattern.sub(canonical, value)
+    return value
+
+
+def mentioned_catalog_groups(text: str, ignored_names=()) -> set[str]:
+    """Chỉ chọn ví dụ/kiểm chứng nhóm rõ; không tạo intent, filter hay ID."""
+    value = normalize_shopping_terms(text.replace(";", ",").replace("?", ",").replace("!", ","))
+    for name in sorted(ignored_names, key=len, reverse=True):
+        phrase = normalize_shopping_terms(name)
+        if phrase:
+            value = re.sub(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", " ", value)
+    groups = set()
+    mapping = {"banh kem": "cream_cake", "banh nho": "mini", "ca phe": "coffee",
+               "tra": "tea", "do uong": "drink", "banh": "cake"}
+    pattern = (r"\b(?:banh kem|banh nho|ca phe|do uong|tra|"
+               r"banh(?=\s*(?:,|va\b|voi\b|gia\b|duoi\b|tren\b|nao\b|co\b|vi\b|$)))\b")
+    for match in re.finditer(pattern, value):
+        kind = mapping[match[0]]
+        before = re.split(r"[,.;]", value[:match.start()])[-1]
+        if re.search(r"\b(?:khong|tranh|ngoai tru|bo)(?:\s+(?:can|muon|chon|tim|lay|phai))*\s*$", before):
+            continue
+        if kind in {"tea", "coffee"} and re.search(r"\b(?:vi|huong)\b[^,.;]*$", before):
+            continue  # Vị trà xanh/cà phê của bánh không là một nhóm đồ uống khác.
+        groups.add(kind)
+    return groups
+
+
+def numeric_evidence_text(text: str) -> str:
+    """Bỏ dấu chữ, giữ dấu tiền/khoảng; dùng chung thay ba regex lệch nhau."""
+    decomposed = unicodedata.normalize("NFKD", text.casefold().replace("đ", "d"))
+    return "".join(char for char in decomposed if not unicodedata.combining(char))
+
+
+MONEY_NUMBER = r"\d+(?:[.,]\d+)*"
+MONEY_UNIT = r"(?:nghin|ngan|trieu|tr|k|vnd|dong|d|₫)"
+_MONEY_LITERAL = re.compile(r"(?<!\w)(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")(?!\w)")
+_MONEY_RANGE = re.compile(r"(?<!\w)(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")?\s*"
+    r"(?:-|–|—|~|den|toi)\s*(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")?(?!\w)")
+_BUDGET_CUES = {
+    "upper_strict": r"duoi|it hon|thap hon|chua toi|re hon",
+    "upper_inclusive": r"khong (?:qua|vuot|hon|tren)|khong nhieu hon|dung qua|toi da|khoang|tam|co|con|ngan sach(?: la)?",
+    "lower_strict": r"tren|hon|cao hon|nhieu hon|dat hon|mac hon",
+    "lower_inclusive": r"khong (?:duoi|it hon|thap hon)|it nhat|toi thieu|tu",
+    "exact": r"cung gia|dong gia|bang gia|gia dung|gia(?: la)?|dung|chinh xac",
+}
+
+
+def parse_money(amount: str, unit: str | None) -> int:
+    """300k/300.000/0,3 triệu → VNĐ nguyên; Decimal tránh lỗi số thực."""
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", amount) and not amount.startswith(("0.", "0,")):
+        amount = amount.replace(".", "").replace(",", "")
+    number = Decimal(amount.replace(",", "."))
+    multiplier = 1_000_000 if unit in {"tr", "trieu"} else 1_000 if unit in {"k", "ngan", "nghin"} else 1
+    return int(round(number * multiplier))
+
+
+def budget_evidence(text: str) -> dict:
+    """Bằng chứng tiền để chọn mẫu và bác output sai; KHÔNG áp filter thay Qwen."""
+    raw = numeric_evidence_text(text)
+    values = {parse_money(m[1], m[2]) for m in _MONEY_LITERAL.finditer(raw)}
+    # Cách viết phổ biến 1tr5 = 1,5 triệu; chỉ xác minh số, không trích intent.
+    values.update(int(m[1]) * 1_000_000 + int(m[2]) * 100_000
+                  for m in re.finditer(r"(?<!\w)(\d+)tr(\d)(?!\w)", raw))
+    expected, shapes, spans = {}, set(), []
+    money_context = bool(re.search(r"\b(?:gia|tien|ngan sach|muc|tai chinh)\b", raw)
+        or (re.search(r"\b(?:san pham|sp|banh|tra|ca phe)\b", raw)
+            and re.search(r"\b(?:tu|khoang)\b", raw)
+            and not re.search(r"\b(?:ngay|thang|nam)\b", raw)))
+    for match in _MONEY_RANGE.finditer(raw):
+        left_unit, right_unit = match[2], match[4]
+        if not left_unit and not right_unit and not money_context:
+            continue
+        lower = parse_money(match[1], left_unit or right_unit)
+        upper = parse_money(match[3], right_unit or left_unit)
+        if not (left_unit or right_unit) and min(lower, upper) < 1000:
+            continue  # Không đoán 300-400 không đơn vị thành nghìn đồng.
+        values.update((lower, upper)); spans.append(match.span()); shapes.add("range")
+        expected.update(min_budget_vnd=lower, budget_vnd=upper, min_price_inclusive=True, price_inclusive=True)
+    candidates = []
+    for shape, cue in _BUDGET_CUES.items():
+        pattern = r"\b(?:" + cue + r")\s*:?\s*(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")?(?!\w)"
+        for match in re.finditer(pattern, raw):
+            if any(match.start(1) < end and match.end(1) > start for start, end in spans):
+                continue
+            value = parse_money(match[1], match[2])
+            if not match[2] and value < 1000:
+                continue
+            candidates.append((match.start(), match.end(), shape, value))
+    # Cụm dài ưu tiên: "không dưới" không bị đọc thành "dưới".
+    accepted = []
+    for start, end, shape, value in sorted(candidates, key=lambda m: (m[0]-m[1], m[0])):
+        if not any(start < b and end > a for a, b in spans + accepted):
+            accepted.append((start, end)); shapes.add(shape); values.add(value)
+            if shape == "exact":
+                expected.update(min_budget_vnd=value, budget_vnd=value, min_price_inclusive=True, price_inclusive=True)
+            elif shape.startswith("upper"):
+                expected.update(budget_vnd=value, price_inclusive=shape.endswith("inclusive"))
+            else:
+                expected.update(min_budget_vnd=value, min_price_inclusive=shape.endswith("inclusive"))
+    for match in re.finditer(r"(?<!\w)(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")\s+(tro len|tro xuong|do xuong)\b", raw):
+        value = parse_money(match[1], match[2]); values.add(value)
+        if match[3] == "tro len":
+            expected.update(min_budget_vnd=value, min_price_inclusive=True); shapes.add("lower_inclusive")
+        else:
+            expected.update(budget_vnd=value, price_inclusive=True); shapes.add("upper_inclusive")
+    return {"values": values, "shapes": shapes, "expected": expected}

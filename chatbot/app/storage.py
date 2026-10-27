@@ -22,17 +22,22 @@ def fingerprint(value: dict) -> str:
 
 def draft_fingerprint(draft: dict) -> str:
     """Giữ hash cũ cho một món; nhiều món phải khóa cả danh sách REVIEW."""
+    if draft.get("checkout_form"):
+        return fingerprint({"slots": draft["slots"], "extra_items": draft.get("extra_items", []),
+                            "checkout_form": draft["checkout_form"], "checkout_summary": draft.get("checkout_summary")})
     if not draft.get("extra_items"):
         return fingerprint(draft["slots"])
     return fingerprint({"slots": draft["slots"], "extra_items": draft["extra_items"]})
 
 
-def safe_history_text(text: str) -> str:
+def safe_history_text(text: str, contact_values=()) -> str:
     """Không lưu giá trị contact nhập thô; che email/chuỗi giống số điện thoại."""
     if re.match(r"\s*(?:tên|ten|sđt|sdt|điện thoại|dien thoai|địa chỉ|dia chi)\s*:", text, re.I):
-        return "[Đã xử lý trường liên hệ thử nghiệm; không lưu đầu vào thô.]"
+        return "[Đã ghi nhận thông tin liên hệ; không lưu đầu vào thô trong lịch sử.]"
+    for value in sorted({v for v in contact_values if isinstance(v, str) and v}, key=len, reverse=True):
+        text = re.sub(r"(?<!\w)" + re.escape(value) + r"(?!\w)", "[liên hệ đã che]", text, flags=re.I)
     text = re.sub(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}", "[email đã che]", text)
-    return re.sub(r"(?<!\w)\+?\d[\d .-]{7,}\d(?!\w)", "[chuỗi số đã che]", text)
+    return re.sub(r"(?<!\w)\+?\d(?:[ .-]*\d){7,}(?!\w)", "[chuỗi số đã che]", text)
 
 
 def open_storage(path: str | Path) -> sqlite3.Connection:
@@ -114,11 +119,22 @@ def migrate_legacy_orders(connection: sqlite3.Connection) -> None:
         ))
 
 
-def record_messages(connection: sqlite3.Connection, conversation_id: str, message: str, answer: str) -> None:
+def record_messages(connection: sqlite3.Connection, conversation_id: str, message: str, answer: str, *, contact_values=()) -> None:
     connection.executemany("INSERT INTO messages(conversation_id,role,content,created_at) VALUES(?,?,?,?)", [
-        (conversation_id, "user", safe_history_text(message), utc_now()),
-        (conversation_id, "assistant", safe_history_text(answer), utc_now()),
+        (conversation_id, "user", safe_history_text(message, contact_values), utc_now()),
+        (conversation_id, "assistant", safe_history_text(answer, contact_values), utc_now()),
     ])
+
+
+def load_messages(connection: sqlite3.Connection, conversation_id: str, limit: int = 100) -> list[dict]:
+    """Đọc tin đã lưu theo owner, mới nhất có giới hạn; không tăng context gửi LLM."""
+    if type(limit) is not int or not 1 <= limit <= 200:
+        raise ValueError("Giới hạn lịch sử cần từ 1 đến 200.")
+    rows = connection.execute(
+        "SELECT role,content,created_at FROM messages WHERE conversation_id=? ORDER BY id DESC LIMIT ?",
+        (conversation_id, limit),
+    ).fetchall()
+    return [dict(row) for row in reversed(rows)]
 
 
 def save_conversation(connection: sqlite3.Connection, conversation: dict) -> None:
@@ -128,8 +144,9 @@ def save_conversation(connection: sqlite3.Connection, conversation: dict) -> Non
         owner = connection.execute("SELECT conversation_id FROM drafts WHERE id=?", (draft["id"],)).fetchone()
         if draft["conversation_id"] != stored["id"] or (owner and owner["conversation_id"] != stored["id"]):
             raise ValueError("Bản nháp không thuộc conversation này.")
+    contacts = [(draft or {}).get("slots", {}).get(key) for key in ("name", "phone", "address")]
     for message in stored["history"]:
-        message["content"] = safe_history_text(message["content"])
+        message["content"] = safe_history_text(message["content"], contacts)
     connection.execute(
         "INSERT INTO conversations VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload, updated_at=excluded.updated_at",
         (stored["id"], json.dumps(stored, ensure_ascii=False), datetime.now(timezone.utc).isoformat()),
@@ -185,10 +202,3 @@ def save_record(connection: sqlite3.Connection, table: str, conversation_id: str
     if row["conversation_id"] != conversation_id or row["payload_hash"] != digest:
         return {"status": "error", "data": None, "error": "idempotency_conflict"}
     return {"status": "available", "data": json.loads(row["payload"]), "error": None}
-
-
-def list_records(connection: sqlite3.Connection, table: str, conversation_id: str) -> list[dict]:
-    if table not in {"drafts", "submissions", "tickets"}:
-        raise ValueError("Tên bảng không được hỗ trợ.")
-    rows = connection.execute(f"SELECT payload FROM {table} WHERE conversation_id=? ORDER BY rowid", (conversation_id,)).fetchall()
-    return [json.loads(row["payload"]) for row in rows]

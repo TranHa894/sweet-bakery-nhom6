@@ -16,14 +16,15 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import config
-from app.conversation import handle_message, new_conversation
+from app.conversation import handle_message, new_conversation, response_shell, finish_turn
+from app.checkout import CheckoutAction, CheckoutView, checkout_view, apply_checkout
 from app.knowledge_loader import create_knowledge_repository
 from app.order_service import create_order_tools
 from app.order_flow import order_items
 from app.repositories.catalog import create_catalog_repository
-from app.schemas import QueryStatus, StockStatus
+from app.schemas import QueryStatus, StockStatus, ProductType
 from app.repositories.catalog import safe_search_products
-from app.storage import load_conversation, load_order_request, open_storage, save_conversation
+from app.storage import load_conversation, load_order_request, open_storage, save_conversation, load_messages
 
 STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
 MESSAGE_MAX_LENGTH = 2000  # Giới hạn kỹ thuật của API, không là chính sách cửa hàng.
@@ -65,6 +66,11 @@ class ProductView(APIModel):
     category: str
     description: str
     flavor: str | None
+    product_type: ProductType | None = None
+    flavor_source: str | None = None
+    style_tags: list[str] = Field(default_factory=list)
+    advice_profile: dict | None = None
+    image_url: str | None = None
     variants: list[VariantView]
     allergen: list[str] | None
     customization: list[str] | None
@@ -137,11 +143,14 @@ class ReviewView(APIModel):
 
 
 class ChatView(APIModel):
+    show_checkout: bool = False
+    checkout: CheckoutView | None = None
     conversation_id: str
     catalog_source: str
     message: str
     state: State
     products: list[ProductView]
+    quick_replies: list[str] = Field(default_factory=list, max_length=6)
     sources: list[SourceView]
     data_mode: str
     knowledge_mode: str
@@ -166,7 +175,22 @@ class ConversationView(APIModel):
     state: State
 
 
+class HistoryMessageView(APIModel):
+    role: Literal["user", "assistant"]
+    content: str
+    created_at: str
+
+
+class ConversationResumeView(APIModel):
+    conversation_id: str
+    messages: list[HistoryMessageView]
+    snapshot: ChatView
+    truncated: bool
+
+
 class OrderRequestView(APIModel):
+    checkout_form: dict | None = None
+    checkout_summary: dict | None = None
     items: list[OrderItemView] = Field(default_factory=list)
     id: str
     conversation_id: str
@@ -252,6 +276,7 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
         "conversation_id": conversation["id"], "message": response["text"],
         "catalog_source": response.get("catalog_source", response["data_mode"]),
         "state": draft["state"], "products": response["products"], "sources": sources,
+        "quick_replies": response.get("quick_replies", conversation.get("quick_replies", [])),
         "data_mode": response["data_mode"], "knowledge_mode": knowledge_mode,
         "catalog_status": response["catalog_status"], "policy_status": policy["status"] if policy else None,
         "requires_confirmation": review is not None and (
@@ -261,6 +286,9 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
         "request_id": submission["id"] if submission and submission["kind"] == "waiting_consultation" else None,
         "demo_order_id": submission["id"] if submission and submission["kind"] == "demo_order" else None,
         "engine": turn["engine"], "errors": list(dict.fromkeys(error for error in errors if error)),
+        "checkout": checkout_view(conversation),
+        "show_checkout": bool(response.get("show_checkout", conversation.get(
+            "checkout_visible", draft["state"] in {"COLLECTING", "REVIEW"} and not submission))),
     }
 
 
@@ -284,8 +312,15 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
     @application.middleware("http")
     async def no_cache_private_data(request, call_next):
         response = await call_next(request)
-        if request.url.path.startswith("/api/"):
+        path = request.url.path
+        if path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
+        elif (path in {"/", "/chatbot/", "/website"} or
+              path.startswith("/website/") and (path.endswith("/") or Path(path).suffix == ".html")):
+            # HTML mới không tiếp tục nằm trong HTTP cache sau cập nhật.
+            response.headers["Cache-Control"] = "no-store"
+        elif path.startswith(("/website/", "/static/")) and Path(path).suffix in {".html", ".js", ".css"}:
+            response.headers["Cache-Control"] = "no-cache"
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
 
@@ -334,6 +369,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
     @application.post("/api/conversations", response_model=ConversationView, status_code=201)
     def start_conversation(body: CreateConversationRequest):
         conversation = new_conversation()
+        conversation["web_checkout"] = get_catalog_source(catalog) == "group_files"
         token = secrets.token_urlsafe(32)  # 256 bit ngẫu nhiên; UUID chỉ là ID.
         digest = hashlib.sha256(token.encode()).hexdigest()
         with registry_lock:
@@ -351,6 +387,27 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                 "expires_in_seconds": session_seconds, "data_mode": get_data_mode(catalog),
                 "knowledge_mode": knowledge_mode, "chat_mode": chat_mode, "state": "BROWSING"}
 
+    @application.get("/api/conversations/{id}", response_model=ConversationResumeView)
+    def resume_conversation(id: str, authorization: str | None = Header(default=None)):
+        session = authorize(authorization)
+        if id != session["conversation_id"]:
+            raise HTTPException(404, "conversation_not_found")
+        # Cùng lock với chat: chờ lượt đang xử lý, không gửi lại yêu cầu/đặt đơn.
+        with session["lock"], closing(open_storage(db_path)) as connection:
+            conversation = load_conversation(connection, id)
+            if conversation is None:
+                raise HTTPException(404, "conversation_not_found")
+            history = load_messages(connection, id, 101)
+            response = response_shell("", catalog, conversation)
+            latest_ids = {identifier for question in (conversation.get("current_request") or {}).get("requests", [])
+                          for identifier in question.get("result_product_ids", [])}
+            response["products"] = [product for product in conversation.get("shown_products", [])
+                                    if history and product["id"] in latest_ids]
+            snapshot = make_chat_view({"conversation": conversation, "response": response,
+                "engine": chat_mode, "llm_error": None}, knowledge_mode)
+            return {"conversation_id": id, "messages": history[-100:],
+                    "snapshot": snapshot, "truncated": len(history) > 100}
+
     @application.post("/api/chat", response_model=ChatView)
     def chat(body: ChatRequest, authorization: str | None = Header(default=None)):
         session = authorize(authorization)
@@ -362,12 +419,36 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             conversation = load_conversation(connection, session["conversation_id"])
             if conversation is None:
                 raise HTTPException(404, "conversation_not_found")
+            conversation["web_checkout"] = get_catalog_source(catalog) == "group_files"
             tools = create_order_tools(catalog, connection, conversation["id"])
             turn = handle_message(body.message, catalog, conversation, chat_mode=chat_mode,
                                   base_url=base_url, model=model, timeout=timeout,
                                   knowledge_repository=knowledge, order_tools=tools,
                                   storage_connection=connection)
             return make_chat_view(turn, knowledge_mode)
+
+    @application.post("/api/checkout", response_model=ChatView)
+    def checkout(body: CheckoutAction, authorization: str | None = Header(default=None)):
+        session = authorize(authorization)
+        if body.conversation_id != session["conversation_id"]:
+            raise HTTPException(404, "conversation_not_found")
+        with session["lock"], closing(open_storage(db_path)) as connection, connection:
+            conversation = load_conversation(connection, body.conversation_id)
+            if conversation is None:
+                raise HTTPException(404, "conversation_not_found")
+            tools = create_order_tools(catalog, connection, conversation["id"])
+            try:
+                current, message = apply_checkout(conversation, body, catalog, tools)
+            except ValueError as error:
+                raise HTTPException(409, str(error)) from None
+            response = response_shell(message, catalog, current)
+            response["text"] += message
+            response["show_checkout"] = True
+            finish_turn(current, {"review": "Xem lại thông tin đã nhập trên form.",
+                                 "edit": "Sửa thông tin yêu cầu.", "cancel": "Hủy bản nháp.",
+                                 "confirm": "Xác nhận gửi yêu cầu."}[body.action], response, connection)
+            return make_chat_view({"conversation": current, "response": response,
+                                   "engine": "form", "llm_error": None}, knowledge_mode)
 
     @application.get("/api/order-requests/{id}", response_model=OrderRequestView)
     def get_order_request(id: str, authorization: str | None = Header(default=None)):
@@ -382,6 +463,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                 raise HTTPException(404, "order_request_not_found")
             return result["data"]
 
+    @application.get("/chatbot/", include_in_schema=False)
     @application.get("/", include_in_schema=False)
     def index():
         return FileResponse(STATIC_DIR / "index.html")
@@ -389,7 +471,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     group_static = config.GROUP_PROJECT_ROOT / "static"
     if group_static.is_dir():
-        # Chỉ phục vụ file có sẵn, không ghi/chèn widget vào frontend nhóm.
+        # Phục vụ website nhóm cùng origin; widget dùng lại trang /chatbot/.
         application.mount("/website", StaticFiles(directory=group_static, html=True), name="group_website")
     return application
 

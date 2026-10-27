@@ -1,5 +1,29 @@
 "use strict";
-// Token chỉ nằm trong RAM của tab; không ghi vào URL hoặc localStorage.
+// Phiên theo tab: sessionStorage giữ token qua chuyển trang; không dùng URL/localStorage.
+const SESSION_KEY = "sweetBakeryChatSession.v1";
+const embedded = window.parent !== window && new URLSearchParams(location.search).get("embed") === "1";
+if (embedded) document.documentElement.classList.add("embedded");
+let parentOrigin = null;
+try { if (embedded && document.referrer) parentOrigin = new URL(document.referrer).origin; } catch { /* Không gửi sang origin chưa biết. */ }
+function notifyParent(action, extra = {}) {
+  if (parentOrigin) window.parent.postMessage({channel: "sweet-bakery-chat", action, ...extra}, parentOrigin);
+}
+function rememberSession() {
+  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); }
+  catch { showError("Trình duyệt không cho lưu phiên tạm. Lịch sử có thể không khôi phục khi chuyển trang."); }
+}
+function forgetSession() {
+  try { sessionStorage.removeItem(SESSION_KEY); } catch { /* Storage có thể bị chặn. */ }
+}
+function readSession() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
+    if (saved && typeof saved.conversation_id === "string" && typeof saved.session_token === "string"
+        && saved.session_token.length >= 32 && saved.session_token.length <= 128) return saved;
+  } catch { /* Dữ liệu hỏng không được dùng làm phiên. */ }
+  forgetSession();
+  return null;
+}
 let session = null;
 let busy = false;
 const byId = (id) => document.getElementById(id);
@@ -77,7 +101,14 @@ async function api(path, body) {
       422: "Tin nhắn chưa hợp lệ. Vui lòng nhập từ 1 đến 2.000 ký tự.",
       503: "Chatbot tạm thời chưa sẵn sàng. Bạn có thể thử lại."
     };
-    throw new Error(errors[response.status] || "Chưa xử lý được yêu cầu. Bạn có thể thử lại.");
+    let detail = errors[response.status] || "Chưa xử lý được yêu cầu. Bạn có thể thử lại.";
+    if (path === "/api/checkout") {
+      if (response.status === 409 && typeof result.detail === "string") detail = result.detail;
+      if (response.status === 422) detail = "Bạn kiểm tra các trường bắt buộc, số điện thoại, email, ngày nhận và số lượng nhé.";
+    }
+    const error = new Error(detail);
+    error.status = response.status;
+    throw error;
   }
   return result;
 }
@@ -92,7 +123,7 @@ function showModes(data) {
     label = "Chưa kết nối menu";
     notice = "Có thể ghi nhận nhu cầu; chưa đủ dữ liệu để chọn bánh hoặc xác nhận đơn.";
   } else if (source === "group_files") {
-    label = "Menu nhóm · dữ liệu mẫu";
+    label = "Danh mục tham khảo";
     notice = "Chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn.";
   } else if (["mock", "local_demo"].includes(data.data_mode)) {
     label = "Dữ liệu mô phỏng";
@@ -102,7 +133,6 @@ function showModes(data) {
     notice = "Chưa đủ thông tin để xác nhận sản phẩm, giá hoặc tình trạng bán.";
   }
   if (["sample", "local_demo"].includes(data.knowledge_mode)) notice += " Chính sách mẫu.";
-  if (["COLLECTING", "REVIEW"].includes(data.state)) notice += " Chỉ dùng liên hệ giả DEMO/TEST.";
   byId("mode-label").textContent = label;
   byId("data-notice").textContent = notice;
   session.state = data.state;
@@ -129,6 +159,33 @@ function addMessage(role, text) {
   return section;
 }
 
+
+function addPendingReply() {
+  // Hiện trạng thái ngay khi gửi; thời gian này là đã chờ, không dự đoán model.
+  const section = addMessage("bot", "Đang xử lý yêu cầu…");
+  section.classList.add("pending");
+  const bubble = section.querySelector(".bubble");
+  const elapsed = element("span", "", "waiting-elapsed");
+  elapsed.setAttribute("aria-hidden", "true"); // Không đọc lại từng giây qua screen reader.
+  bubble.append(elapsed);
+  const started = performance.now();
+  const timer = setInterval(() => {
+    const seconds = Math.floor((performance.now() - started) / 1000);
+    if (seconds >= 3) elapsed.textContent = "Đã chờ " + seconds + " giây";
+  }, 1000);
+  return {
+    section,
+    complete(text) {
+      clearInterval(timer);
+      section.classList.remove("pending");
+      bubble.textContent = displayMessage(text);
+      return section;
+    },
+    remove() { section.remove(); },
+    stop() { clearInterval(timer); }
+  };
+}
+
 function showProducts(parent, products = []) {
   if (!products.length) return;
   const grid = element("div", undefined, "product-grid");
@@ -137,6 +194,16 @@ function showProducts(parent, products = []) {
     if (ids.has(product.id)) continue;
     ids.add(product.id);
     const card = element("article", undefined, "product-card");
+    if (typeof product.image_url === "string" && /^\/website\/images\/[A-Za-z0-9_.-]+$/.test(product.image_url)) {
+      const image = document.createElement("img");
+      image.src = product.image_url;
+      image.alt = product.name;
+      image.className = "product-image";
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.addEventListener("error", () => image.remove(), {once: true});
+      card.append(image);
+    }
     card.append(element("h3", product.name));
     const shown = new Set();
     for (const variant of product.variants || []) {
@@ -160,11 +227,33 @@ function showProducts(parent, products = []) {
     if (product.source === "group_files" && product.id) {
       const link = element("a", "Xem bánh →");
       link.href = "/website/chi-tiet-san-pham-demo.html?id=" + encodeURIComponent(product.id);
+      if (embedded) {
+        link.target = "_blank";
+        link.rel = "noopener";
+        if (parentOrigin) link.addEventListener("click", (event) => {
+          event.preventDefault();
+          notifyParent("product", {productId: product.id});
+        });
+      }
       card.append(link);
     }
     grid.append(card);
   }
   parent.append(grid);
+}
+
+function showQuickReplies(parent, replies = []) {
+  document.querySelectorAll(".reply-actions").forEach((node) => node.remove());
+  if (!replies.length) return;
+  const group = element("div", undefined, "quick-actions reply-actions");
+  group.setAttribute("aria-label", "Lựa chọn tư vấn");
+  for (const label of replies.slice(0, 6)) {
+    const button = element("button", label);
+    button.type = "button";
+    button.addEventListener("click", () => send(label));
+    group.append(button);
+  }
+  parent.append(group);
 }
 
 function showSources(parent, sources = []) {
@@ -183,24 +272,252 @@ function showSources(parent, sources = []) {
   parent.append(details);
 }
 
-function showReview(data) {
-  reviewPanel.replaceChildren();
-  // Nội dung REVIEW đầy đủ đã có trong tin nhắn bot, không dựng bản sao.
-  reviewPanel.hidden = !data.review || !data.requires_confirmation || Boolean(data.errors?.length);
-  if (reviewPanel.hidden) return;
-  const demo = Boolean(data.review.quote && data.review.availability === "available"
-    && ["mock", "local_demo"].includes(data.review.data_mode) && (data.review.items?.length || 1) === 1);
-  reviewPanel.append(element("p", demo ? "Đây là đơn mô phỏng, không thanh toán thật."
-    : "Gửi chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn."));
+let checkoutCatalog = null;
+let activeCheckout = null;
+let checkoutPresented = false;
+const checkoutLabels = {
+  fullName: "Họ và tên", phone: "Số điện thoại", email: "Email",
+  province: "Tỉnh / Thành phố", ward: "Phường / Xã", addressLine: "Số nhà, tên đường, tòa nhà",
+  deliveryDate: "Ngày nhận mong muốn", deliverySlot: "Khung giờ mong muốn",
+  cakeMessage: "Lời chúc viết trên bánh", note: "Ghi chú"
+};
+const slotLabels = {"": "Cửa hàng liên hệ xác nhận", morning: "08:00 – 12:00",
+  afternoon: "12:00 – 17:00", evening: "17:00 – 20:00"};
+
+function checkoutButton(label, callback, primary = false) {
+  const button = element("button", label, "button " + (primary ? "primary" : "secondary"));
+  button.type = "button";
+  button.addEventListener("click", callback);
+  return button;
+}
+
+async function checkoutAction(action, form) {
+  if (busy || !activeCheckout) return;
+  const snapshot = activeCheckout;
+  const body = {conversation_id: session.conversation_id, draft_id: snapshot.draft_id,
+    revision: snapshot.revision, action};
+  if (form) body.form = form;
+  if (action === "confirm") body.confirmation_token = snapshot.confirmation_token;
+  setBusy(true);
+  showError("");
+  try {
+    const data = await api("/api/checkout", body);
+    welcome.hidden = true;
+    addMessage("bot", data.message);
+    showModes(data);
+    rememberSession();
+    showReview(data);
+    if (!reviewPanel.hidden && data.checkout && data.checkout.stage !== "cancelled") reviewPanel.scrollIntoView({block: "start"});
+    else messages.scrollTop = messages.scrollHeight;
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+function orderThumbnail(name, path) {
+  const box = element("span", undefined, "checkout-thumbnail");
+  if (typeof path === "string" && /^\/website\/images\/[A-Za-z0-9_.-]+$/.test(path)) {
+    const img = document.createElement("img");
+    img.src = path; img.alt = name || "Ảnh sản phẩm";
+    img.width = 48; img.height = 48; img.loading = "lazy"; img.decoding = "async";
+    img.addEventListener("error", () => { box.replaceChildren(element("span", "Ảnh")); }, {once: true});
+    box.append(img);
+  } else box.textContent = "Ảnh";
+  return box;
+}
+
+function checkoutSummary(view) {
+  const summary = view.summary;
+  if (!summary) return;
+  const list = element("div", undefined, "checkout-lines");
+  for (const line of summary.items) {
+    const row = element("div", undefined, "checkout-line");
+    const heading = element("div", undefined, "checkout-product-heading");
+    const product = (checkoutCatalog || []).find(item => item.id === line.product_id);
+    heading.append(orderThumbnail(line.name, line.image_url || product?.image_url), element("strong", line.name));
+    row.append(heading,
+      element("span", line.quantity + " × " + formatMoney(line.unit_price_vnd)),
+      element("strong", formatMoney(line.line_total_vnd)));
+    list.append(row);
+  }
+  reviewPanel.append(list, element("p", "Tổng tiền hàng: " + formatMoney(summary.subtotal_vnd), "checkout-total"),
+    element("p", summary.notice));
+  const details = element("dl", undefined, "checkout-details");
+  for (const [key, label] of Object.entries(checkoutLabels)) {
+    const value = view.form[key];
+    if (!value) continue;
+    details.append(element("dt", label), element("dd", key === "deliverySlot" ? slotLabels[value] : value));
+  }
+  reviewPanel.append(details);
+}
+
+function renderCheckoutForm(view) {
+  const form = element("form", undefined, "checkout-form");
+  form.id = "order-information-form";
+  const productsBox = element("div", undefined, "checkout-items");
+  const rows = [];
+  const menu = checkoutCatalog || [];
+  function addItem(item = {product_id: "", quantity: 1}) {
+    const row = element("div", undefined, "checkout-item");
+    const productLabel = element("label", "Sản phẩm *");
+    const select = element("select");
+    select.required = true;
+    select.append(new Option("Chọn sản phẩm", ""));
+    for (const product of menu) select.append(new Option(product.name, product.id));
+    select.value = item.product_id;
+    productLabel.append(select);
+    const productCell = element("div", undefined, "checkout-product");
+    const selected = menu.find(product => product.id === select.value);
+    let thumbnail = orderThumbnail(selected?.name, selected?.image_url);
+    productCell.append(thumbnail, productLabel);
+    select.addEventListener("change", () => {
+      const product = menu.find(item => item.id === select.value);
+      const next = orderThumbnail(product?.name, product?.image_url);
+      thumbnail.replaceWith(next); thumbnail = next;
+    });
+    const qtyLabel = element("label", "Số lượng *");
+    const qty = element("input");
+    qty.type = "number"; qty.min = "1"; qty.max = "99"; qty.step = "1";
+    qty.required = true; qty.value = item.quantity;
+    qtyLabel.append(qty);
+    const remove = checkoutButton("Bỏ món", () => {
+      row.remove(); rows.splice(rows.indexOf(entry), 1);
+    });
+    const entry = {select, qty};
+    rows.push(entry);
+    row.append(productCell, qtyLabel, remove);
+    productsBox.append(row);
+  }
+  view.items.forEach(addItem);
+  const add = checkoutButton("Thêm món", () => { if (rows.length < 20) addItem(); });
+  form.append(element("p", "Các trường có dấu * là bắt buộc. Số điện thoại cần 10 số hoặc bắt đầu bằng +84."),
+    productsBox, add);
+  const grid = element("div", undefined, "checkout-grid");
+  const limits = {fullName: 100, phone: 20, email: 254, province: 100, ward: 100,
+    addressLine: 250, cakeMessage: 100, note: 500};
+  for (const [key, label] of Object.entries(checkoutLabels)) {
+    const required = ["fullName", "phone", "province", "ward", "addressLine"].includes(key);
+    const wrapper = element("label", label + (required ? " *" : ""));
+    const control = element(key === "note" ? "textarea" : key === "deliverySlot" ? "select" : "input");
+    control.name = key;
+    control.required = required;
+    if (key === "deliverySlot") {
+      for (const [value, name] of Object.entries(slotLabels)) control.append(new Option(name, value));
+    } else if (key !== "note") {
+      control.type = key === "phone" ? "tel" : key === "email" ? "email" : key === "deliveryDate" ? "date" : "text";
+    }
+    if (limits[key]) control.maxLength = limits[key];
+    if (key === "phone") {
+      control.placeholder = "09xxxxxxxx";
+      control.addEventListener("input", () => control.setCustomValidity(""));
+    }
+    if (key === "fullName") control.minLength = 2;
+    if (key === "addressLine") control.minLength = 5;
+    if (key === "deliveryDate") {
+      const parts = new Intl.DateTimeFormat("en-CA", {timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric", month: "2-digit", day: "2-digit"}).formatToParts(new Date());
+      const date = Object.fromEntries(parts.map(part => [part.type, part.value]));
+      control.min = date.year + "-" + date.month + "-" + date.day;
+    }
+    control.value = view.form[key] || "";
+    wrapper.append(control);
+    if (["addressLine", "cakeMessage", "note"].includes(key)) wrapper.className = "checkout-wide";
+    grid.append(wrapper);
+  }
+  const consentLabel = element("label", undefined, "checkout-consent");
+  const consent = element("input"); consent.type = "checkbox"; consent.name = "consent";
+  consent.required = true; consent.checked = Boolean(view.form.consent);
+  consentLabel.append(consent, element("span", "Tôi đồng ý cung cấp thông tin để xử lý yêu cầu đặt hàng. *"));
   const actions = element("div", undefined, "review-actions");
-  const confirm = element("button", demo ? "Xác nhận đơn mô phỏng" : "Gửi yêu cầu", "button primary");
-  confirm.type = "button";
-  confirm.addEventListener("click", () => send("xác nhận gửi yêu cầu"));
-  const cancel = element("button", "Hủy bản nháp", "button secondary");
-  cancel.type = "button";
-  cancel.addEventListener("click", () => send("hủy bản nháp"));
-  actions.append(confirm, cancel);
-  reviewPanel.append(actions);
+  const submit = element("button", "Xem lại yêu cầu", "button primary"); submit.type = "submit";
+  actions.append(submit, checkoutButton("Hủy", () => checkoutAction("cancel")));
+  form.append(grid, element("p", "Ngày/giờ nhận và lời chúc là mong muốn cần cửa hàng xác nhận; chưa tính phí giao hàng."),
+    consentLabel, actions);
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const phone = form.elements.namedItem("phone");
+    const digits = phone.value.replace(/[ .-]/g, "");
+    phone.setCustomValidity(/^(?:0[35789]\d{8}|\+84[35789]\d{8})$/.test(digits)
+      ? "" : "Nhập số di động Việt Nam 10 số hoặc bắt đầu bằng +84.");
+    if (!form.reportValidity()) return;
+    if (!rows.length) { showError("Bạn cần chọn ít nhất một sản phẩm."); return; }
+    const values = Object.fromEntries(new FormData(form));
+    values.consent = consent.checked;
+    values.items = rows.map(row => ({product_id: row.select.value, quantity: Number(row.qty.value)}));
+    checkoutAction("review", values);
+  });
+  reviewPanel.append(form);
+}
+
+function showReview(data, skipCatalog = false) {
+  const view = data.checkout;
+  if ((view && data.show_checkout === false) || data.errors?.length) {
+    // Ẩn phần đơn khi đang tư vấn/lượt lỗi, giữ DOM để không mất form chưa gửi.
+    checkoutPresented = false;
+    reviewPanel.hidden = true;
+    return;
+  }
+  checkoutPresented = Boolean(view);
+  const existing = document.getElementById("order-information-form");
+  // Câu hỏi thông tin không làm mất phần khách đang gõ trong form cùng revision.
+  if (existing && view?.stage === "form" && activeCheckout?.stage === "form"
+      && view.draft_id === activeCheckout.draft_id && view.revision === activeCheckout.revision) {
+    view.form = Object.fromEntries(new FormData(existing));
+    view.form.consent = existing.elements.namedItem("consent").checked;
+    view.items = [...existing.querySelectorAll(".checkout-item")].map(row => ({
+      product_id: row.querySelector("select").value, quantity: Number(row.querySelector("input").value)
+    }));
+  }
+  activeCheckout = view || null;
+  reviewPanel.replaceChildren();
+  reviewPanel.hidden = !view || view.stage === "cancelled";
+  if (!view) {
+    // Giữ tương thích API phiên cũ; không gửi xác nhận chỉ bằng ID.
+    if (data.review && data.requires_confirmation && !data.errors?.length) {
+      reviewPanel.hidden = false;
+      reviewPanel.append(checkoutButton("Gửi yêu cầu", () => send("xác nhận gửi yêu cầu"), true));
+    }
+    return;
+  }
+  if (reviewPanel.hidden) return;
+  messages.append(reviewPanel); // Cùng vùng cuộn: form không chiếm hết widget.
+  reviewPanel.append(element("h2", view.stage === "form" ? "Thông tin đặt hàng"
+    : view.stage === "review" ? "Xem lại yêu cầu" : "Yêu cầu đã lưu"));
+  if (!checkoutCatalog && !skipCatalog) {
+    reviewPanel.append(element("p", "Đang tải danh mục…"));
+    api("/api/catalog").then(result => {
+      checkoutCatalog = result.products.filter(product => product.active !== false);
+      if (activeCheckout === view && checkoutPresented) showReview(data);
+    }).catch(error => {
+      if (activeCheckout === view && checkoutPresented) {
+        // Bản xem lại vẫn có snapshot giá/tên ngay cả khi nguồn ảnh đang lỗi.
+        if (view.stage !== "form") showReview(data, true);
+        else {
+          reviewPanel.append(element("p", error.message));
+          reviewPanel.append(checkoutButton("Thử tải lại", () => showReview(data)));
+        }
+      }
+    });
+    return;
+  }
+  if (view.stage === "form") {
+    renderCheckoutForm(view);
+  } else {
+    checkoutSummary(view);
+    if (view.stage === "review") {
+      reviewPanel.append(element("p", "Xác nhận sẽ lưu yêu cầu chờ cửa hàng tư vấn, chưa thanh toán."));
+      const actions = element("div", undefined, "review-actions");
+      actions.append(checkoutButton("Xác nhận gửi yêu cầu", () => checkoutAction("confirm"), true),
+        checkoutButton("Quay lại chỉnh sửa", () => checkoutAction("edit")),
+        checkoutButton("Hủy", () => checkoutAction("cancel")));
+      reviewPanel.append(actions);
+    } else {
+      reviewPanel.append(element("p", "Mã yêu cầu: " + view.record_id),
+        element("p", "Bạn có thể đặt thêm món trong cuộc trò chuyện này."));
+    }
+  }
 }
 
 async function startConversation() {
@@ -210,10 +527,13 @@ async function startConversation() {
   try {
     const created = await api("/api/conversations", {});
     session = created;
+    rememberSession();
     welcome.hidden = false;
     messages.replaceChildren(welcome);
     reviewPanel.replaceChildren();
     reviewPanel.hidden = true;
+    activeCheckout = null;
+    checkoutPresented = false;
     input.value = "";
     showModes(created);
   } catch (error) {
@@ -228,26 +548,71 @@ async function startConversation() {
   }
 }
 
+async function restoreConversation() {
+  session = readSession();
+  if (!session) return startConversation();
+  setBusy(true);
+  showError("");
+  byId("connection-status").textContent = "Đang khôi phục cuộc trò chuyện…";
+  try {
+    const data = await api("/api/conversations/" + encodeURIComponent(session.conversation_id));
+    messages.replaceChildren(welcome);
+    welcome.hidden = data.messages.length > 0;
+    if (data.truncated) messages.append(element("p", "Hiển thị 100 tin nhắn gần nhất của cuộc trò chuyện.", "history-note"));
+    let lastAssistant = null;
+    for (const message of data.messages) {
+      const section = addMessage(message.role === "user" ? "user" : "bot", message.content);
+      lastAssistant = message.role === "assistant" ? section : null;
+    }
+    if (lastAssistant) {
+      showProducts(lastAssistant, data.snapshot.products);
+      showSources(lastAssistant, data.snapshot.sources);
+      showQuickReplies(lastAssistant, data.snapshot.quick_replies);
+    }
+    showModes(data.snapshot);
+    showReview(data.snapshot);
+    rememberSession();
+    messages.scrollTop = messages.scrollHeight;
+  } catch (error) {
+    if ([401, 404].includes(error.status)) {
+      forgetSession();
+      session = null;
+    }
+    showError(error.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
 async function send(text) {
   if (busy || !session || !text.trim()) return;
   setBusy(true);
   showError("");
   welcome.hidden = true;
   reviewPanel.hidden = true;
+  document.querySelectorAll(".reply-actions").forEach((node) => node.remove());
   addMessage("user", text);
+  const pending = addPendingReply();
   try {
     const data = await api("/api/chat", {conversation_id: session.conversation_id, message: text});
-    const parent = addMessage("bot", data.message);
+    const parent = pending.complete(data.message);
     showModes(data);
+    rememberSession();
     showProducts(parent, data.products);
     showSources(parent, data.sources);
+    showQuickReplies(parent, data.quick_replies);
     showReview(data);
     input.value = "";
-    messages.scrollTop = messages.scrollHeight;
+    if (!reviewPanel.hidden && ["form", "review"].includes(data.checkout?.stage)) reviewPanel.scrollIntoView({block: "start"});
+    else messages.scrollTop = messages.scrollHeight;
   } catch (error) {
     // Không tự retry: server có thể đã nhận tin nhắn trước khi mất kết nối.
-    showError(error.message + " Nếu vừa sửa yêu cầu, hãy gửi “xem lại” trước khi xác nhận.");
+    pending.remove();
+    checkoutPresented = false; // Lỗi mạng không tự mở lại đơn cũ.
+    reviewPanel.hidden = true;
+    showError(error.message + " Nếu vừa sửa yêu cầu, hãy tải lại thông tin trước khi xác nhận.");
   } finally {
+    pending.stop();
     setBusy(false);
     input.focus();
   }
@@ -262,4 +627,8 @@ byId("new-conversation").addEventListener("click", startConversation);
 document.querySelectorAll("[data-message]").forEach((button) => {
   button.addEventListener("click", () => send(button.dataset.message));
 });
-startConversation();
+if (embedded) document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") notifyParent("minimize");
+});
+notifyParent("ready");
+restoreConversation();

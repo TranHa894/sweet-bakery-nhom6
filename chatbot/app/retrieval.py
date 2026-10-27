@@ -8,10 +8,12 @@ import json
 import logging
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from app.config import (RETRIEVAL_MIN_SCORE, RETRIEVAL_TOP_K, RETRIEVAL_MODE,
     EMBEDDING_MODEL, VECTOR_INDEX_PATH, VECTOR_MIN_SCORE, OLLAMA_BASE_URL, OLLAMA_TIMEOUT_SECONDS)
 from app.knowledge_loader import KnowledgeRepository
-from app.schemas import KnowledgeResult, PolicyResponse, RAGAnswer, RetrievalResult
+from app.schemas import KnowledgeResult, PolicyResponse, RAGAnswer, RAGWireAnswer, RetrievalResult
 from app.text_utils import normalize_text
 
 RETRIEVER_VERSION = "keyword-v1"
@@ -228,6 +230,54 @@ def retrieve_vector(question, repository, knowledge, result, top_k):
         return None, "vector_index_or_model_unavailable"
 
 
+def policy_sentence_spans(content: str) -> list[dict]:
+    """Đánh số câu và giữ offset nguyên văn; không tách dấu chấm trong 25.000."""
+    sentences = []
+    start = 0
+    boundaries = [(match.start(), match.end()) for match in re.finditer(r"(?<=[.!?])\s+|\n+", content)]
+    for end, next_start in [*boundaries, (len(content), len(content))]:
+        raw = content[start:end]
+        left = start + len(raw) - len(raw.lstrip())
+        right = end - len(raw) + len(raw.rstrip())
+        if left < right:
+            sentences.append({"id": len(sentences) + 1, "text": content[left:right],
+                              "start": left, "end": right})
+        start = next_start
+    return sentences
+
+
+def expand_rag_selection(selection: RAGWireAnswer, retrieval: RetrievalResult) -> tuple[RAGAnswer | None, str | None]:
+    """Nguồn/số câu hợp lệ mới mở rộng thành quote cũ; không in text do LLM tự viết."""
+    if selection.supported != bool(selection.selections):
+        return None, "invalid_rag_structure"
+    sources = {chunk["source_id"]: chunk for chunk in retrieval["chunks"]}
+    quotes = []
+    selected_sources = set()
+    for item in selection.selections:
+        if item.source_id not in sources:
+            return None, "invalid_rag_source"
+        if item.source_id in selected_sources or len(set(item.sentence_ids)) != len(item.sentence_ids):
+            return None, "invalid_rag_structure"
+        selected_sources.add(item.source_id)
+        content = sources[item.source_id]["content"]
+        sentences = policy_sentence_spans(content)
+        if any(index > len(sentences) for index in item.sentence_ids):
+            return None, "invalid_rag_quote"
+        # Một quote liên tục giữ cả ngữ cảnh giữa các câu được chọn, không ghép
+        # câu rời rồi gọi là trích nguyên văn. Version vẫn lấy từ chunk gốc.
+        first, last = min(item.sentence_ids), max(item.sentence_ids)
+        quote = content[sentences[first - 1]["start"]:sentences[last - 1]["end"]]
+        if not 1 <= len(quote) <= 4000:  # Cùng giới hạn SourceQuote hiện tại.
+            return None, "invalid_rag_quote"
+        quotes.append({"source_id": item.source_id, "quote": quote})
+    try:
+        answer = RAGAnswer(supported=selection.supported, quotes=quotes)
+    except ValidationError:
+        return None, "invalid_rag_quote"
+    error = validate_rag_answer(answer, retrieval)
+    return (None if error else answer), error
+
+
 def validate_rag_answer(answer: RAGAnswer, retrieval: RetrievalResult) -> str | None:
     """Nguồn phải trong top chunks, quote phải nguyên văn; chưa chứng minh đúng ý."""
     if answer.supported != bool(answer.quotes):
@@ -260,7 +310,7 @@ def make_policy_response(
         "error": retrieval["error"], "llm_error": llm_error, "attempts": attempts,
     }
     if retrieval["status"] == "unconfigured":
-        body = "Chưa có tài liệu chính sách để đối chiếu; mình chưa đủ thông tin để trả lời. Không dùng điều khoản mẫu khi KNOWLEDGE_MODE=empty."
+        body = "Chưa có tài liệu chính sách để trả lời chính xác. Bạn có thể để lại yêu cầu để được tư vấn."
     elif retrieval["status"] == "error":
         body = "Không đọc được nguồn chính sách; chưa đủ thông tin để xác nhận câu trả lời. Hãy kiểm tra nguồn tài liệu."
     elif retrieval["status"] == "no_results":
@@ -281,7 +331,7 @@ def make_policy_response(
                 response["source_ids"].append(source_id)
             lines.extend([f"Nguồn [{source_id}] — {chunk['title']} — phiên bản {chunk['version']}:", "> " + quote.replace("\n", "\n> ")])
         body = "\n".join(lines)
-    response["text"] = label + "\n" + body
+    response["text"] = body if retrieval["status"] == "unconfigured" else label + "\n" + body
     if llm_error:
         response["text"] += f"\n[RAG dùng trích đoạn từ code vì model lỗi: {llm_error}.]"
     return response

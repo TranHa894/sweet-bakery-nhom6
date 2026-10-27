@@ -1,0 +1,247 @@
+{
+  "version": 1,
+  "source": "group_files",
+  "is_mock": true,
+  "provenance": "Phân loại do người dùng cung cấp ngày 24/10/2026; Vàng anh và Biển ngọc được xác nhận vị ngọt, chưa xác định thành phần vị.",
+  "products": {
+    "SP0012": {
+      "name": "Bánh kem Choco ngọc trai",
+      "category": "cake",
+      "sweetness": "high",
+      "taste_families": [
+        "chocolate"
+      ],
+      "coffee_style": null,
+      "note": "Vị sô cô la, ngọt nhiều.",
+      "flavor": "sô cô la"
+    },
+    "SP0004": {
+      "name": "Bánh kem Mật ngọt",
+      "category": "cake",
+      "sweetness": "high",
+      "taste_families": [
+        "cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị kem, caramel và mật, ngọt nhiều.",
+      "flavor": "kem; caramel; mật"
+    },
+    "SP0005": {
+      "name": "Bánh kem Mây trắng",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị kem sữa/vani, ngọt vừa.",
+      "flavor": "kem; sữa; vani"
+    },
+    "SP0007": {
+      "name": "Bánh kem Mây xanh",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị kem sữa/vani, ngọt vừa.",
+      "flavor": "kem; sữa; vani"
+    },
+    "SP0008": {
+      "name": "Bánh kem Mây hồng",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị kem sữa/vani, ngọt vừa.",
+      "flavor": "kem; sữa; vani"
+    },
+    "SP0009": {
+      "name": "Bánh kem Kỳ lân",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị kem sữa/vani, ngọt vừa.",
+      "flavor": "kem; sữa; vani"
+    },
+    "SP0001": {
+      "name": "Mousse Hawaii",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "fruit"
+      ],
+      "coffee_style": null,
+      "note": "Vị trái cây, ngọt vừa."
+    },
+    "SP0010": {
+      "name": "Bánh mousse Vải hoa hồng",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [
+        "fruit"
+      ],
+      "coffee_style": null,
+      "note": "Vị trái cây, ngọt vừa."
+    },
+    "SP0003": {
+      "name": "Bánh kem Vàng anh",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [],
+      "coffee_style": null,
+      "note": "Vị ngọt, mức ngọt vừa; thành phần hương vị cụ thể chưa được xác nhận.",
+      "flavor": "ngọt"
+    },
+    "SP0006": {
+      "name": "Bánh kem Biển ngọc",
+      "category": "cake",
+      "sweetness": "medium",
+      "taste_families": [],
+      "coffee_style": null,
+      "note": "Vị ngọt, mức ngọt vừa; thành phần hương vị cụ thể chưa được xác nhận.",
+      "flavor": "ngọt"
+    },
+    "SP0024": {
+      "name": "Mousse Chanh leo",
+      "category": "cake",
+      "sweetness": "low",
+      "taste_families": [
+        "fruit"
+      ],
+      "coffee_style": null,
+      "note": "Vị trái cây chua nhẹ, ít ngọt."
+    },
+    "SP0011": {
+      "name": "Bánh mousse quả mọng",
+      "category": "cake",
+      "sweetness": "low",
+      "taste_families": [
+        "fruit"
+      ],
+      "coffee_style": null,
+      "note": "Vị trái cây chua nhẹ, ít ngọt."
+    },
+    "SP0019": {
+      "name": "Trà sữa Thái xanh",
+      "category": "drink",
+      "sweetness": "high",
+      "taste_families": [
+        "milk_tea"
+      ],
+      "coffee_style": null,
+      "note": "Trà sữa, ngọt nhiều."
+    },
+    "SP0021": {
+      "name": "Trà sữa",
+      "category": "drink",
+      "sweetness": "medium",
+      "taste_families": [
+        "milk_tea"
+      ],
+      "coffee_style": null,
+      "note": "Trà sữa, ngọt vừa."
+    },
+    "SP0020": {
+      "name": "Trà đào",
+      "category": "drink",
+      "sweetness": "low",
+      "taste_families": [
+        "fruit_tea"
+      ],
+      "coffee_style": null,
+      "note": "Trà trái cây thanh, hơi chua nhẹ, ít ngọt."
+    },
+    "SP0022": {
+      "name": "Cà phê đen",
+      "category": "drink",
+      "sweetness": null,
+      "taste_families": [],
+      "coffee_style": "strong",
+      "note": "Đậm, đắng; phù hợp khi bạn thích cà phê rõ vị."
+    },
+    "SP0023": {
+      "name": "Cà phê muối",
+      "category": "drink",
+      "sweetness": null,
+      "taste_families": [],
+      "coffee_style": "creamy",
+      "note": "Béo, mặn nhẹ, dễ uống."
+    },
+    "SP0025": {
+      "name": "Cà phê ủ lạnh",
+      "category": "drink",
+      "sweetness": null,
+      "taste_families": [],
+      "coffee_style": "mild",
+      "note": "Dịu, mát, ít đắng gắt."
+    },
+    "SP0013": {
+      "name": "Bánh madeleine sô cô la",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "chocolate"
+      ],
+      "coffee_style": null,
+      "note": "Vị sô cô la."
+    },
+    "SP0016": {
+      "name": "Bánh donut sô cô la",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "chocolate"
+      ],
+      "coffee_style": null,
+      "note": "Vị sô cô la."
+    },
+    "SP0017": {
+      "name": "Bánh donut sô cô la hương dâu",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "chocolate"
+      ],
+      "coffee_style": null,
+      "note": "Vị sô cô la kết hợp dâu."
+    },
+    "SP0014": {
+      "name": "Bánh cuộn trà xanh",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "matcha"
+      ],
+      "coffee_style": null,
+      "note": "Vị trà xanh."
+    },
+    "SP0015": {
+      "name": "Bánh cuộn vani",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "vanilla"
+      ],
+      "coffee_style": null,
+      "note": "Vị vani."
+    },
+    "SP0018": {
+      "name": "Bánh tiramisu",
+      "category": "mini",
+      "sweetness": null,
+      "taste_families": [
+        "coffee_cream"
+      ],
+      "coffee_style": null,
+      "note": "Vị cà phê và kem.",
+      "flavor": "cà phê; kem"
+    }
+  }
+}

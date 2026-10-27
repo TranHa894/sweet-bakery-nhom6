@@ -4,9 +4,6 @@ import json
 from pathlib import Path
 from scripts.evaluate_intent_context import summarize
 
-ROOT = Path(__file__).resolve().parents[1]
-
-
 def compare(before, after):
     if not before["completed"] or not after["completed"]:
         raise ValueError("Cần hai lần đo hoàn tất")

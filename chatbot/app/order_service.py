@@ -14,6 +14,10 @@ from app.storage import fingerprint, draft_fingerprint, save_record, load_order_
 from app.text_utils import normalize_text
 
 LOCAL_ZONE = ZoneInfo("Asia/Ho_Chi_Minh")
+# Giữ key cũ trong snapshot, nhưng không thu thập/tính vận chuyển ở chatbot.
+DISABLED_RECEIVING_FIELDS = ("fulfillment", "address")
+RECEIVING_ISSUES = {"fulfillment_required", "address_required",
+                    "fulfillment_unverified", "delivery_fee_unverified"}
 
 
 class OrderMetadataRepository(Protocol):
@@ -31,7 +35,32 @@ def parse_pickup_at(value: str) -> str:
     return datetime.strptime(value.replace("T", " "), "%Y-%m-%d %H:%M").replace(tzinfo=LOCAL_ZONE).astimezone(timezone.utc).isoformat()
 
 
+
+def normalize_contact_value(field: str, value: str) -> str:
+    """Kiểm tra cú pháp liên hệ; không xác minh danh tính hay số đang hoạt động."""
+    import unicodedata
+
+    if not isinstance(value, str):
+        raise ValueError("Bạn nhập thông tin liên hệ bằng văn bản nhé.")
+    value = unicodedata.normalize("NFC", value).strip()
+    if field == "phone":
+        # Giữ số 0 đầu và mã quốc gia; chỉ bỏ dấu phân cách khi lưu.
+        if not re.fullmatch(r"\+?[0-9][0-9 .-]*", value):
+            raise ValueError("Bạn nhập số điện thoại gồm 8–15 chữ số nhé; có thể dùng + ở đầu và dấu cách, chấm hoặc gạch nối.")
+        value = re.sub(r"[ .-]", "", value)
+        if not 8 <= len(value.lstrip("+")) <= 15:
+            raise ValueError("Số điện thoại cần có 8–15 chữ số. Bạn kiểm tra và nhập lại nhé.")
+    elif field == "name":
+        if not value or len(value) > 100 or not any(char.isalpha() for char in value) or any(
+            unicodedata.category(char).startswith("C") for char in value
+        ):
+            raise ValueError("Bạn cho mình tên người liên hệ, từ 1 đến 100 ký tự nhé.")
+    return value
+
+
 def validate_slots(slots: dict, now: datetime, optional_fields=(), disabled_fields=()) -> list[str]:
+    disabled_fields = set(disabled_fields) | set(DISABLED_RECEIVING_FIELDS)
+    optional_fields = set(optional_fields) | disabled_fields
     errors = []
     if type(slots.get("quantity")) is not int or slots["quantity"] <= 0:
         errors.append("quantity_positive_integer")
@@ -47,21 +76,31 @@ def validate_slots(slots: dict, now: datetime, optional_fields=(), disabled_fiel
     if any(field not in optional_fields and (not slots.get(field) if field == "size" else slots.get(field) is None)
            for field in ("size", "toppings", "cake_text")):
         errors.append("choices_required")
-    if slots.get("fulfillment") not in {"pickup", "delivery"}:
+    if "fulfillment" not in disabled_fields and slots.get("fulfillment") not in {"pickup", "delivery"}:
         errors.append("fulfillment_required")
-    if not str(slots.get("name") or "").startswith("DEMO ") or not re.fullmatch(r"TEST-[A-Z0-9-]+", slots.get("phone") or ""):
-        errors.append("fake_contact_required")
-    if slots.get("fulfillment") == "delivery" and not str(slots.get("address") or "").startswith("DEMO "):
-        errors.append("fake_address_required")
+    for field in ("name", "phone"):
+        try:
+            normalize_contact_value(field, slots.get(field))
+        except ValueError:
+            errors.append(field + "_invalid")
+    if "fulfillment" not in disabled_fields and "address" not in disabled_fields and slots.get("fulfillment") == "delivery" and not str(slots.get("address") or "").strip():
+        errors.append("address_required")
     return errors
 
 
-def validate_metadata(metadata: dict) -> None:
-    keys = {"toppings", "max_cake_text_length", "cake_text_price_vnd", "fulfillment_modes", "delivery_fee_vnd", "stock_quantity"}
-    optional = {"business", "active", "writing_supported", "topping_allergens"}
+def validate_metadata(metadata: dict, disabled_fields=()) -> None:
+    disabled = set(disabled_fields) | set(DISABLED_RECEIVING_FIELDS)
+    keys = {"toppings", "max_cake_text_length", "cake_text_price_vnd", "stock_quantity"}
+    optional = {"business", "active", "writing_supported", "topping_allergens",
+                "fulfillment_modes", "delivery_fee_vnd"}
+    if "fulfillment" not in disabled:
+        keys |= {"fulfillment_modes", "delivery_fee_vnd"}
     if not isinstance(metadata, dict) or not keys <= set(metadata) or set(metadata) - keys - optional:
         raise ValueError("Metadata sai schema.")
-    for key in ("max_cake_text_length", "cake_text_price_vnd", "delivery_fee_vnd"):
+    numeric_keys = ("max_cake_text_length", "cake_text_price_vnd")
+    if "fulfillment" not in disabled:
+        numeric_keys += ("delivery_fee_vnd",)
+    for key in numeric_keys:
         value = metadata[key]
         if value is not None and (type(value) is not int or value < 0):
             raise ValueError("Metadata số sai kiểu.")
@@ -69,9 +108,10 @@ def validate_metadata(metadata: dict) -> None:
         mapping = metadata[key]
         if mapping is not None and (not isinstance(mapping, dict) or any(not isinstance(k, str) or (v is not None and (type(v) is not int or v < 0)) for k, v in mapping.items())):
             raise ValueError("Metadata mapping sai kiểu.")
-    modes = metadata["fulfillment_modes"]
-    if modes is not None and (not isinstance(modes, list) or any(mode not in {"pickup", "delivery"} for mode in modes)):
-        raise ValueError("Hình thức nhận sai schema.")
+    if "fulfillment" not in disabled:
+        modes = metadata["fulfillment_modes"]
+        if modes is not None and (not isinstance(modes, list) or any(mode not in {"pickup", "delivery"} for mode in modes)):
+            raise ValueError("Hình thức nhận sai schema.")
 
 
 def inspect_single_order(repository: CatalogRepository, draft: dict, now: datetime) -> dict:
@@ -83,7 +123,7 @@ def inspect_single_order(repository: CatalogRepository, draft: dict, now: dateti
               "availability": "unknown", "quote": None, "catalog_fingerprint": None, "error": None}
     try:
         caps = repository.get_capabilities()
-        disabled = caps.get("disabled_order_fields", [])
+        disabled = list(dict.fromkeys([*DISABLED_RECEIVING_FIELDS, *caps.get("disabled_order_fields", [])]))
         optional = list(dict.fromkeys([*caps.get("optional_order_fields", []), *disabled]))
         issues.extend(validate_slots(slots, now, optional, disabled))
         for field in optional:
@@ -123,7 +163,7 @@ def inspect_single_order(repository: CatalogRepository, draft: dict, now: dateti
                 raise ValueError("Nguồn metadata lỗi.")
             if meta_result["status"] == "success":
                 metadata = meta_result["metadata"]
-                validate_metadata(metadata)
+                validate_metadata(metadata, disabled)
         result["catalog_fingerprint"] = fingerprint({"product": product, "metadata": metadata})
         variants = [variant for variant in product["variants"] if slots["size"] and normalize_text(variant["size"] or "").replace(" ", "") == normalize_text(slots["size"]).replace(" ", "")]
         if not slots["size"] and "size" in optional:
@@ -186,18 +226,25 @@ def inspect_single_order(repository: CatalogRepository, draft: dict, now: dateti
                 text_cost = metadata["cake_text_price_vnd"]
         elif slots["cake_text"] == "":
             verification["cake_text"] = "not_applicable"
-        modes = metadata["fulfillment_modes"] if metadata else None
-        if modes is None or slots["fulfillment"] not in modes:
-            result["issues"].append("fulfillment_unverified")
+        # 0 chỉ giữ schema quote cũ; không gán pickup hoặc cam kết giao miễn phí.
+        # Tổng hiện tại chỉ tính bánh và phụ phí trên bánh.
+        delivery_fee = 0
+        if "fulfillment" in disabled:
+            verification["fulfillment"] = "not_applicable"
+            verification["address"] = "not_applicable"
         else:
-            verification["fulfillment"] = "verified"
-        delivery_fee = 0 if slots["fulfillment"] == "pickup" else (metadata["delivery_fee_vnd"] if metadata else None)
-        if slots["fulfillment"] == "delivery" and metadata and "business" in metadata:
-            regions = metadata["business"]["delivery_regions"]
-            matched = [fee for region, fee in regions.items() if normalize_text(region) in normalize_text(slots.get("address") or "")]
-            delivery_fee = matched[0] if len(matched) == 1 else None
-        if delivery_fee is None:
-            result["issues"].append("delivery_fee_unverified")
+            modes = metadata["fulfillment_modes"] if metadata else None
+            if modes is None or slots["fulfillment"] not in modes:
+                result["issues"].append("fulfillment_unverified")
+            else:
+                verification["fulfillment"] = "verified"
+            delivery_fee = 0 if slots["fulfillment"] == "pickup" else (metadata["delivery_fee_vnd"] if metadata else None)
+            if slots["fulfillment"] == "delivery" and metadata and "business" in metadata:
+                regions = metadata["business"]["delivery_regions"]
+                matched = [fee for region, fee in regions.items() if normalize_text(region) in normalize_text(slots.get("address") or "")]
+                delivery_fee = matched[0] if len(matched) == 1 else None
+            if delivery_fee is None:
+                result["issues"].append("delivery_fee_unverified")
         if variant is not None and type(slots["quantity"]) is int and slots["quantity"] > 0:
             count = (metadata["stock_quantity"] or {}).get(variant["id"]) if metadata else None
             if variant["stock_status"] == "out_of_stock" or (count is not None and count < slots["quantity"]):
@@ -279,7 +326,7 @@ def submit_order_request(connection: sqlite3.Connection, repository: CatalogRepo
         return {"status": inspection["availability"], "data": None, "error": inspection["error"]}
     from app.order_flow import order_items
     capabilities = repository.get_capabilities()
-    disabled = capabilities.get("disabled_order_fields", [])
+    disabled = list(dict.fromkeys([*DISABLED_RECEIVING_FIELDS, *capabilities.get("disabled_order_fields", [])]))
     optional = list(dict.fromkeys([*capabilities.get("optional_order_fields", []), *disabled]))
     if any(validate_slots({**draft["slots"], **{k: v for k, v in item.items() if k in {"product_id", "cake_need", "size", "quantity", "toppings", "cake_text"}}}, now or local_now(), optional, disabled) for item in order_items(draft)):
         return {"status": "unknown", "data": None, "error": "invalid_slots"}
@@ -296,6 +343,8 @@ def submit_order_request(connection: sqlite3.Connection, repository: CatalogRepo
         "verification": inspection["verification"], "issues": inspection["issues"],
         "quote": inspection["quote"] if demo else None, "data_mode": inspection["mode"],
         "is_mock": True, "confirmed": demo,
+        **({"checkout_form": draft["checkout_form"], "checkout_summary": draft["checkout_summary"]}
+           if draft.get("checkout_form") else {}),
     })
 
 

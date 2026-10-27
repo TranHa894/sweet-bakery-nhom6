@@ -26,7 +26,12 @@ def summarize_draft(draft: dict, needs: dict) -> str:
     # Chỉ tóm tắt nhu cầu; không đưa tên/phone/địa chỉ vào summary ticket.
     slots = draft["slots"]
     from app.order_flow import missing_draft_slots
+    from app.order_service import DISABLED_RECEIVING_FIELDS, RECEIVING_ISSUES
     missing = missing_draft_slots(draft)
+    disabled = set(draft.get("disabled_fields", [])) | set(DISABLED_RECEIVING_FIELDS)
+    issues = [issue for issue in draft.get("issues", [])
+              if issue.rsplit(":", 1)[-1] not in RECEIVING_ISSUES]
+    fulfillment_note = f"hình thức: {slots['fulfillment'] or 'chưa rõ'}; " if "fulfillment" not in disabled else ""
     size_note = f"size: {slots['size'] or 'chưa rõ'}; " if slots["size"] is not None or "size" not in draft.get("optional_fields", []) else ""
     pickup_note = f"nhận: {slots['pickup_at'] or 'chưa rõ'}; " if "pickup_at" not in draft.get("disabled_fields", []) else ""
     return safe_history_text(
@@ -34,7 +39,7 @@ def summarize_draft(draft: dict, needs: dict) -> str:
         f"product_id: {slots['product_id'] or 'chưa đối chiếu'}; {size_note}"
         f"món thêm: {[(i.get('product_id') or i.get('cake_need'), i.get('quantity')) for i in draft.get('extra_items', [])]}; "
         f"số lượng: {slots['quantity']}; {pickup_note}"
-        f"hình thức: {slots['fulfillment'] or 'chưa rõ'}; còn thiếu: {', '.join(missing) or 'không thiếu trường nhập'}; cần kiểm tra: {', '.join(draft.get('issues', [])) or 'theo lý do ticket'}."
+        f"{fulfillment_note}còn thiếu: {', '.join(missing) or 'không thiếu trường nhập'}; cần kiểm tra: {', '.join(issues) or 'theo lý do ticket'}."
     )
 
 
@@ -51,6 +56,6 @@ def create_handoff_ticket(connection: sqlite3.Connection, conversation_id: str, 
         "order_id": order_id, "priority": "high" if reason in {"severe_allergy", "allergen_requires_staff", "complaint"} else "normal",
         "missing_information": missing, "outside_hours": outside_hours,
         "is_mock": True, "is_demo": True, "source": "local_ticket",
-        "note": "Ticket thử nghiệm mới được lưu; chưa có nhân viên nhận hoặc được thông báo." + (
+        "note": "Đã ghi nhận yêu cầu hỗ trợ, đang chờ xử lý." + (
             " Ngoài giờ mở cửa mô phỏng; yêu cầu vẫn pending, chờ xử lý." if outside_hours else ""),
     })

@@ -8,7 +8,9 @@ import unicodedata
 from uuid import uuid4
 
 from app.handoff import detect_handoff, summarize_draft
-from app.order_service import local_now, parse_pickup_at, validate_slots
+from app.order_service import (
+    DISABLED_RECEIVING_FIELDS, RECEIVING_ISSUES, local_now, normalize_contact_value, parse_pickup_at, validate_slots,
+)
 from app.schemas import OrderTools, ToolResult
 from app.storage import fingerprint, draft_fingerprint
 from app.text_utils import format_vnd, normalize_text
@@ -21,7 +23,7 @@ FIELD_NAMES = {
 }
 FIELD_LABELS = {"cake_need": "nhu cầu bánh", "product_id": "mã bánh", "size": "size", "quantity": "số lượng",
                 "toppings": "topping", "cake_text": "chữ trên bánh", "pickup_at": "ngày giờ nhận",
-                "fulfillment": "hình thức nhận", "name": "tên giả", "phone": "điện thoại giả", "address": "địa chỉ giả"}
+                "fulfillment": "hình thức nhận", "name": "tên liên hệ", "phone": "số điện thoại", "address": "địa chỉ"}
 
 
 def business_command_text(message: str) -> str:
@@ -31,6 +33,7 @@ def business_command_text(message: str) -> str:
 
 
 def new_draft(conversation_id: str, optional_fields=(), disabled_fields=()) -> dict:
+    disabled_fields = list(dict.fromkeys([*DISABLED_RECEIVING_FIELDS, *disabled_fields]))
     return {
         "id": str(uuid4()), "conversation_id": conversation_id, "state": "BROWSING", "revision": 0,
         "slots": {"cake_need": None, "product_id": None, "size": None, "toppings": None,
@@ -59,23 +62,36 @@ def call_tool(tools: OrderTools, name: str, *args) -> ToolResult:
 def configure_order_fields(draft: dict, optional_fields, disabled_fields=()) -> dict:
     """Trường bị tắt không được thu thập; giữ dữ liệu cũ để tương thích."""
     updated = deepcopy(draft)
-    disabled = [field for field in ("pickup_at",) if field in disabled_fields]
-    optional = [field for field in ("size", "toppings", "cake_text", "pickup_at")
+    disabled = [field for field in ("pickup_at", "fulfillment", "address")
+                if field in disabled_fields or field in DISABLED_RECEIVING_FIELDS]
+    optional = [field for field in ("size", "toppings", "cake_text", "pickup_at", "fulfillment", "address")
                 if field in optional_fields or field in disabled]
-    if optional != updated.get("optional_fields", []) or disabled != updated.get("disabled_fields", []):
+    if set(optional) != set(updated.get("optional_fields", [])) or set(disabled) != set(updated.get("disabled_fields", [])):
         updated["optional_fields"] = optional
         updated["disabled_fields"] = disabled
         if updated["state"] in {"COLLECTING", "REVIEW"} and not updated.get("submission") and not updated.get("submission_pending"):
             updated.update(state="COLLECTING", review=None, revision=updated["revision"] + 1)
+    # REVIEW chưa gửi từ phiên cũ có mã TEST thay điện thoại cần nhập lại liên hệ.
+    if (updated["state"] == "REVIEW" and not updated.get("submission") and not updated.get("submission_pending")
+            and {"name", "phone"}.intersection(missing_slots(updated["slots"], optional, disabled))):
+        updated.update(state="COLLECTING", review=None, revision=updated["revision"] + 1)
     return updated
 
 
-def missing_slots(slots: dict, optional_fields=()) -> list[str]:
+def missing_slots(slots: dict, optional_fields=(), disabled_fields=()) -> list[str]:
+    optional_fields = set(optional_fields) | set(disabled_fields) | set(DISABLED_RECEIVING_FIELDS)
     missing = [field for field in ("size", "quantity", "toppings", "cake_text", "pickup_at", "fulfillment", "name", "phone")
                if field not in optional_fields and slots[field] is None]
+    for field in ("name", "phone"):
+        if field in optional_fields or field in missing:
+            continue
+        try:
+            normalize_contact_value(field, slots[field])
+        except ValueError:
+            missing.append(field)
     if not (slots["cake_need"] or slots["product_id"]):
         missing.insert(0, "cake_need hoặc product_id")
-    if slots["fulfillment"] == "delivery" and not slots["address"]:
+    if "fulfillment" not in optional_fields and "address" not in optional_fields and slots["fulfillment"] == "delivery" and not slots["address"]:
         missing.append("address")
     return missing
 
@@ -122,10 +138,8 @@ def collect_instructions(draft: dict) -> str:
         "toppings": "Bạn muốn thêm topping gì, hay không topping?",
         "cake_text": "Bạn muốn ghi chữ gì trên bánh, hay không viết chữ?",
         "pickup_at": "Bạn muốn nhận ngày giờ nào? Dùng YYYY-MM-DD HH:MM theo giờ Việt Nam.",
-        "fulfillment": "Bạn muốn nhận tại cửa hàng hay giao mô phỏng?",
-        "name": "Bạn cho tên giả bắt đầu DEMO, ví dụ tên: DEMO Khách A nhé.",
-        "phone": "Nhập điện thoại giả, ví dụ sđt: TEST-0001.",
-        "address": "Nhập địa chỉ giả bắt đầu DEMO, ví dụ địa chỉ: DEMO Địa chỉ A.",
+        "name": "Bạn cho mình tên người liên hệ nhé.",
+        "phone": "Bạn cho mình số điện thoại liên hệ nhé.",
     }
     prefix = f"Món {pending['item_index'] + 1}" + (f" ({pending['product_name']})" if pending.get("product_name") else "") + ": " if pending and pending["item_index"] else ""
     question = prefix + questions[missing[0]] if missing else "Đã đủ thông tin để xem lại; gõ 'xem lại' trước khi gửi."
@@ -137,12 +151,12 @@ def update_slot(draft: dict, field: str, value, now: datetime | None = None) -> 
     if updated["state"] not in {"BROWSING", "COLLECTING", "REVIEW"}:
         raise ValueError("Không sửa bản nháp đã hủy/chuyển tư vấn; bắt đầu bản nháp mới.")
     if updated["submission"] and updated["submission"]["confirmed"]:
-        raise ValueError("Đơn demo đã xác nhận: phải chuyển ticket, không sửa đơn trực tiếp.")
+        raise ValueError("Đơn đã xác nhận: cần yêu cầu hỗ trợ để thay đổi thông tin.")
     if updated.get("submission_pending"):
         raise ValueError("Kết quả gửi đơn đang chưa xác định; cần kiểm tra với idempotency key cũ trước khi sửa.")
     if field not in updated["slots"]:
         raise ValueError("Trường chưa hỗ trợ.")
-    if field in updated.get("disabled_fields", []):
+    if field in DISABLED_RECEIVING_FIELDS or field in updated.get("disabled_fields", []):
         return updated  # Không parse, tăng revision hoặc làm mất REVIEW vì trường đã bỏ.
     if field == "quantity" and (type(value) is not int or value <= 0):
         raise ValueError("Số lượng phải là số nguyên dương.")
@@ -152,12 +166,8 @@ def update_slot(draft: dict, field: str, value, now: datetime | None = None) -> 
             raise ValueError("Ngày giờ nhận phải ở tương lai, theo Asia/Ho_Chi_Minh.")
     if field == "cake_text" and isinstance(value, str):
         value = unicodedata.normalize("NFC", value)
-    if field == "name" and (not isinstance(value, str) or not value.startswith("DEMO ") or not value[5:].strip()):
-        raise ValueError("Chỉ dùng tên giả bắt đầu bằng DEMO, ví dụ DEMO Khách A.")
-    if field == "phone" and (not isinstance(value, str) or not re.fullmatch(r"TEST-[A-Z0-9-]+", value)):
-        raise ValueError("Chỉ dùng mã điện thoại giả TEST-0001; không nhập số thật.")
-    if field == "address" and (not isinstance(value, str) or not value.startswith("DEMO ") or not value[5:].strip()):
-        raise ValueError("Chỉ dùng địa chỉ giả bắt đầu bằng DEMO.")
+    if field in {"name", "phone"}:
+        value = normalize_contact_value(field, value)
     if field == "fulfillment" and value not in {"pickup", "delivery"}:
         raise ValueError("Nhận: cửa hàng hoặc giao.")
     if field == "toppings" and (not isinstance(value, list) or any(not isinstance(item, str) or not item.strip() for item in value)):
@@ -207,8 +217,9 @@ def render_review(draft: dict) -> str:
     lines = ["Xem lại yêu cầu — chưa xác nhận đơn."]
     if review.get("product_name"):
         lines.append("Sản phẩm: " + review["product_name"])
+    disabled = set(draft.get("disabled_fields", [])) | set(DISABLED_RECEIVING_FIELDS)
     for field, value in draft["slots"].items():
-        if field in draft.get("disabled_fields", []) or value is None or (review.get("product_name") and field in {"cake_need", "product_id"}):
+        if field in disabled or value is None or (review.get("product_name") and field in {"cake_need", "product_id"}):
             continue
         shown = {"pickup": "nhận tại cửa hàng", "delivery": "giao (mô phỏng)"}.get(value, value) if isinstance(value, str) else value
         if field == "pickup_at":
@@ -225,9 +236,12 @@ def render_review(draft: dict) -> str:
         lines.append("Yêu cầu nhiều món sẽ lưu chờ tư vấn; chưa có báo giá hoặc đơn xác nhận.")
     if review["quote"] is not None:
         quote = review["quote"]
-        lines.append(f"Giá/chiếc: {format_vnd(quote['unit_price_vnd'])}; số lượng: {quote['quantity']}; giao demo: {format_vnd(quote['delivery_fee_vnd'])}.")
+        price_line = f"Giá/chiếc: {format_vnd(quote['unit_price_vnd'])}; số lượng: {quote['quantity']}"
+        if "fulfillment" not in disabled:
+            price_line += "; giao demo: " + format_vnd(quote["delivery_fee_vnd"])
+        lines.append(price_line + ".")
         lines.append("Tổng MÔ PHỎNG: " + format_vnd(quote["total_vnd"]) + "; không thanh toán thật.")
-        if draft["issues"]:
+        if any(issue.rsplit(":", 1)[-1] not in RECEIVING_ISSUES for issue in draft["issues"]):
             lines.append("Một số điều kiện cần nhân viên xác minh; chưa thể xác nhận đơn.")
     else:
         lines.append("Chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn hoặc báo giá.")
@@ -332,6 +346,8 @@ def handle_order_message(message: str, draft: dict, nlu: dict, tools: OrderTools
             if nlu["size"] is not None:
                 updated = update_slot(updated, "size", nlu["size"], now)
         return updated, collect_instructions(updated)
+    if field in DISABLED_RECEIVING_FIELDS:
+        return deepcopy(draft), "Trường này hiện không được thu thập. " + collect_instructions(draft)
     if field and draft["state"] in {"COLLECTING", "REVIEW"}:
         value = field_match.group(2).strip()
         updated = deepcopy(draft)
@@ -352,7 +368,7 @@ def handle_order_message(message: str, draft: dict, nlu: dict, tools: OrderTools
             updated.update(state="COLLECTING", review=None)
             return updated, str(error) + " REVIEW cũ không còn dùng để xác nhận."
     if field:
-        return deepcopy(draft), "Chưa ở bước thu thập. Gõ 'đặt bánh' để tạo bản nháp mới; chỉ nhập liên hệ giả."
+        return deepcopy(draft), "Bạn muốn đặt sản phẩm nào? Mình sẽ ghi nhận thông tin liên hệ khi thu thập yêu cầu."
     if text == "xem lai" and draft["state"] in {"COLLECTING", "REVIEW"}:
         return create_review(draft, tools, now)
     if text == "xac nhan":

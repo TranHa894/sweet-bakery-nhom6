@@ -59,6 +59,29 @@ def seed_database(connection: sqlite3.Connection, seed_path: Path = SEED_PATH, *
     return check_database(connection)
 
 
+def classify_group_flavors(connection: sqlite3.Connection, *, manage_transaction: bool = True) -> dict:
+    """Lưu một lớp phân loại, không chép menu/giá/tồn kho hoặc sửa dữ liệu đã lưu."""
+    from app.repositories.group_catalog import FLAVOR_PROFILE_KEY, GroupCatalogRepository, FlavorProfile
+
+    result = GroupCatalogRepository(database_path=":memory:").search_products({})
+    if result["status"] not in {"success", "no_results"}:
+        raise ValueError("Chưa đọc được danh mục nhóm để phân loại.")
+    profiles = {product["id"]: FlavorProfile(**{key: product[key] for key in
+        ("name", "category", "product_type", "flavor", "style_tags")}).model_dump()
+        for product in result["products"]}
+    document = {"version": 1, "source": "group_files", "basis": "product_name",
+                "products": profiles}
+    encoded = json.dumps(document, ensure_ascii=False, sort_keys=True)
+    with connection if manage_transaction else nullcontext():
+        connection.execute("INSERT INTO database_metadata(key,value) VALUES(?,?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE value<>excluded.value",
+            (FLAVOR_PROFILE_KEY, encoded))
+    return {"metadata_key": FLAVOR_PROFILE_KEY, "product_count": len(profiles),
+            "known_flavor_count": sum(p["flavor"] is not None for p in profiles.values()),
+            "unknown_flavor_count": sum(p["flavor"] is None for p in profiles.values()),
+            "products": profiles}
+
+
 def check_database(connection: sqlite3.Connection) -> dict:
     tables = ["products", "product_variants", "toppings", "product_toppings", "policies", "conversations", "messages", "drafts", "orders", "order_items", "tickets"]
     return {"schema_version": connection.execute("PRAGMA user_version").fetchone()[0],
@@ -107,11 +130,16 @@ def reset_demo(connection: sqlite3.Connection, database_path: str | Path, *, con
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="SQLite LOCAL DEMO; reset xóa hội thoại/đơn demo sau backup.")
-    parser.add_argument("command", choices=["init", "seed", "check", "reset"])
+    parser.add_argument("command", choices=["init", "seed", "check", "reset", "classify-flavors"])
     parser.add_argument("--database", default=DATABASE_PATH)
     parser.add_argument("--confirm", action="store_true")
     args = parser.parse_args()
     try:
+        if args.command == "classify-flavors":
+            target = Path(args.database)
+            target = (target if target.is_absolute() else PROJECT_ROOT / target).resolve()
+            if not target.is_relative_to(PROJECT_ROOT):
+                raise ValueError("Chỉ lưu phân loại vào database bên trong thư mục chatbot.")
         if args.command == "reset":
             # Không init/migrate một file tùy ý trước khi từ chối reset.
             path = Path(args.database)
@@ -121,7 +149,9 @@ def main() -> None:
             with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)) as probe:
                 validate_reset_target(probe, path, confirm=True)
         with closing(open_storage(args.database)) as connection:
-            if args.command == "seed":
+            if args.command == "classify-flavors":
+                result = classify_group_flavors(connection)
+            elif args.command == "seed":
                 result = seed_database(connection)
             elif args.command == "reset":
                 result = reset_demo(connection, args.database, confirm=args.confirm)
