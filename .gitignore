@@ -1,1 +1,2 @@
-*.db # SQLite database file
+__pycache__/*
+*.db

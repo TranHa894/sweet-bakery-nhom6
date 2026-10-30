@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, request
 import sqlite3
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 
 @app.route('/')
 def index():
