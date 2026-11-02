@@ -17,7 +17,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import config
 from app.conversation import handle_message, new_conversation, response_shell, finish_turn
-from app.checkout import CheckoutAction, CheckoutView, checkout_view, apply_checkout
+from app.checkout import CheckoutStart, start_checkout, CheckoutAction, CheckoutView, checkout_view, apply_checkout
 from app.knowledge_loader import create_knowledge_repository
 from app.order_service import create_order_tools
 from app.order_flow import order_items
@@ -86,6 +86,51 @@ class ProductView(APIModel):
     topping_options: list[dict] | None = None
 
 
+class BundleItemView(APIModel):
+    product_id: str
+    variant_id: str
+    name: str
+    source: str
+    is_mock: bool
+    image_url: str | None
+    size: str | None
+    flavor: str | None
+    sweetness: str | None
+    quantity: int = Field(ge=1)
+    unit_price_vnd: int = Field(ge=0)
+    line_total_vnd: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def correct_line_total(self):
+        if self.line_total_vnd != self.quantity * self.unit_price_vnd:
+            raise ValueError("Sai thành tiền món.")
+        return self
+
+
+class BundleView(APIModel):
+    price_tier: Literal["low", "medium", "high", "single"] | None = None
+    reason: str = Field(default="", max_length=500)
+    remaining_budget_vnd: int | None = Field(default=None, ge=0)
+    items: list[BundleItemView] = Field(min_length=2, max_length=4)
+    total_vnd: int = Field(ge=0)
+    budget_vnd: int | None = Field(default=None, ge=0)
+    extra_needed_vnd: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def correct_total(self):
+        if self.total_vnd != sum(item.line_total_vnd for item in self.items):
+            raise ValueError("Sai tổng tiền nhóm.")
+        if self.budget_vnd is None:
+            if self.extra_needed_vnd is not None or self.remaining_budget_vnd is not None:
+                raise ValueError("Thiếu ngân sách để kiểm tra tiền dư/cần thêm.")
+        elif self.total_vnd > self.budget_vnd:
+            if self.extra_needed_vnd != self.total_vnd - self.budget_vnd or self.remaining_budget_vnd is not None:
+                raise ValueError("Sai số tiền cần thêm.")
+        elif self.remaining_budget_vnd != self.budget_vnd - self.total_vnd or self.extra_needed_vnd is not None:
+            raise ValueError("Sai số tiền còn dư.")
+        return self
+
+
 class SourceView(APIModel):
     source_id: str
     version: str
@@ -150,6 +195,7 @@ class ChatView(APIModel):
     message: str
     state: State
     products: list[ProductView]
+    recommendation_groups: list[BundleView] = Field(default_factory=list, max_length=3)
     quick_replies: list[str] = Field(default_factory=list, max_length=6)
     sources: list[SourceView]
     data_mode: str
@@ -176,6 +222,7 @@ class ConversationView(APIModel):
 
 
 class HistoryMessageView(APIModel):
+    recommendation_groups: list[BundleView] = Field(default_factory=list, max_length=3)
     role: Literal["user", "assistant"]
     content: str
     created_at: str
@@ -276,6 +323,7 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
         "conversation_id": conversation["id"], "message": response["text"],
         "catalog_source": response.get("catalog_source", response["data_mode"]),
         "state": draft["state"], "products": response["products"], "sources": sources,
+        "recommendation_groups": response.get("recommendation_groups", []),
         "quick_replies": response.get("quick_replies", conversation.get("quick_replies", [])),
         "data_mode": response["data_mode"], "knowledge_mode": knowledge_mode,
         "catalog_status": response["catalog_status"], "policy_status": policy["status"] if policy else None,
@@ -397,12 +445,16 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             conversation = load_conversation(connection, id)
             if conversation is None:
                 raise HTTPException(404, "conversation_not_found")
-            history = load_messages(connection, id, 101)
+            history = load_messages(connection, id, 101, include_ids=True)
+            saved_groups = conversation.get("recommendation_history", {})
+            for entry in history:
+                entry["recommendation_groups"] = saved_groups.get(str(entry.pop("id")), [])
             response = response_shell("", catalog, conversation)
             latest_ids = {identifier for question in (conversation.get("current_request") or {}).get("requests", [])
                           for identifier in question.get("result_product_ids", [])}
             response["products"] = [product for product in conversation.get("shown_products", [])
                                     if history and product["id"] in latest_ids]
+            response["recommendation_groups"] = conversation.get("recommendation_groups", [])
             snapshot = make_chat_view({"conversation": conversation, "response": response,
                 "engine": chat_mode, "llm_error": None}, knowledge_mode)
             return {"conversation_id": id, "messages": history[-100:],
@@ -426,6 +478,26 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                                   knowledge_repository=knowledge, order_tools=tools,
                                   storage_connection=connection)
             return make_chat_view(turn, knowledge_mode)
+
+    @application.post("/api/checkout/start", response_model=ChatView)
+    def select_checkout(body: CheckoutStart, authorization: str | None = Header(default=None)):
+        session = authorize(authorization)
+        if body.conversation_id != session["conversation_id"]:
+            raise HTTPException(404, "conversation_not_found")
+        with session["lock"], closing(open_storage(db_path)) as connection, connection:
+            conversation = load_conversation(connection, body.conversation_id)
+            if conversation is None:
+                raise HTTPException(404, "conversation_not_found")
+            try:
+                current, message = start_checkout(conversation, body, catalog)
+            except ValueError as error:
+                raise HTTPException(409, str(error)) from None
+            response = response_shell(message, catalog, current)
+            response["text"] += message
+            response["show_checkout"] = True
+            finish_turn(current, "Chọn món từ thẻ sản phẩm hoặc combo.", response, connection)
+            return make_chat_view({"conversation": current, "response": response,
+                                   "engine": "form", "llm_error": None}, knowledge_mode)
 
     @application.post("/api/checkout", response_model=ChatView)
     def checkout(body: CheckoutAction, authorization: str | None = Header(default=None)):

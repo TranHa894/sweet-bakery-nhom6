@@ -119,22 +119,23 @@ def migrate_legacy_orders(connection: sqlite3.Connection) -> None:
         ))
 
 
-def record_messages(connection: sqlite3.Connection, conversation_id: str, message: str, answer: str, *, contact_values=()) -> None:
+def record_messages(connection: sqlite3.Connection, conversation_id: str, message: str, answer: str, *, contact_values=()) -> int:
     connection.executemany("INSERT INTO messages(conversation_id,role,content,created_at) VALUES(?,?,?,?)", [
         (conversation_id, "user", safe_history_text(message, contact_values), utc_now()),
         (conversation_id, "assistant", safe_history_text(answer, contact_values), utc_now()),
     ])
+    return connection.execute("SELECT last_insert_rowid()").fetchone()[0]
 
 
-def load_messages(connection: sqlite3.Connection, conversation_id: str, limit: int = 100) -> list[dict]:
+def load_messages(connection: sqlite3.Connection, conversation_id: str, limit: int = 100, *, include_ids=False) -> list[dict]:
     """Đọc tin đã lưu theo owner, mới nhất có giới hạn; không tăng context gửi LLM."""
     if type(limit) is not int or not 1 <= limit <= 200:
         raise ValueError("Giới hạn lịch sử cần từ 1 đến 200.")
     rows = connection.execute(
-        "SELECT role,content,created_at FROM messages WHERE conversation_id=? ORDER BY id DESC LIMIT ?",
+        "SELECT id,role,content,created_at FROM messages WHERE conversation_id=? ORDER BY id DESC LIMIT ?",
         (conversation_id, limit),
     ).fetchall()
-    return [dict(row) for row in reversed(rows)]
+    return [{key: row[key] for key in row.keys() if include_ids or key != "id"} for row in reversed(rows)]
 
 
 def save_conversation(connection: sqlite3.Connection, conversation: dict) -> None:

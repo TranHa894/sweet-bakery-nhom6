@@ -1,8 +1,8 @@
 {
-  "version": "intent-context-v56-order-advice",
-  "annotation_revision": 34,
+  "version": "intent-context-v57-generic-menu",
+  "annotation_revision": "v65-combo-context",
   "split": "dev",
-  "sample_count": 495,
+  "sample_count": 536,
   "source": "manually_labelled_synthetic",
   "is_mock": true,
   "scope": "LLM NLU and controller, not overall/production evaluation",
@@ -19335,7 +19335,6 @@
               "SP0017",
               "SP0018"
             ],
-            "recommendation_count": 8,
             "request_scopes": [
               {
                 "intents": [
@@ -19358,7 +19357,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -19375,13 +19377,29 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
             ],
             "order_product_id": "SP0015",
             "slots": {
               "quantity": 2
-            }
+            },
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "mini"
+            ],
+            "recommendation_count_range": [
+              2,
+              6
+            ]
           }
         }
       ]
@@ -19554,7 +19572,6 @@
               "SP0020",
               "SP0021"
             ],
-            "recommendation_count": 7,
             "request_scopes": [
               {
                 "intents": [
@@ -19577,7 +19594,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -19591,8 +19611,24 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
+            ],
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "tea"
+            ],
+            "recommendation_count_range": [
+              2,
+              6
             ]
           }
         }
@@ -19661,7 +19697,6 @@
               "SP0023",
               "SP0025"
             ],
-            "recommendation_count": 7,
             "request_scopes": [
               {
                 "intents": [
@@ -19678,7 +19713,10 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  1
+                ]
               },
               {
                 "intents": [
@@ -19692,8 +19730,22 @@
                   "SP0023",
                   "SP0025"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  1
+                ]
               }
+            ],
+            "combo_tiers": [
+              "single"
+            ],
+            "combo_types": [
+              "mini",
+              "coffee"
+            ],
+            "recommendation_count_range": [
+              2,
+              2
             ]
           }
         }
@@ -19759,7 +19811,6 @@
               "SP0023",
               "SP0025"
             ],
-            "recommendation_count": 6,
             "request_scopes": [
               {
                 "intents": [
@@ -19773,7 +19824,10 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  1
+                ]
               },
               {
                 "intents": [
@@ -19787,8 +19841,22 @@
                   "SP0023",
                   "SP0025"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  1
+                ]
               }
+            ],
+            "combo_tiers": [
+              "single"
+            ],
+            "combo_types": [
+              "tea",
+              "coffee"
+            ],
+            "recommendation_count_range": [
+              2,
+              2
             ]
           }
         }
@@ -19866,7 +19934,6 @@
               "SP0017",
               "SP0018"
             ],
-            "recommendation_count": 8,
             "request_scopes": [
               {
                 "intents": [
@@ -19889,7 +19956,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -19906,8 +19976,24 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
+            ],
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "mini"
+            ],
+            "recommendation_count_range": [
+              2,
+              6
             ]
           }
         }
@@ -19976,7 +20062,6 @@
               "SP0020",
               "SP0021"
             ],
-            "recommendation_count": 7,
             "request_scopes": [
               {
                 "intents": [
@@ -19993,7 +20078,10 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  1
+                ]
               },
               {
                 "intents": [
@@ -20007,8 +20095,22 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  1
+                ]
               }
+            ],
+            "combo_tiers": [
+              "single"
+            ],
+            "combo_types": [
+              "mini",
+              "tea"
+            ],
+            "recommendation_count_range": [
+              2,
+              2
             ]
           }
         }
@@ -20083,7 +20185,6 @@
               "SP0023",
               "SP0025"
             ],
-            "recommendation_count": 7,
             "request_scopes": [
               {
                 "intents": [
@@ -20106,7 +20207,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20120,8 +20224,24 @@
                   "SP0023",
                   "SP0025"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
+            ],
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "coffee"
+            ],
+            "recommendation_count_range": [
+              2,
+              6
             ]
           }
         }
@@ -20214,7 +20334,6 @@
               "SP0020",
               "SP0021"
             ],
-            "recommendation_count": 11,
             "request_scopes": [
               {
                 "intents": [
@@ -20237,7 +20356,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20254,7 +20376,10 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20268,8 +20393,25 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
+            ],
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "mini",
+              "tea"
+            ],
+            "recommendation_count_range": [
+              3,
+              9
             ]
           }
         }
@@ -20377,7 +20519,6 @@
               "SP0023",
               "SP0025"
             ],
-            "recommendation_count": 14,
             "request_scopes": [
               {
                 "intents": [
@@ -20400,7 +20541,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20417,7 +20561,10 @@
                   "SP0017",
                   "SP0018"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20431,7 +20578,10 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20445,8 +20595,26 @@
                   "SP0023",
                   "SP0025"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
+            ],
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "mini",
+              "tea",
+              "coffee"
+            ],
+            "recommendation_count_range": [
+              4,
+              12
             ]
           }
         }
@@ -20678,7 +20846,6 @@
               "SP0020",
               "SP0021"
             ],
-            "recommendation_count": 7,
             "request_scopes": [
               {
                 "intents": [
@@ -20701,7 +20868,10 @@
                   "SP0010",
                   "SP0011"
                 ],
-                "result_count": 4
+                "result_count_range": [
+                  1,
+                  3
+                ]
               },
               {
                 "intents": [
@@ -20715,13 +20885,29 @@
                   "SP0020",
                   "SP0021"
                 ],
-                "result_count": 3
+                "result_count_range": [
+                  1,
+                  3
+                ]
               }
             ],
             "order_product_id": "SP0015",
             "slots": {
               "quantity": 2
-            }
+            },
+            "combo_tiers": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "combo_types": [
+              "cream_cake",
+              "tea"
+            ],
+            "recommendation_count_range": [
+              2,
+              6
+            ]
           }
         },
         {
@@ -28593,6 +28779,2771 @@
         "v56",
         "order_advice_separation",
         "sweetness"
+      ]
+    },
+    {
+      "id": "dev_generic_menu_restart",
+      "mode": "group_files",
+      "tags": [
+        "generic_menu",
+        "topic_switch"
+      ],
+      "turns": [
+        {
+          "message": "gợi ý bánh ngọt nhỏ",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": null
+                }
+              }
+            ]
+          },
+          "expected": {
+            "advice_pending": "taste_family",
+            "order_count": 0
+          },
+          "id": "dev-496",
+          "turn_index": 1
+        },
+        {
+          "message": "Trà xanh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "refine",
+                "filters": {
+                  "product_type": null,
+                  "flavor": null,
+                  "taste_family": "matcha"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0014"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-497",
+          "turn_index": 2
+        },
+        {
+          "message": "gợi ý món dưới 100k nhé",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": null,
+                  "flavor": null,
+                  "budget_vnd": 100000,
+                  "price_inclusive": false
+                }
+              }
+            ]
+          },
+          "expected": {
+            "recommendation_pool": [
+              "SP0019",
+              "SP0020",
+              "SP0021",
+              "SP0013",
+              "SP0014",
+              "SP0015",
+              "SP0016",
+              "SP0017",
+              "SP0018",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 3,
+            "draft_unchanged": true,
+            "order_count": 0,
+            "filters": {
+              "max_price_vnd": 100000,
+              "price_inclusive": false
+            },
+            "no_product_codes": true
+          },
+          "id": "dev-498",
+          "turn_index": 3
+        }
+      ]
+    },
+    {
+      "id": "dev_generic_menu_range",
+      "mode": "group_files",
+      "tags": [
+        "generic_menu",
+        "unitless_range"
+      ],
+      "turns": [
+        {
+          "message": "gợi ý bánh nhỏ vị trà xanh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": null,
+                  "taste_family": "matcha"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0014"
+            ],
+            "order_count": 0
+          },
+          "id": "dev-499",
+          "turn_index": 1
+        },
+        {
+          "message": "gợi ý mặt hàng từ 25000 đến 45000",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": null,
+                  "flavor": null,
+                  "min_budget_vnd": 25000,
+                  "budget_vnd": 45000,
+                  "min_price_inclusive": true,
+                  "price_inclusive": true
+                }
+              }
+            ]
+          },
+          "expected": {
+            "recommendation_pool": [
+              "SP0019",
+              "SP0020",
+              "SP0021",
+              "SP0013",
+              "SP0014",
+              "SP0015",
+              "SP0016",
+              "SP0017",
+              "SP0018",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 3,
+            "draft_unchanged": true,
+            "order_count": 0,
+            "filters": {
+              "min_price_vnd": 25000,
+              "max_price_vnd": 45000,
+              "min_price_inclusive": true,
+              "price_inclusive": true
+            }
+          },
+          "id": "dev-500",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "dev_combo_budget_collecting_v65",
+      "mode": "group_files",
+      "tags": [
+        "combo",
+        "budget",
+        "taste",
+        "order_isolation",
+        "v65"
+      ],
+      "turns": [
+        {
+          "message": "đặt 2 bánh cuộn vani",
+          "label": {
+            "action": "start_order",
+            "product_mentions": [
+              "bánh cuộn vani"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "order_request"
+            ],
+            "order_operation": "select_product",
+            "requests": [],
+            "order_product_mentions": [
+              "bánh cuộn vani"
+            ],
+            "order_items": [
+              {
+                "product_mention": "bánh cuộn vani",
+                "quantity": 2
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0
+          },
+          "id": "dev-501",
+          "turn_index": 1
+        },
+        {
+          "message": "cho tôi bánh kem, trà ngọt vừa và cà phê nhé bạn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0004",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010",
+                "SP0011",
+                "SP0012",
+                "SP0024"
+              ],
+              [
+                "SP0021"
+              ],
+              [
+                "SP0022",
+                "SP0023",
+                "SP0025"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-502",
+          "turn_index": 2
+        },
+        {
+          "message": "cho tôi bánh kem ngọt nhiều, trà ngọt vừa trong tầm giá 400k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong tầm giá 400k",
+              "budget_vnd": 400000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0004",
+                "SP0012"
+              ],
+              [
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 400000
+          },
+          "id": "dev-503",
+          "turn_index": 3
+        },
+        {
+          "message": "gợi ý bánh kem ít ngọt và cà phê đắng, khoảng giá 450 nghìn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "low"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "khoảng giá 450 nghìn",
+              "budget_vnd": 450000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0024",
+                "SP0011"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 450000
+          },
+          "id": "dev-504",
+          "turn_index": 4
+        },
+        {
+          "message": "gợi ý bánh nhỏ vị vani, trà ít ngọt nhé",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ vị vani",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "taste_family": "vanilla"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0015"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-505",
+          "turn_index": 5
+        },
+        {
+          "message": "tôi có 400000 đồng, gợi ý bánh kem trái cây ngọt vừa và trà ít ngọt",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem trái cây ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "taste_family": "fruit",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "tôi có 400000 đồng",
+              "budget_vnd": 400000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0010"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 400000
+          },
+          "id": "dev-506",
+          "turn_index": 6
+        },
+        {
+          "message": "giới thiệu bánh kem sô cô la ngọt nhiều với cà phê béo mặn nhẹ trong khoảng giá 500k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem sô cô la ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "taste_family": "chocolate",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê béo mặn nhẹ",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "creamy"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong khoảng giá 500k",
+              "budget_vnd": 500000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0012"
+              ],
+              [
+                "SP0023"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 500000
+          },
+          "id": "dev-507",
+          "turn_index": 7
+        },
+        {
+          "message": "gợi ý bánh kem, trà, cà phê và bánh nhỏ, ngân sách 600k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "ngân sách 600k",
+              "budget_vnd": 600000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0004",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010",
+                "SP0011",
+                "SP0012",
+                "SP0024"
+              ],
+              [
+                "SP0019",
+                "SP0020",
+                "SP0021"
+              ],
+              [
+                "SP0022",
+                "SP0023",
+                "SP0025"
+              ],
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "combo_budget": 600000
+          },
+          "id": "dev-508",
+          "turn_index": 8
+        },
+        {
+          "message": "với 300k gợi ý bánh kem ngọt nhiều và trà ít ngọt",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "với 300k",
+              "budget_vnd": 300000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0004",
+                "SP0012"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 300000
+          },
+          "id": "dev-509",
+          "turn_index": 9
+        },
+        {
+          "message": "goi y banh nho vi tra xanh va cf dang nhe",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "banh nho vi tra xanh",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "taste_family": "matcha"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cf dang",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0014"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-510",
+          "turn_index": 10
+        },
+        {
+          "message": "gợi ý bánh kem ngọt vừa và trà ngọt nhiều trong tầm khoảng 420 ngàn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "high"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong tầm khoảng 420 ngàn",
+              "budget_vnd": 420000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010"
+              ],
+              [
+                "SP0019"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 420000
+          },
+          "id": "dev-511",
+          "turn_index": 11
+        },
+        {
+          "message": "gợi ý bánh nhỏ vị dâu với cà phê dịu mát ít đắng",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ vị dâu",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": "dâu"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê dịu mát ít đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "mild"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0017"
+              ],
+              [
+                "SP0025"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-512",
+          "turn_index": 12
+        },
+        {
+          "message": "mình còn khoảng 90k, gợi ý 2 trà ngọt vừa và 1 cà phê đắng",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "2 trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                },
+                "quantity": 2
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "1 cà phê đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                },
+                "quantity": 1
+              }
+            ],
+            "bundle_budget": {
+              "question": "mình còn khoảng 90k",
+              "budget_vnd": 90000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0021"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              2,
+              1
+            ],
+            "combo_budget": 90000
+          },
+          "id": "dev-513",
+          "turn_index": 13
+        }
+      ]
+    },
+    {
+      "id": "dev_combo_budget_pending_v65",
+      "mode": "group_files",
+      "tags": [
+        "combo",
+        "budget",
+        "taste",
+        "order_isolation",
+        "v65"
+      ],
+      "turns": [
+        {
+          "message": "đặt 2 bánh donut",
+          "label": {
+            "action": "start_order",
+            "product_mentions": [
+              "bánh donut"
+            ],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "order_request"
+            ],
+            "order_operation": "select_product",
+            "requests": [],
+            "order_product_mentions": [
+              "bánh donut"
+            ],
+            "order_items": [
+              {
+                "product_mention": "bánh donut",
+                "quantity": 2
+              }
+            ]
+          },
+          "expected": {
+            "order_count": 0
+          },
+          "id": "dev-514",
+          "turn_index": 1
+        },
+        {
+          "message": "cho tôi bánh kem, trà ngọt vừa và cà phê nhé bạn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0004",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010",
+                "SP0011",
+                "SP0012",
+                "SP0024"
+              ],
+              [
+                "SP0021"
+              ],
+              [
+                "SP0022",
+                "SP0023",
+                "SP0025"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-515",
+          "turn_index": 2
+        },
+        {
+          "message": "cho tôi bánh kem ngọt nhiều, trà ngọt vừa trong tầm giá 400k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong tầm giá 400k",
+              "budget_vnd": 400000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0004",
+                "SP0012"
+              ],
+              [
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 400000
+          },
+          "id": "dev-516",
+          "turn_index": 3
+        },
+        {
+          "message": "gợi ý bánh kem ít ngọt và cà phê đắng, khoảng giá 450 nghìn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "low"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "khoảng giá 450 nghìn",
+              "budget_vnd": 450000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0024",
+                "SP0011"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 450000
+          },
+          "id": "dev-517",
+          "turn_index": 4
+        },
+        {
+          "message": "gợi ý bánh nhỏ vị vani, trà ít ngọt nhé",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ vị vani",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "taste_family": "vanilla"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0015"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-518",
+          "turn_index": 5
+        },
+        {
+          "message": "tôi có 400000 đồng, gợi ý bánh kem trái cây ngọt vừa và trà ít ngọt",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem trái cây ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "taste_family": "fruit",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "tôi có 400000 đồng",
+              "budget_vnd": 400000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0010"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 400000
+          },
+          "id": "dev-519",
+          "turn_index": 6
+        },
+        {
+          "message": "giới thiệu bánh kem sô cô la ngọt nhiều với cà phê béo mặn nhẹ trong khoảng giá 500k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem sô cô la ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "taste_family": "chocolate",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê béo mặn nhẹ",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "creamy"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong khoảng giá 500k",
+              "budget_vnd": 500000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0012"
+              ],
+              [
+                "SP0023"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 500000
+          },
+          "id": "dev-520",
+          "turn_index": 7
+        },
+        {
+          "message": "gợi ý bánh kem, trà, cà phê và bánh nhỏ, ngân sách 600k",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "ngân sách 600k",
+              "budget_vnd": 600000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0004",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010",
+                "SP0011",
+                "SP0012",
+                "SP0024"
+              ],
+              [
+                "SP0019",
+                "SP0020",
+                "SP0021"
+              ],
+              [
+                "SP0022",
+                "SP0023",
+                "SP0025"
+              ],
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "combo_budget": 600000
+          },
+          "id": "dev-521",
+          "turn_index": 8
+        },
+        {
+          "message": "với 300k gợi ý bánh kem ngọt nhiều và trà ít ngọt",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "high"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "với 300k",
+              "budget_vnd": 300000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0004",
+                "SP0012"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 300000
+          },
+          "id": "dev-522",
+          "turn_index": 9
+        },
+        {
+          "message": "goi y banh nho vi tra xanh va cf dang nhe",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "banh nho vi tra xanh",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "taste_family": "matcha"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cf dang",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0014"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-523",
+          "turn_index": 10
+        },
+        {
+          "message": "gợi ý bánh kem ngọt vừa và trà ngọt nhiều trong tầm khoảng 420 ngàn",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "sweetness": "medium"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt nhiều",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "high"
+                }
+              }
+            ],
+            "bundle_budget": {
+              "question": "trong tầm khoảng 420 ngàn",
+              "budget_vnd": 420000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0001",
+                "SP0003",
+                "SP0005",
+                "SP0006",
+                "SP0007",
+                "SP0008",
+                "SP0009",
+                "SP0010"
+              ],
+              [
+                "SP0019"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 420000
+          },
+          "id": "dev-524",
+          "turn_index": 11
+        },
+        {
+          "message": "gợi ý bánh nhỏ vị dâu với cà phê dịu mát ít đắng",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ vị dâu",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": "dâu"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê dịu mát ít đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "mild"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0017"
+              ],
+              [
+                "SP0025"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": null
+          },
+          "id": "dev-525",
+          "turn_index": 12
+        },
+        {
+          "message": "mình còn khoảng 90k, gợi ý 2 trà ngọt vừa và 1 cà phê đắng",
+          "label": {
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "intents": [
+              "recommendation"
+            ],
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "2 trà ngọt vừa",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                },
+                "quantity": 2
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "1 cà phê đắng",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                },
+                "quantity": 1
+              }
+            ],
+            "bundle_budget": {
+              "question": "mình còn khoảng 90k",
+              "budget_vnd": 90000,
+              "price_inclusive": true
+            }
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0021"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              2,
+              1
+            ],
+            "combo_budget": 90000
+          },
+          "id": "dev-526",
+          "turn_index": 13
+        }
+      ]
+    },
+    {
+      "id": "dev_within_price_combo_v66",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "dev-527",
+          "turn_index": 1,
+          "message": "cho tôi combo bánh nhỏ và trà ngọt trong giá 70k nhé",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 70k",
+              "budget_vnd": 70000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "sweet"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0019",
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 70000
+          }
+        },
+        {
+          "id": "dev-528",
+          "turn_index": 2,
+          "message": "gợi ý combo bánh nhỏ và trà ngọt trong mức giá 70 nghìn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong mức giá 70 nghìn",
+              "budget_vnd": 70000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "sweet"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0019",
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 70000
+          }
+        },
+        {
+          "id": "dev-529",
+          "turn_index": 3,
+          "message": "cho minh combo banh nho va tra ngot trong gia 70000",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong gia 70000",
+              "budget_vnd": 70000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "banh nho",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "tra ngot",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "sweet"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0019",
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 70000
+          }
+        },
+        {
+          "id": "dev-530",
+          "turn_index": 4,
+          "message": "gợi ý combo bánh nhỏ và trà ngọt trong giá 55k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 55k",
+              "budget_vnd": 55000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "sweet"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0019",
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 55000
+          }
+        },
+        {
+          "id": "dev-531",
+          "turn_index": 5,
+          "message": "gợi ý combo bánh nhỏ và trà ngọt nhiều trong giá 60k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 60k",
+              "budget_vnd": 60000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt nhiều",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "high"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0019"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 60000
+          }
+        },
+        {
+          "id": "dev-532",
+          "turn_index": 6,
+          "message": "cho mình combo bánh nhỏ và trà ít ngọt trong mức giá 70k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong mức giá 70k",
+              "budget_vnd": 70000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ít ngọt",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "low"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0020"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 70000
+          }
+        }
+      ]
+    },
+    {
+      "id": "dev_combo_coffee_preferences_v67",
+      "mode": "group_files",
+      "turns": [
+        {
+          "id": "dev-533",
+          "turn_index": 1,
+          "message": "đề xuất cho tôi bánh nhỏ và cà phê đắng trong giá 80k nhé",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 80k",
+              "budget_vnd": 80000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê đắng",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 80000
+          }
+        },
+        {
+          "id": "dev-534",
+          "turn_index": 2,
+          "message": "đề xuất cho tôi bánh nhỏ, cà phê đắng trong giá 86k nhé",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 86k",
+              "budget_vnd": 86000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê đắng",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "strong"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0013",
+                "SP0014",
+                "SP0015",
+                "SP0016",
+                "SP0017",
+                "SP0018"
+              ],
+              [
+                "SP0022"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 86000
+          }
+        },
+        {
+          "id": "dev-535",
+          "turn_index": 3,
+          "message": "gợi ý bánh nhỏ vị vani và cà phê béo mặn nhẹ trong giá 90k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 90k",
+              "budget_vnd": 90000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh nhỏ vị vani",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": "vani"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "cà phê béo mặn nhẹ",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "coffee",
+                  "coffee_style": "creamy"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0015"
+              ],
+              [
+                "SP0023"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 90000
+          }
+        },
+        {
+          "id": "dev-536",
+          "turn_index": 4,
+          "message": "đề xuất bánh kem trái cây ít ngọt với trà ngọt vừa trong giá 400k",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "bundle_budget": {
+              "question": "trong giá 400k",
+              "budget_vnd": 400000,
+              "price_inclusive": true
+            },
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "bánh kem trái cây ít ngọt",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "cream_cake",
+                  "taste_family": "fruit",
+                  "sweetness": "low"
+                }
+              },
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": "trà ngọt vừa",
+                "quantity": 1,
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "tea",
+                  "sweetness": "medium"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "draft_unchanged": true,
+            "order_count": 0,
+            "combo_pools": [
+              [
+                "SP0011",
+                "SP0024"
+              ],
+              [
+                "SP0021"
+              ]
+            ],
+            "combo_quantities": [
+              1,
+              1
+            ],
+            "combo_budget": 400000
+          }
+        }
       ]
     }
   ],

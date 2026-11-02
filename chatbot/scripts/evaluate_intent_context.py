@@ -99,7 +99,36 @@ def score_turn(item, result, proposal, previous_draft, order_count, previous_pro
         identifiers = [p["id"] for p in response["products"]]
         behavior["recommendation_pool"] = (len(identifiers) == len(set(identifiers))
             and set(identifiers).issubset(expected["recommendation_pool"]))
-        behavior["recommendation_count"] = len(identifiers) == expected["recommendation_count"]
+        if "recommendation_count" in expected:
+            behavior["recommendation_count"] = len(identifiers) == expected["recommendation_count"]
+        elif "recommendation_count_range" in expected:
+            lower, upper = expected["recommendation_count_range"]
+            behavior["recommendation_count"] = lower <= len(identifiers) <= upper
+    if "combo_tiers" in expected:
+        groups = response.get("recommendation_groups", [])
+        behavior["combo_tiers"] = [g.get("price_tier") for g in groups] == expected["combo_tiers"]
+        type_by_id = {p["id"]: p.get("product_type") for p in response["products"]}
+        behavior["combo_types"] = bool(groups) and all(
+            [type_by_id.get(i["product_id"]) for i in g["items"]] == expected["combo_types"] for g in groups)
+        totals = [g["total_vnd"] for g in groups]
+        behavior["combo_prices"] = totals == sorted(set(totals)) and all(
+            g["total_vnd"] == sum(i["quantity"] * i["unit_price_vnd"] for i in g["items"]) for g in groups)
+    if "combo_pools" in expected:
+        groups = response.get("recommendation_groups", [])
+        pools, quantities = expected["combo_pools"], expected["combo_quantities"]
+        behavior["combo_components"] = bool(groups) and len(groups) <= 3 and all(
+            len(g["items"]) == len(pools) and all(
+                item["product_id"] in pool and item["quantity"] == quantity
+                for item, pool, quantity in zip(g["items"], pools, quantities)) for g in groups)
+        budget = expected["combo_budget"]
+        behavior["combo_money"] = bool(groups) and all(
+            g["total_vnd"] == sum(i["quantity"] * i["unit_price_vnd"] for i in g["items"])
+            and (g.get("budget_vnd") is None if budget is None else
+                 g.get("budget_vnd") == budget and (
+                     g["total_vnd"] <= budget or g.get("extra_needed_vnd") == g["total_vnd"] - budget))
+            for g in groups)
+        behavior["combo_distinct"] = len({tuple((i["product_id"], i["quantity"]) for i in g["items"])
+                                         for g in groups}) == len(groups)
     if "distinct_groups_min" in expected:
         behavior["diverse_groups"] = len({p.get("product_type") for p in response["products"]}) >= expected["distinct_groups_min"]
     if expected.get("exclude_previous_products"):
@@ -152,10 +181,15 @@ def score_turn(item, result, proposal, previous_draft, order_count, previous_pro
             ids = actual.get("result_product_ids", [])
             if "result_ids" in wanted and set(ids) != set(wanted["result_ids"]):
                 return False
-            if "result_pool" in wanted and (
-                    len(ids) != wanted["result_count"] or len(ids) != len(set(ids))
-                    or not set(ids).issubset(wanted["result_pool"])):
-                return False
+            if "result_pool" in wanted:
+                if len(ids) != len(set(ids)) or not set(ids).issubset(wanted["result_pool"]):
+                    return False
+                if "result_count" in wanted and len(ids) != wanted["result_count"]:
+                    return False
+                if "result_count_range" in wanted:
+                    lower, upper = wanted["result_count_range"]
+                    if not lower <= len(ids) <= upper:
+                        return False
             return wanted.get("status", actual.get("status")) == actual.get("status")
         scoped_ok = len(actual_scopes) == len(expected["request_scopes"])
         for wanted in expected["request_scopes"]:

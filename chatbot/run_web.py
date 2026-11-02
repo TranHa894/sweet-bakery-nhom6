@@ -20,8 +20,7 @@ def main() -> None:
     except ValueError as error:
         parser.exit(2, str(error) + "\n")
     import uvicorn
-    print(f"Đang khởi động chatbot. Khi server báo sẵn sàng, mở: http://127.0.0.1:{args.port}/", flush=True)
-    print(f"Website có khung chat: http://127.0.0.1:{args.port}/website/?site_v=20261024-3", flush=True)
+    print(f"Website trên máy tính: http://127.0.0.1:{args.port}/website/", flush=True)
     print("Dừng server: Ctrl+C.", flush=True)
     if args.chat_mode == "ollama":
         def prepare_model():

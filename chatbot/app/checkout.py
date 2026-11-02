@@ -20,6 +20,20 @@ class CheckoutItem(BaseModel):
     quantity: int = Field(ge=1, le=99)
 
 
+class CheckoutStart(BaseModel):
+    """Nút đặt chỉ gửi ID/số lượng; giá và quyền sở hữu kiểm tra ở server."""
+    model_config = ConfigDict(extra="forbid", strict=True)
+    conversation_id: str = Field(min_length=1, max_length=100)
+    items: list[CheckoutItem] = Field(min_length=1, max_length=20)
+
+    @model_validator(mode="after")
+    def unique_products(self):
+        ids = [item.product_id for item in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Mỗi sản phẩm chỉ được có một dòng.")
+        return self
+
+
 class CheckoutForm(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     fullName: str = Field(min_length=2, max_length=100)
@@ -175,6 +189,38 @@ def verify_checkout(draft, repository):
     if not draft.get("review") or draft["review"]["slots_hash"] != draft_fingerprint(draft):
         raise ValueError("Bản nháp đã thay đổi. Hãy xem lại trước khi xác nhận.")
     return summary
+
+
+def start_checkout(conversation, body, repository):
+    """Mở form bằng dữ liệu chọn rõ ràng; chưa review, gửi yêu cầu hay tạo đơn."""
+    if repository.get_capabilities().get("catalog_source") != "group_files":
+        raise ValueError("Nguồn hiện tại chưa hỗ trợ đặt từ thẻ sản phẩm.")
+    items = [item.model_dump() for item in body.items]
+    summary = price_items(repository, items)
+    current = deepcopy(conversation)
+    draft = current["order"]
+    if draft["state"] in {"COLLECTING", "REVIEW"} and not draft.get("submission"):
+        existing = [{"product_id": i.get("product_id"), "quantity": i.get("quantity")}
+                    for i in order_items(draft)]
+        if existing == items:
+            return current, "Bạn kiểm tra thông tin yêu cầu bên dưới nhé."
+        raise ValueError("Bạn đang có bản nháp khác. Hãy hoàn tất hoặc hủy bản nháp trước khi đặt món mới.")
+    from app.order_flow import new_draft
+    caps = repository.get_capabilities()
+    draft = new_draft(current["id"], caps.get("optional_order_fields", []),
+                      caps.get("disabled_order_fields", []))
+    draft["state"], draft["revision"] = "COLLECTING", 1
+    first = summary["items"][0]
+    draft["slots"].update(product_id=first["product_id"], quantity=first["quantity"])
+    draft["verification"] = {"product_id": "verified", "quantity": "unverified"}
+    draft["extra_items"] = [{"product_id": row["product_id"], "name": row["name"],
+                            "quantity": row["quantity"], "size": None, "toppings": None,
+                            "cake_text": None, "cake_need": None,
+                            "verification": {"product_id": "verified", "quantity": "unverified"}}
+                           for row in summary["items"][1:]]
+    current.update(order=draft, web_checkout=True, pending_order_request=None,
+                   pending_order_question=None)
+    return current, "Mình đã chọn các món cho bạn. Bạn kiểm tra và điền thông tin trong form bên dưới nhé."
 
 
 def apply_checkout(conversation, body, repository, tools):

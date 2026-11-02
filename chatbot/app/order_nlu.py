@@ -8,14 +8,15 @@ from app.order_flow import business_command_text, update_slot
 from app.order_service import normalize_contact_value
 from app.repositories.catalog import safe_search_products
 from app.repositories.mock_catalog import canonical_flavors, styles_from_name
-from app.text_utils import normalize_text, normalize_business_evidence, normalize_shopping_terms, numeric_evidence_text, budget_evidence, parse_money, mentioned_catalog_groups
+from app.text_utils import ADVICE_PREFERENCE_CUES, normalize_text, normalize_business_evidence, normalize_shopping_terms, numeric_evidence_text, budget_evidence, parse_money, mentioned_catalog_groups, normalize_money_evidence
 
 NUMBER_WORDS = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "nam": 5,
                 "sau": 6, "bay": 7, "tam": 8, "chin": 9, "muoi": 10}
 
 # Chỉ kiểm chứng quyền dùng tham chiếu của Qwen; "trên 100k" không phải "ở trên".
 _QUERY_REFERENCE_CUES = (r"\b(?:nay|do|ay|vua|truoc|trong so|giu|van|nhu cu|re hon|dat hon|"
-                         r"thu\s*(?:nhat|hai|1|2)|dau tien|ca\s*(?:hai|2)|tat ca|toan bo|ben tren|o tren)\b")
+                         r"thu\s*(?:nhat|hai|1|2)|dau tien|ca\s*(?:hai|2)|tat ca|toan bo|ben tren|o tren|"
+                         r"cung\s+(?:vi|loai|nhom|huong\s+vi))\b")
 
 
 def resolve_mentions(mentions: list[str], repository, shown: list[dict], reference: str, selected_id=None, focus_ids=None, choice_ids=None) -> dict:
@@ -174,6 +175,110 @@ def each_quantity_values(text: str) -> set[int]:
     return {int(value) if value.isdigit() else NUMBER_WORDS[value] for value in values}
 
 
+def bundle_quantity_evidence(message, clause):
+    """Chỉ kiểm chứng số lượng trong đúng cụm món; tiền không phải số lượng."""
+    value = normalize_shopping_terms(clause or "")
+    words = "|".join(NUMBER_WORDS)
+    counts = {NUMBER_WORDS[m[1]] for m in re.finditer(
+        r"(?<!\w)(" + words + r")\s+(?:(?:cai|coc|ly|phan|chiec)\s+)?(?:banh|tra|ca phe)\b", value)}
+    leading = re.match(r"(" + words + r")\s+(?!\d|nghin\b|ngan\b|trieu\b)\w+", value)
+    if leading:
+        counts.add(NUMBER_WORDS[leading[1]])
+    for match in re.finditer(r"(?<![\w.,])(\d+)(?![\w.,])", value):
+        if not re.match(r"\s*(?:nghin|ngan|trieu|tr|k|vnd|dong|d|₫)\b", value[match.end():]):
+            counts.add(int(match[1]))
+    current = normalize_shopping_terms(message)
+    position = current.find(value) if value else -1
+    if position >= 0:
+        words = "|".join(NUMBER_WORDS)
+        prefix = re.search(r"(?<!\w)(\d+|" + words + r")\s*(?:(?:cai|coc|ly|phan|chiec)\s*)?$", current[:position])
+        if prefix:
+            counts.add(int(prefix[1]) if prefix[1].isdigit() else NUMBER_WORDS[prefix[1]])
+    return counts | each_quantity_values(message)
+
+
+def ground_bundle_questions(message, proposal):
+    """Gắn lại đoạn nguồn duy nhất cho các nhóm Qwen đã chọn, không trích intent/filter."""
+    if (proposal.intents != ["recommendation"] or not 2 <= len(proposal.requests) <= 4
+            or proposal.action != "none" or proposal.order_operation != "none"
+            or any(r.product_mentions or r.reference != "none" or not r.filters.product_type
+                   for r in proposal.requests)):
+        return
+    text = normalize_shopping_terms(message)
+    budget_start = None
+    if proposal.bundle_budget:
+        budget = normalize_shopping_terms(proposal.bundle_budget.question)
+        positions = list(re.finditer(re.escape(budget), text))
+        if len(positions) != 1:
+            return
+        budget_start = positions[0].start()
+    anchors = []
+    for request in proposal.requests:
+        clause = normalize_shopping_terms(request.question or "")
+        # Model hay lặp "gợi ý" ở mọi mục. Chỉ bỏ tiền tố chung, không đổi tên/vị.
+        if clause not in text and text.startswith("goi y "):
+            clause = clause.removeprefix("goi y ")
+        if not clause:
+            return
+        positions = list(re.finditer(r"(?<!\w)" + re.escape(clause) + r"(?!\w)", text))
+        if len(positions) != 1 or request.filters.product_type not in mentioned_catalog_groups(clause):
+            return  # Trùng/mơ hồ thì giữ nguyên để validator bác, không đoán liên kết.
+        start = positions[0].start()
+        count_prefix = re.search(r"(?<!\w)(\d+|" + "|".join(NUMBER_WORDS)
+            + r")\s*(?:(?:cai|coc|ly|phan|chiec)\s*)?$", text[:start])
+        if count_prefix:
+            count = int(count_prefix[1]) if count_prefix[1].isdigit() else NUMBER_WORDS[count_prefix[1]]
+            if 1 <= count <= 1000:
+                start = count_prefix.start()
+        anchors.append((start, positions[0].end(), request))
+    anchors.sort(key=lambda item: item[0])
+    if any(left[1] > right[0] for left, right in zip(anchors, anchors[1:])):
+        return
+    for index, (start, end, request) in enumerate(anchors):
+        boundary = anchors[index + 1][0] if index + 1 < len(anchors) else len(text)
+        if budget_start is not None and end <= budget_start < boundary:
+            boundary = budget_start
+        # Phần mở rộng chỉ là đoạn nguồn giữa hai đối tượng riêng biệt.
+        request.question = re.sub(r"(?:\s+|[,.;]|\bva\b|\bvoi\b)+$", "", text[start:boundary]).strip()
+
+
+def normalize_bundle_preferences(message, proposal, conversation=None):
+    """Chuẩn hóa mô tả AI và quyền kế thừa bộ lọc; không tạo intent/giá/sản phẩm."""
+    current = proposal.model_copy(deep=True)
+    ground_bundle_questions(message, current)
+    active = (conversation or {}).get("bundle_context")
+    text = normalize_shopping_terms(message)
+    # Qwen vẫn trích intent/loại/vị. Code chỉ quyết định quyền kế thừa bộ lọc:
+    # yêu cầu tìm mới rõ ràng không được trộn vào combo cũ.
+    fresh_groups = (current.intents == ["recommendation"] and len(current.requests) >= 2
+        and current.action == "none" and current.order_operation == "none"
+        and re.search(r"\b(?:goi y|tim)\b", text)
+        and not re.search(_QUERY_REFERENCE_CUES, re.sub(r"\bngot vua\b", "", text))
+        and all(r.intents == ["recommendation"] and r.reference == "none"
+                and r.price_preference == "none" and r.advice != "more"
+                and r.filters.product_type is not None for r in current.requests))
+    for request in current.requests:
+        if request.intents != ["recommendation"] or request.product_mentions:
+            continue
+        clause = normalize_shopping_terms(request.question or message)
+        if clause not in text:
+            continue
+        if fresh_groups and request.filters.product_type in mentioned_catalog_groups(clause):
+            request.search_scope = "new"
+        if current.bundle_budget is not None or active or len(current.requests) > 1:
+            bare = re.search(r"(?<!it )(?<!khong )\bngot\b(?!\s+(?:nhieu|dam|vua|hon)\b)", clause)
+            if bare and not re.search(r"\b(?:it ngot|ngot (?:nhieu|vua|dam)|khong ngot)\b", clause):
+                if request.filters.sweetness in {"high", "medium"}:
+                    request.filters.sweetness = "sweet"
+            # "món ít ngọt hơn" không cho phép AI tự chọn bánh thay cho trà.
+            if (active and request.search_scope == "refine" and not mentioned_catalog_groups(message)
+                    and request.filters.sweetness is not None
+                    and request.reference == "none"):
+                request.filters.product_type = None
+                request.search_scope = "refine"
+    return current
+
+
 def check_turn_grounding(message: str, proposal, repository=None, conversation=None, *, _check_omissions=True) -> str | None:
     """Kiểm chứng tên literal/nguồn và viết tắt; không thay intent của AI."""
     raw = normalize_text(message)
@@ -233,7 +338,7 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     recommendation_active = ("recommendation" in proposal.intents
                              or any("recommendation" in request.intents for request in proposal.requests))
     money = budget_evidence(message)
-    has_budget = (proposal.updates.budget_vnd is not None or proposal.updates.min_budget_vnd is not None
+    has_budget = (proposal.bundle_budget is not None or proposal.updates.budget_vnd is not None or proposal.updates.min_budget_vnd is not None
                   or any("recommendation" in request.intents
                          and (request.filters.budget_vnd is not None or request.filters.min_budget_vnd is not None)
                          for request in proposal.requests))
@@ -256,6 +361,13 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
                       for request in proposal.requests if "recommendation" in request.intents]
         if not proposal.requests:
             candidates = [(message, proposal.updates)]
+        if proposal.bundle_budget is not None:
+            total = proposal.bundle_budget
+            if (normalize_money_evidence(total.question) not in normalize_money_evidence(message)
+                    or total.budget_vnd not in money["values"]
+                    or total.budget_vnd not in budget_evidence(total.question)["values"]):
+                return "ungrounded_bundle_budget"
+            candidates.append((total.question, total))
         for clause, constraints in candidates:
             expected = budget_evidence(clause)["expected"]
             if expected:
@@ -372,7 +484,8 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
             inherited_scope = any(
                 context.get("needs", {}).get("filters", {}).get(field) is not None
                 and field not in proposal.clear_slots
-                for field in ("product_type", "flavor", "servings", "size", "occasion"))
+                for field in ("product_type", "flavor", "servings", "size", "occasion",
+                              "sweetness", "taste_family", "coffee_style"))
             if (full_catalog and budget_evidence(clause)["expected"]
                     and request.search_scope != "new" and inherited_scope):
                 return "missing_new_search_scope"
@@ -397,7 +510,10 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
                     # Đây là vị của bánh đang hỏi, không phải đổi sang đồ uống.
                     # Enum và bằng chứng vị vẫn được validate riêng bên dưới.
                     beverage_clause = re.sub(r"\b(?:tra xanh|ca phe(?: va)? kem)\b", "", beverage_clause)
-                for kind, pattern in {"tea": r"\btra\b", "coffee": r"\bca\s+phe\b"}.items():
+                # "Vẫn vị trà xanh" có thể chỉ bổ sung ngân sách, không lặp
+                # delta vị đã biết. Từ sau "vị/hương" không phải tên nhóm mới.
+                for kind, pattern in {"tea": r"(?<!vi )(?<!huong )\btra\b",
+                                      "coffee": r"(?<!vi )(?<!huong )\bca\s+phe\b"}.items():
                     if re.search(pattern, beverage_clause):
                         explicit_types.add(kind)
             negated_type = re.search(r"\b(?:khong(?:\s+(?:can|muon|lay|chon|xem|tim))?|bo|xoa)\s+"
@@ -463,6 +579,57 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
         mentions.extend(request.product_mentions)
         mentions.extend(request.excluded_product_mentions)
         constraints = request.filters.model_dump(exclude_none=True)
+        if proposal.bundle_budget is not None or (
+                len(proposal.requests) > 1 and "recommendation" in request.intents
+                and len({r.filters.product_type for r in proposal.requests}) > 1
+                and all(r.intents == ["recommendation"] and r.filters.product_type
+                        and r.filters.budget_vnd is None and r.filters.min_budget_vnd is None
+                        for r in proposal.requests)):
+            if not request.product_mentions and not mentioned_catalog_groups(request.question or ""):
+                return "invalid_bundle_component"
+            if (_check_omissions and not request.product_mentions
+                    and re.search(r"(?<!it )(?<!khong )\bngot\b(?!\s+(?:nhieu|dam|vua)\b)", normalize_shopping_terms(request.question or ""))
+                    and request.filters.sweetness != "sweet"):
+                return "missing_advice_preference"
+            quantities = bundle_quantity_evidence(message, request.question)
+            if len(quantities) == 1 and request.quantity not in quantities:
+                return "missing_bundle_quantity"
+            if request.quantity != 1 and request.quantity not in quantities:
+                return "ungrounded_bundle_quantity"
+        # Không để Qwen bỏ mức ngọt đã nói trong một câu tìm nhóm đầy đủ.
+        # Nút/fragment vẫn do FSM tư vấn xử lý như trước.
+        if (_check_omissions and "recommendation" in request.intents and not request.product_mentions
+                and mentioned_catalog_groups(clause)
+                and (len(proposal.requests) > 1 or budget_evidence(clause)["expected"])
+                and not re.search(r"\b(?:khong|tranh|bo|ngoai tru)\b", clause)):
+            for degree, pattern in {"high": r"\bngot (?:nhieu|dam)\b", "medium": r"\bngot vua\b", "low": r"\bit ngot\b"}.items():
+                if re.search(pattern, clause) and (request.filters.sweetness or proposal.updates.sweetness) != degree:
+                    return "missing_advice_preference"
+        if (_check_omissions and len(proposal.requests) > 1
+                and "recommendation" in request.intents and not request.product_mentions
+                and mentioned_catalog_groups(clause)
+                and not re.search(r"\b(?:khong|tranh|bo|ngoai tru)\b", clause)):
+            if request.filters.product_type == "coffee":
+                styles = {style for style, pattern in ADVICE_PREFERENCE_CUES["coffee_style"].items() if re.search(pattern, clause)}
+                if len(styles) == 1 and request.filters.coffee_style not in styles:
+                    return "missing_coffee_preference"
+            required_tastes = {
+                "fruit": (r"\btrai cay\b", set()),
+                "chocolate": (r"\b(?:socola|so co la|chocolate|choco)\b", canonical_flavors("sô cô la")),
+                "matcha": (r"\b(?:tra xanh|matcha)\b", canonical_flavors("trà xanh")),
+                "vanilla": (r"\b(?:vani|vanilla)\b", canonical_flavors("vani")),
+            }
+            for family, (pattern, flavors) in required_tastes.items():
+                if not re.search(pattern, clause):
+                    continue
+                accepted = {family}
+                if family == "fruit" and request.filters.product_type == "tea":
+                    accepted.add("fruit_tea")
+                if family == "vanilla" and request.filters.product_type in {"cake", "cream_cake"}:
+                    accepted.add("cream")
+                if (request.filters.taste_family not in accepted
+                        and not (flavors and flavors.issubset(canonical_flavors(request.filters.flavor)))):
+                    return "missing_taste_preference"
         if (_check_omissions and len(proposal.requests) == 1
                 and "recommendation" in request.intents and not request.product_mentions
                 and request.filters.product_type == "coffee"):
@@ -480,7 +647,8 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
             from app.schemas import TurnUpdates
             query.updates = TurnUpdates(**constraints)
             # Chỉ kiểm chứng filter cục bộ; omission đã kiểm tra toàn lượt ở trên.
-            error = check_turn_grounding(message, query, repository, conversation,
+            grounding_message = (request.question or message) if len(proposal.requests) > 1 else message
+            error = check_turn_grounding(grounding_message, query, repository, conversation,
                                          _check_omissions=False)
             if error:
                 return error
@@ -508,17 +676,10 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
             if not literal_short and grounded_names is not None and normalize_text(mention) not in grounded_names:
                 return "invalid_turn_mention"
     updates = proposal.updates.model_dump(exclude_none=True)
-    preference_evidence = {
-        "sweetness": {"low": r"\bit ngot\b", "medium": r"\bngot vua\b", "high": r"\bngot (?:nhieu|dam)\b"},
-        "taste_family": {"fruit": r"\btrai cay\b", "chocolate": r"\b(?:chocolate|choco|socola|so co la)\b",
-            "cream": r"\b(?:vi kem|kem sua|vani|vanilla|trang tri)\b", "milk_tea": r"\btra sua\b",
-            "fruit_tea": r"\btra trai cay\b", "matcha": r"\b(?:tra xanh|matcha)\b",
-            "vanilla": r"\b(?:vani|vanilla)\b", "coffee_cream": r"\bca phe\s+(?:va\s+)?kem\b"},
-        "coffee_style": {"strong": r"\b(?:dam|dang|tinh tao)\b", "creamy": r"\b(?:beo|man|de uong)\b",
-            "mild": r"\b(?:diu|mat|it dang)\b"},
-    }
+    preference_evidence = ADVICE_PREFERENCE_CUES
     for field, patterns in preference_evidence.items():
-        if updates.get(field) and not re.search(patterns[updates[field]], raw):
+        evidence_text = normalize_shopping_terms(message) if field == "sweetness" and updates.get(field) == "sweet" else raw
+        if updates.get(field) and not re.search(patterns[updates[field]], evidence_text):
             return "ungrounded_advice_preference"
     for field in ("cake_need", "flavor", "occasion", "name", "phone", "address"):
         if field in updates and normalize_text(updates[field]) not in business_raw:
@@ -612,6 +773,13 @@ def check_turn_grounding(message: str, proposal, repository=None, conversation=N
     return None
 
 
+def catalog_group_evidence(message, products):
+    """Đối chiếu loại từ tên nguồn, không làm mất cà phê muối khi kiểm chứng nhóm."""
+    aliases = {alias: product.get("product_type") for product in products
+               for alias in [product["name"], *product["aliases"]]}
+    return mentioned_catalog_groups(message, named_groups=aliases)
+
+
 def check_catalog_grounding(message: str, proposal, repository) -> str | None:
     """Phát hiện model bỏ tên nguồn trong câu; chỉ từ chối/sửa, không thay intent."""
     all_mentions = [*proposal.product_mentions, *proposal.order_product_mentions,
@@ -629,9 +797,16 @@ def check_catalog_grounding(message: str, proposal, repository) -> str | None:
     result = safe_search_products(repository, {})
     if result["status"] == "error":
         return None  # Controller xử lý lỗi nguồn riêng, không gọi là lỗi model.
-    names = [name for product in result["products"] for name in [product["name"], *product["aliases"]]]
-    expected_groups = mentioned_catalog_groups(message, names)
+    expected_groups = catalog_group_evidence(message, result["products"])
     if len(expected_groups) >= 2 and "recommendation" in proposal.intents:
+        # Chỉ bác bỏ thiếu ngân sách tổng rõ ràng, không tự gán intent/budget.
+        money = budget_evidence(message)
+        from app.text_utils import APPROXIMATE_BUDGET_CUE
+        shared_budget = (len(money["values"]) == 1 and re.search(
+            r"\b(?:ngan sach|tong(?: cong| tien)?|chi co|(?:toi|minh|t) (?:co|con)|"
+            + APPROXIMATE_BUDGET_CUE + r")\b", normalize_shopping_terms(message)))
+        if shared_budget and proposal.bundle_budget is None:
+            return "missing_bundle_budget"
         covered = {request.filters.product_type for request in proposal.requests
                    if "recommendation" in request.intents}
         if not expected_groups.issubset(covered):

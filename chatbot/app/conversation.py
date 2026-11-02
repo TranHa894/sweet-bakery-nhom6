@@ -10,7 +10,7 @@ from uuid import uuid4
 from time import monotonic
 
 from app import llm_client
-from app.advice import resolve_advice_selection, expand_advice_selection, apply_advice_selection, advice_question, advice_summary, diverse_products, next_advice_page, save_advice_pages, more_advice_selection, MORE_ADVICE_LABEL
+from app.advice import resolve_advice_selection, expand_advice_selection, apply_advice_selection, advice_question, advice_summary, diverse_products, next_advice_page, save_advice_pages, more_advice_selection, MORE_ADVICE_LABEL, recommend_bundles, bundle_summary, bundle_cards
 from app.chatbot import create_state, respond, make_response, describe_products, summarize_needs
 from app.config import CHAT_MODE, CONTEXT_MAX_TURNS, get_llm_settings
 from app.nlu import analyze_message
@@ -159,13 +159,20 @@ def finish_turn(current, message, response, storage_connection=None) -> None:
     current["pending_order_question"] = pending_order_slot(draft) if draft["state"] == "COLLECTING" else None
     response["text"] = response["text"].strip()
     current["quick_replies"] = list(response.get("quick_replies", []))
+    # Chỉ để khôi phục giao diện; không đưa thẻ/ảnh vào prompt hoặc bản nháp.
+    current["recommendation_groups"] = deepcopy(response.get("recommendation_groups", []))
     if "show_checkout" in response:
         current["checkout_visible"] = response["show_checkout"]
     contacts = [draft["slots"].get(key) for key in ("name", "phone", "address")]
     if storage_connection is not None:
         # Parent phải có trước messages foreign key; lưu cùng transaction của cả lượt.
         save_conversation(storage_connection, current)
-        record_messages(storage_connection, current["id"], message, response["text"], contact_values=contacts)
+        message_id = record_messages(storage_connection, current["id"], message, response["text"], contact_values=contacts)
+        if current["recommendation_groups"]:
+            cards = current.setdefault("recommendation_history", {})
+            cards[str(message_id)] = deepcopy(current["recommendation_groups"])
+            # Web khôi phục tối đa 100 tin; giữ tối đa 50 câu trả lời có nhóm.
+            current["recommendation_history"] = dict(list(cards.items())[-50:])
     current["history"].extend([
         {"role": "user", "content": safe_history_text(message, contacts)},
         {"role": "assistant", "content": safe_history_text(response["text"], contacts)},
@@ -1253,6 +1260,48 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
     return ""
 
 
+def continue_combo(current, proposal, message=""):
+    """Nối delta đã kiểm chứng vào bộ lọc combo, tách biệt hoàn toàn bản nháp."""
+    saved = current.get("bundle_context")
+    if (not saved or proposal.bundle_budget is not None or proposal.action != "none"
+            or proposal.order_operation != "none" or proposal.intents != ["recommendation"]
+            or not proposal.requests or any(r.search_scope != "refine" for r in proposal.requests)):
+        return proposal, None
+    components = saved["components"]
+    types = [c["filters"].get("product_type") for c in components]
+    targets = [r.filters.product_type for r in proposal.requests]
+    from app.schemas import BundleBudget
+    budget_change = None
+    if len(proposal.requests) == 1 and targets == [None]:
+        delta = proposal.requests[0].filters.model_dump(exclude_none=True)
+        if ("budget_vnd" in delta and set(delta) <=
+                {"budget_vnd", "min_budget_vnd", "price_inclusive", "min_price_inclusive"}):
+            budget_change = BundleBudget(question=message, **delta)
+            targets = types
+    if (any(t is None or types.count(t) != 1 for t in targets)
+            or len(set(targets)) != len(targets)
+            or any(r.product_mentions or r.reference != "none" for r in proposal.requests)):
+        return proposal, "Bạn muốn điều chỉnh món nào trong combo?"
+    result = proposal.model_copy(deep=True)
+    inverse = {target: field for field, target in QUERY_FILTER_MAP.items()}
+    requests = []
+    for component in components:
+        values = {inverse[k]: v for k, v in component["filters"].items() if k in inverse}
+        kind = values.get("product_type")
+        change = next((r for r in proposal.requests if r.filters.product_type == kind), None)
+        if change:
+            for field in proposal.clear_slots:
+                values.pop(field, None)
+            values.update(change.filters.model_dump(exclude_none=True))
+        requests.append(InformationRequest(
+            intents=["recommendation"], question=change.question if change and change.question else kind,
+            product_mentions=component.get("product_mentions", []),
+            quantity=component["quantity"], search_scope="new", filters=values))
+    result.requests = requests
+    result.bundle_budget = budget_change or (BundleBudget.model_validate(saved["budget"]) if saved["budget"] else None)
+    return result, None
+
+
 def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, base_url=None,
                    model=None, timeout=None, knowledge_repository=None,
                    order_tools=None, storage_connection=None) -> dict:
@@ -1304,6 +1353,8 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
         with storage_connection if storage_connection is not None else nullcontext():
             finish_turn(current, original_message, response, storage_connection)
         return turn_result(current, response, attempts=attempts)
+    from app.order_nlu import normalize_bundle_preferences
+    proposal = normalize_bundle_preferences(message, proposal, current)
     grounding = check_turn_grounding(message, proposal, repository, current)
     if grounding:
         return failed_turn(message, repository, conversation, grounding, attempts)
@@ -1329,12 +1380,40 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
         return failed_turn(message, repository, conversation, "conflicting_continuation", attempts)
     proposal = continue_information(current, proposal, message)
     proposal = without_disabled_order_fields(proposal, current["order"])
+    proposal, combo_question = continue_combo(current, proposal, message)
     response = response_shell(message, repository, current, list(proposal.intents))
+    if combo_question:
+        from app.advice import selection_sentence
+        response["text"] += combo_question
+        delta = proposal.requests[0].filters.model_dump(exclude_none=True)
+        response["quick_replies"] = [selection_sentence({**delta,
+            "product_type": c["filters"].get("product_type")}).removeprefix("Gợi ý ")
+            for c in current["bundle_context"]["components"]]
+        response["requires_clarification"] = True
+        response["show_checkout"] = False
+        with storage_connection if storage_connection is not None else nullcontext():
+            finish_turn(current, original_message, response, storage_connection)
+        return turn_result(current, response, attempts=attempts)
     # Áp dụng delta nhu cầu trước khi lập truy vấn: clear_slots không để lại filter cũ.
     # ID đơn vẫn chỉ được giải/kiểm tra ở repository sau bước này.
     current["needs"] = merge_preferences(current, proposal, None, response["data_mode"])
     current_turn, query_tasks, order_proposal, order_resolution = resolve_message_scopes(current, proposal, repository, message)
-    query_tasks = deduplicate_information_tasks(query_tasks)
+    # Mỗi thành phần bundle là một suất món, không gộp mất số lượng.
+    if proposal.bundle_budget is None:
+        query_tasks = deduplicate_information_tasks(query_tasks)
+    bundle_tasks = [task for task in query_tasks if "recommendation" in task["scope"]["intents"]]
+    use_bundle = (proposal.bundle_budget is not None or
+        (2 <= len(bundle_tasks) <= 4 and proposal.action == "none"
+         and all(t["request"].intents == ["recommendation"]
+                 and t["request"].reference == "none"
+                 and t["request"].price_preference == "none"
+                 and not any(k in t["scope"]["filters"] for k in ("max_price_vnd", "min_price_vnd"))
+                 for t in bundle_tasks)))
+    if use_bundle:
+        # Ngân sách tổng không được ghi thành trần giá riêng cho mọi món.
+        for task in bundle_tasks:
+            task["scope"]["quantity"] = task["request"].quantity
+        current_turn["bundle_budget"] = proposal.bundle_budget.model_dump() if proposal.bundle_budget else None
     selected_page = (advice_selection or {}).get("page")
     if selected_page is not None and len(query_tasks) == 1:
         # Điều kiện từ trang trước đã được kiểm chứng, không nhờ model đoán lại.
@@ -1396,6 +1475,7 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
     product_texts = set()
     pagination_pages = []
     opening_used = False
+    bundle_done = False
     try:
         for task in query_tasks:
             scope, resolution = task["scope"], task["resolution"]
@@ -1404,6 +1484,47 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 response["text"] += information_clarification(task) + "\n"
                 scope["status"] = "awaiting_clarification"
                 pending_information.append(task["request"].model_dump())
+                continue
+            if use_bundle and task in bundle_tasks:
+                if not bundle_done:
+                    if any(t["scope"].get("ambiguous") or t["resolution"]["ambiguous"] for t in bundle_tasks):
+                        response["requires_clarification"] = True
+                        response["text"] += "Mình cần làm rõ các món trước khi ghép combo theo ngân sách.\n"
+                    else:
+                        bundle = recommend_bundles(repository,
+                            [{"filters": t["scope"]["filters"], "quantity": t["request"].quantity} for t in bundle_tasks],
+                            proposal.bundle_budget, response["data_mode"])
+                        response["catalog_status"] = bundle["status"]
+                        if bundle["status"] == "error":
+                            raise ValueError(bundle["error"] or "source_error")
+                        if bundle["status"] == "unconfigured":
+                            response["text"] += "Chưa có menu để ghép combo và kiểm tra tổng giá.\n"
+                        elif not bundle["groups"]:
+                            response["text"] += "Mình chưa tìm được combo phù hợp với các món và ngân sách này. Bạn muốn đổi món, hương vị hay điều chỉnh ngân sách thế nào?\n"
+                        else:
+                            response["text"] += bundle_summary(bundle["groups"], proposal.bundle_budget) + "\n"
+                            response["recommendation_groups"] = bundle_cards(bundle["groups"], proposal.bundle_budget)
+                            current["bundle_context"] = {
+                                "budget": proposal.bundle_budget.model_dump() if proposal.bundle_budget else None,
+                                "components": [{"filters": deepcopy(t["scope"]["filters"]),
+                                                "quantity": t["request"].quantity,
+                                                "product_mentions": list(t["request"].product_mentions)}
+                                               for t in bundle_tasks]}
+                            for index, component_task in enumerate(bundle_tasks):
+                                component_task["scope"]["result_product_ids"] = list(dict.fromkeys(
+                                    g["items"][index]["product"]["id"] for g in bundle["groups"]))
+                            by_id = {}
+                            for group in bundle["groups"]:
+                                for item in group["items"]:
+                                    product, variant = item["product"], item["variant"]
+                                    shown = by_id.setdefault(product["id"], {**deepcopy(product), "variants": []})
+                                    if variant["id"] not in {v["id"] for v in shown["variants"]}:
+                                        shown["variants"].append(deepcopy(variant))
+                            response["products"].extend(by_id.values())
+                        current["advice_pending"], current["advice_page"] = None, None
+                    bundle_done = True
+                scope["status"] = "answered" if response["catalog_status"] == "success" else "insufficient_data"
+                answered_tasks.append(task)
                 continue
             if scope["intents"] == ["policy"]:
                 policy, error = answer_policy_request(scope.get("question") or message,
@@ -1545,6 +1666,9 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 "updates": remembered}
     current["unknown_streak"] = current["unknown_streak"] + 1 if list(proposal.intents) == ["fallback"] else 0
     current_turn["requests"] = [deepcopy(task["scope"]) for task in query_tasks]
+    if (not use_bundle and any(r.search_scope == "new" and
+            "recommendation" in r.intents for r in proposal.requests)):
+        current.pop("bundle_context", None)
     current["current_request"] = deepcopy(current_turn)
     try:
         with storage_connection if storage_connection is not None else nullcontext():
@@ -1577,7 +1701,7 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 opening == "Mình kiểm tra thông tin cho bạn nhé." and answered_tasks
                 or opening == "Mình đã ghi nhận nhu cầu này." and order_outcome["changed"] and current["order"]["state"] == "COLLECTING"
                 or opening == "Mình chưa đủ thông tin để kết luận." and response["requires_clarification"])
-            if allowed_opening:
+            if allowed_opening and not response.get("recommendation_groups"):
                 opening_used = True
                 label, separator, body = response["text"].partition("\n")
                 response["text"] = label + separator + opening + "\n" + body

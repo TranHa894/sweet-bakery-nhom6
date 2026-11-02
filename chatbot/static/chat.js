@@ -102,7 +102,7 @@ async function api(path, body) {
       503: "Chatbot tạm thời chưa sẵn sàng. Bạn có thể thử lại."
     };
     let detail = errors[response.status] || "Chưa xử lý được yêu cầu. Bạn có thể thử lại.";
-    if (path === "/api/checkout") {
+    if (path.startsWith("/api/checkout")) {
       if (response.status === 409 && typeof result.detail === "string") detail = result.detail;
       if (response.status === 422) detail = "Bạn kiểm tra các trường bắt buộc, số điện thoại, email, ngày nhận và số lượng nhé.";
     }
@@ -237,9 +237,74 @@ function showProducts(parent, products = []) {
       }
       card.append(link);
     }
+    if (product.source === "group_files" && product.active !== false) {
+      card.append(orderCardButton([{product_id: product.id, quantity: 1}], "Đặt món này"));
+    }
     grid.append(card);
   }
   parent.append(grid);
+}
+
+function showRecommendations(parent, data) {
+  const groups = data.recommendation_groups || [];
+  const groupedIds = new Set();
+  if (groups.length) {
+    const grid = element("div", undefined, "bundle-grid");
+    groups.forEach((group, index) => {
+      const card = element("article", undefined, "bundle-card");
+      card.setAttribute("aria-label", "Combo " + (index + 1));
+      const heading = element("div", undefined, "bundle-heading");
+      heading.append(element("h3", "Combo " + (index + 1)),
+        element("span", group.items.length + " món" + (group.price_tier ?
+          " · " + ({low: "Giá thấp", medium: "Giá vừa", high: "Giá cao", single: "Giá tham khảo"}[group.price_tier]) : ""), "bundle-unit"));
+      card.append(heading);
+      if (group.reason) card.append(element("p", group.reason, "bundle-reason"));
+      for (const item of group.items) {
+        groupedIds.add(item.product_id);
+        const row = element("div", undefined, "bundle-item");
+        const details = element("div", undefined, "bundle-details");
+        const name = element("strong", item.name);
+        if (item.source === "group_files") {
+          const link = element("a", item.name);
+          link.href = "/website/chi-tiet-san-pham-demo.html?id=" + encodeURIComponent(item.product_id);
+          if (embedded) {
+            link.target = "_blank"; link.rel = "noopener";
+            if (parentOrigin) link.addEventListener("click", (event) => {
+              event.preventDefault();
+              notifyParent("product", {productId: item.product_id});
+            });
+          }
+          name.replaceChildren(link);
+        }
+        details.append(name);
+        const taste = [item.flavor, item.sweetness].filter(Boolean).join(" · ");
+        if (taste) details.append(element("span", taste, "bundle-taste"));
+        const size = item.size ? item.size + " · " : "";
+        details.append(element("span", size + (item.quantity === 1 ? "Số lượng: 1" : item.quantity + " × " + formatMoney(item.unit_price_vnd)), "bundle-unit"));
+        row.append(orderThumbnail(item.name, item.image_url), details,
+          element("strong", formatMoney(item.line_total_vnd), "bundle-line-price"));
+        card.append(row);
+      }
+      const footer = element("div", undefined, "bundle-total");
+      footer.append(element("span", "Tổng tiền hàng"), element("strong", formatMoney(group.total_vnd)));
+      card.append(footer);
+      if (group.extra_needed_vnd > 0) {
+        const shortfall = element("div", undefined, "bundle-shortfall");
+        shortfall.append(element("span", "Cần thêm"), element("strong", formatMoney(group.extra_needed_vnd)));
+        card.append(shortfall);
+      } else if (group.remaining_budget_vnd > 0) {
+        card.append(element("p", "Còn dư khoảng " + formatMoney(group.remaining_budget_vnd), "bundle-savings"));
+      }
+      if (group.items.every(item => item.source === "group_files")) {
+        card.append(orderCardButton(group.items.map(item => ({product_id: item.product_id, quantity: item.quantity})),
+                                    "Đặt combo này"));
+      }
+      grid.append(card);
+    });
+    parent.append(grid, element("p", "Giá theo menu tham khảo · Chưa tạo yêu cầu đặt hàng.", "bundle-note"));
+  }
+  // Không vẽ lại thẻ lẻ của nhóm; vẫn giữ sản phẩm của câu hỏi khác cùng lượt.
+  showProducts(parent, (data.products || []).filter(product => !groupedIds.has(product.id)));
 }
 
 function showQuickReplies(parent, replies = []) {
@@ -288,6 +353,29 @@ function checkoutButton(label, callback, primary = false) {
   const button = element("button", label, "button " + (primary ? "primary" : "secondary"));
   button.type = "button";
   button.addEventListener("click", callback);
+  return button;
+}
+
+function orderCardButton(items, label) {
+  const button = checkoutButton(label, async () => {
+    if (busy || !session) return;
+    setBusy(true);
+    showError("");
+    try {
+      const data = await api("/api/checkout/start", {conversation_id: session.conversation_id, items});
+      welcome.hidden = true;
+      addMessage("bot", data.message);
+      showModes(data);
+      rememberSession();
+      showReview(data);
+      reviewPanel.scrollIntoView({block: "start"});
+    } catch (error) {
+      showError(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }, true);
+  button.classList.add("card-order");
   return button;
 }
 
@@ -562,10 +650,14 @@ async function restoreConversation() {
     let lastAssistant = null;
     for (const message of data.messages) {
       const section = addMessage(message.role === "user" ? "user" : "bot", message.content);
+      if (message.role === "assistant") showRecommendations(section, message);
       lastAssistant = message.role === "assistant" ? section : null;
     }
     if (lastAssistant) {
-      showProducts(lastAssistant, data.snapshot.products);
+      if (data.messages.at(-1)?.recommendation_groups?.length) {
+        const ids = new Set(data.messages.at(-1).recommendation_groups.flatMap(group => group.items.map(item => item.product_id)));
+        showProducts(lastAssistant, data.snapshot.products.filter(product => !ids.has(product.id)));
+      } else showRecommendations(lastAssistant, data.snapshot);
       showSources(lastAssistant, data.snapshot.sources);
       showQuickReplies(lastAssistant, data.snapshot.quick_replies);
     }
@@ -598,7 +690,7 @@ async function send(text) {
     const parent = pending.complete(data.message);
     showModes(data);
     rememberSession();
-    showProducts(parent, data.products);
+    showRecommendations(parent, data);
     showSources(parent, data.sources);
     showQuickReplies(parent, data.quick_replies);
     showReview(data);

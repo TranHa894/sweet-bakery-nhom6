@@ -178,7 +178,11 @@ def matches_product(product: Product, filters: SearchFilters) -> bool:
             return False
     profile = product.get("advice_profile", {})
     for key in ("sweetness", "coffee_style"):
-        if filters.get(key) and profile.get(key) != filters[key]:
+        wanted = filters.get(key)
+        if key == "sweetness" and wanted == "sweet":
+            if profile.get(key) not in {"medium", "high"}:
+                return False
+        elif wanted and profile.get(key) != wanted:
             return False
     if filters.get("taste_family") and filters["taste_family"] not in profile.get("taste_families", []):
         return False

@@ -1,5 +1,5 @@
 {
-  "version": "intent-context-v56-order-advice",
+  "version": "intent-context-v67-compositional-preferences",
   "source": "abstract_patterns_from_development_errors",
   "note": "bánh A/B/C và banh A/B/C là placeholder, không phải menu. Ví dụ viết tắt giữ nguyên mention của câu hiện tại; tham chiếu dùng reference, không chép tên từ lịch sử. Không chứa nhãn final test. Thêm both/all theo danh sách đã trả: cả hai không tự có ý đặt hoặc số lượng; mỗi loại 1c dùng order_items. Bổ sung 47 pattern trừu tượng ngân sách hai cận, loại bánh/đồ uống, nhiều câu hỏi, tham chiếu, số lượng và an toàn; model chỉ chọn tối đa 2 ví dụ liên quan. Không fine-tune và không đọc đáp án test. Bổ sung 12 pattern nhóm bánh kem/bánh nhỏ/trà/cà phê, hương vị, tiếp tục chọn món đang chờ và giữ số lượng. Không trích hình thức nhận hoặc địa chỉ; không tự suy ra thành phần từ tên. Vẫn chỉ chọn tối đa hai ví dụ. Chọn vị trong danh sách đang chờ chỉ trích flavor của câu mới; code đối chiếu ứng viên và giữ số lượng đã có, không chép tên lịch sử vào mention. Context yêu cầu đang chờ dùng operation/quantity/mentions/choices/already_supplied_fields như prompt thật; tên trần nối yêu cầu chọn món, còn câu hỏi giá theo thứ tự vẫn chỉ hỏi thông tin. Câu nối chỉ đổi vị như 'vani thì sao' trích flavor mới và để product_type=null; controller giữ nhóm đang xem, không sửa đơn. Thêm/bớt trích số lượng thay đổi trong câu hiện tại, không tự cộng thành tổng với số lượng đã có; mẫu tham chiếu dùng cùng cấu trúc context thực tế. Mẫu hỏi giá rồi đặt cùng bánh dùng order_items riêng; chọn ví dụ theo câu hiện tại và trạng thái phù hợp, không suy ý định từ vị trong tên bánh. Mẫu đổi ngân sách chỉ trích cận giá mới; mẫu liên hệ và xem lại không chép món, số lượng hoặc câu hỏi cũ. Mẫu phụ thuộc REVIEW dùng metadata states tường minh. Ưu tiên giá là price_preference riêng của request: extrema và tìm lựa chọn mới không trộn với reference=cheaper chọn giữa các loại đã đưa; giá và nhóm/vị do code đối chiếu nguồn. Ngân sách khoảng một số là cận trên, không tự nới biên; khoảng hai số dùng cả hai cận. Bộ chọn ví dụ bỏ từ nền chung và tiểu từ hỏi cuối câu; ko/kh/k0 trước động từ vẫn giữ tín hiệu phủ định. Đây chỉ là cách chọn few-shot, không phân loại ý định thay Qwen. Chủ đề chính sách chung giữ nguyên câu khách nói, không tự mở thành giao hàng/đổi trả. search_scope=new cho truy vấn tư vấn độc lập; refine mặc định cho câu nối chỉ đổi vị/ngân sách hoặc tham chiếu. Ngữ cảnh ví dụ dùng retained_fields/product_type như prompt thật, không chép giá trị cũ vào bộ lọc mới; bánh chung là cake, chỉ bánh kem mới là cream_cake. Mẫu dưới/trên ngân sách phân biệt danh từ bánh chung=cake với sản phẩm chung=null; mảnh nối vị và giá giữ nhóm cũ bằng refine. Giá trị nhóm cũ trong context chỉ phục vụ bộ chọn ví dụ; trước khi gửi Qwen chỉ giữ tên trường đã có, để model không chép nhầm nhóm từ ví dụ hoặc lịch sử. Mẫu tư vấn vị và ngân sách dùng bánh chung=cake; câu nói có vị X/giá dưới Y là điều kiện tìm, khác câu hỏi tên bánh có vị gì/giá bao nhiêu. Giữ riêng mẫu tư vấn số người, không tăng số ví dụ gửi model. Output HTTP cho thông tin bỏ trường rỗng để giảm token; ví dụ đặt hàng luôn giữ action/product_mentions/order_items/updates để kiểm tra đầy đủ. Schema nội bộ và nghiệp vụ không thay đổi. Grammar HTTP tách nhánh thông tin gọn và nhánh nghiệp vụ đủ trường; intent order_request không được đi qua nhánh gọn, còn Python vẫn validate độc lập. Thêm 13 pattern hỏi lựa chọn khi muốn mua, viết tắt/không dấu, nhóm/giá, hỏi món có tên và hành động chọn mua rõ. Mua trong câu tìm lựa chọn không tự tạo bản nháp; mỗi lượt vẫn tối đa 2 mẫu. Mẫu hủy chỉ phù hợp trạng thái có bản nháp đang thu thập/REVIEW. Tổng 16 pattern mới; mẫu cận trên gồm dưới/không quá/còn khoảng/tối đa, tránh chép cận dưới từ khoảng hai số. Bỏ default rỗng trong file ví dụ, kiểm tra roundtrip giữ nguyên ý nghĩa; lượt đặt vẫn đủ sáu trường. Mẫu tìm mới cùng nhóm có context đang giữ vị cũ, vẫn search_scope=new; câu vẫn/giữ hoặc chỉ đổi giá/vị dùng refine. Bản v42 bổ sung bốn pattern cận giá trà; mẫu trà bao gồm biên không tự thêm vị. Câu tìm có ngân sách chỉ học mẫu tư vấn có cận giá cùng kiểu, không lấy mẫu nhóm/vị thiếu ngân sách. Không dùng mẫu hoặc giá cố định để trả lời thay repository/Qwen.",
   "examples": [
@@ -9681,6 +9681,1890 @@
             "filters": {
               "product_type": "cream_cake",
               "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_item_1",
+      "input": {
+        "message": "gợi ý món dưới 100k nhé",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "new",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_item_2",
+      "input": {
+        "message": "goi y mon duoi 100 nghin",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "new",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_item_3",
+      "input": {
+        "message": "gợi ý món từ 50k đến 100k",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "new",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": true,
+              "min_budget_vnd": 50000,
+              "min_price_inclusive": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_item_4",
+      "input": {
+        "message": "gợi ý mặt hàng dưới 100000",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "new",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_keep_1",
+      "input": {
+        "message": "vẫn bánh nhỏ vị trà xanh, dưới 100k",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "refine",
+            "filters": {
+              "product_type": "mini",
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false,
+              "taste_family": "matcha"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_keep_2",
+      "input": {
+        "message": "dưới 100k thôi",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "refine",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_keep_3",
+      "input": {
+        "message": "gợi ý món cùng vị dưới 100k",
+        "context": {
+          "known_preferences": {
+            "product_type": "mini",
+            "taste_family": "matcha"
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "guided",
+            "search_scope": "refine",
+            "filters": {
+              "product_type": null,
+              "flavor": null,
+              "budget_vnd": 100000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "generic_menu_reference",
+      "input": {
+        "message": "món đó giá bao nhiêu?",
+        "context": {
+          "discussion_context": {
+            "focused_product_count": 1,
+            "recent_information_intents": [
+              "recommendation"
+            ]
+          },
+          "product_choices": {
+            "count": 1
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "price"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "price"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "reference": "last"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_pair",
+      "input": {
+        "context": {},
+        "message": "Mình có 420k, gợi ý bánh kem với trà đi"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null
+            }
+          }
+        ],
+        "bundle_budget": {
+          "question": "Mình có 420k",
+          "budget_vnd": 420000
+        }
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_quantities",
+      "input": {
+        "context": {},
+        "message": "Tổng dưới 500k, đề xuất 1 bánh kem vị sô cô la, 2 trà ngọt nhiều và 1 cà phê"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "1 bánh kem vị sô cô la",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": "sô cô la"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "2 trà ngọt nhiều",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null,
+              "sweetness": "high"
+            },
+            "quantity": 2
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "1 cà phê",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ],
+        "bundle_budget": {
+          "question": "Tổng dưới 500k",
+          "budget_vnd": 500000,
+          "price_inclusive": false
+        }
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_tastes",
+      "input": {
+        "context": {},
+        "message": "Ngân sách 430 nghìn, gợi ý bánh kem ít ngọt và trà hương đào"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem ít ngọt",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null,
+              "sweetness": "low"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà hương đào",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": "đào"
+            }
+          }
+        ],
+        "bundle_budget": {
+          "question": "Ngân sách 430 nghìn",
+          "budget_vnd": 430000
+        }
+      }
+    },
+    {
+      "kind": "guided_advice_tea_sweet_budget",
+      "input": {
+        "context": {},
+        "message": "Gợi ý trà ngọt nhiều dưới 35 nghìn"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null,
+              "sweetness": "high",
+              "budget_vnd": 35000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "guided_advice_tea_low_budget",
+      "input": {
+        "context": {},
+        "message": "tu van tra it ngot khong qua 30000"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null,
+              "sweetness": "low",
+              "budget_vnd": 30000,
+              "price_inclusive": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "guided_advice_tea_medium_budget",
+      "input": {
+        "context": {},
+        "message": "Đề xuất trà ngọt vừa tầm 30k"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": null,
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null,
+              "sweetness": "medium",
+              "budget_vnd": 30000,
+              "price_inclusive": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_budget_last",
+      "input": {
+        "context": {},
+        "message": "Đề xuất bánh kem ít ngọt với trà vị đào; tổng không quá 410000"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem ít ngọt",
+            "search_scope": "new",
+            "quantity": 1,
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null,
+              "sweetness": "low"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà vị đào",
+            "search_scope": "new",
+            "quantity": 1,
+            "filters": {
+              "product_type": "tea",
+              "flavor": "đào"
+            }
+          }
+        ],
+        "bundle_budget": {
+          "question": "tổng không quá 410000",
+          "budget_vnd": 410000
+        }
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_four_types",
+      "input": {
+        "context": {},
+        "message": "Mình có 520k, gợi ý bánh kem, bánh nhỏ, trà và cà phê"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Mình có 520k",
+          "budget_vnd": 520000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh nhỏ",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "guided_advice_cream_high_budget",
+      "input": {
+        "context": {},
+        "message": "Gợi ý bánh kem ngọt nhiều dưới 450000"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": null,
+            "product_mentions": [],
+            "advice": "guided",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null,
+              "sweetness": "high",
+              "budget_vnd": 450000,
+              "price_inclusive": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_quantities_inclusive",
+      "input": {
+        "context": {},
+        "message": "Tổng không quá 510k, gợi ý 1 bánh kem vị sô cô la, 2 trà ngọt nhiều và 1 cà phê"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "1 bánh kem vị sô cô la",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": "sô cô la"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "2 trà ngọt nhiều",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null,
+              "sweetness": "high"
+            },
+            "quantity": 2
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "1 cà phê",
+            "advice": "none",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ],
+        "bundle_budget": {
+          "question": "Tổng không quá 510k",
+          "budget_vnd": 510000
+        }
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_cream_coffee",
+      "input": {
+        "context": {},
+        "message": "Tôi có 480 nghìn, đề xuất bánh kem với cà phê"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Tôi có 480 nghìn",
+          "budget_vnd": 480000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_cream_mini",
+      "input": {
+        "context": {},
+        "message": "Ngân sách 440000, gợi ý bánh kem và bánh nhỏ"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Ngân sách 440000",
+          "budget_vnd": 440000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh nhỏ",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_mini_coffee",
+      "input": {
+        "context": {},
+        "message": "Tôi có 100k, đề xuất bánh nhỏ cùng cà phê"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Tôi có 100k",
+          "budget_vnd": 100000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh nhỏ",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_mini_tea",
+      "input": {
+        "context": {},
+        "message": "Có 75k, gợi ý bánh nhỏ với trà"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Có 75k",
+          "budget_vnd": 75000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh nhỏ",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_tea_coffee",
+      "input": {
+        "context": {},
+        "message": "Mình còn 80 nghìn, đề xuất trà và cà phê"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "Mình còn 80 nghìn",
+          "budget_vnd": 80000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "action": "none",
+        "product_mentions": [],
+        "reference": "none",
+        "updates": [],
+        "clear_slots": [],
+        "ambiguous": false,
+        "handoff_reason": "none",
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "flavor": null
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "flavor": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_named_coffee_quantity",
+      "input": {
+        "message": "Tôi có 480k, gợi ý 1 bánh kem vị sô cô la và 2 cà phê muối",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "bundle_budget": {
+          "question": "Tôi có 480k",
+          "budget_vnd": 480000,
+          "price_inclusive": true
+        },
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "1 bánh kem vị sô cô la",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": "sô cô la"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "2 cà phê muối",
+            "product_mentions": [
+              "cà phê muối"
+            ],
+            "quantity": 2,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_sweet_three",
+      "input": {
+        "message": "Tôi có 470k, đề xuất bánh kem ngọt, trà ngọt, cà phê",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "bundle_budget": {
+          "question": "Tôi có 470k",
+          "budget_vnd": 470000,
+          "price_inclusive": true
+        },
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem ngọt",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "sweet"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà ngọt",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "sweet"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_pastry_three",
+      "input": {
+        "message": "Tôi có 370k, gợi ý bánh kem, trà, bánh ngọt",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "bundle_budget": {
+          "question": "Tôi có 370k",
+          "budget_vnd": 370000,
+          "price_inclusive": true
+        },
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh ngọt",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "multi_scope_bundle_flavored_cake_coffee",
+      "input": {
+        "context": {},
+        "message": "Tôi có 460k, gợi ý bánh kem vị trà xanh và cà phê"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "bundle_budget": {
+          "question": "Tôi có 460k",
+          "budget_vnd": 460000
+        },
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem vị trà xanh",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "flavor": "trà xanh"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê",
+            "product_mentions": [],
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mixed_sweet",
+      "input": {
+        "message": "đề xuất bánh kem ngọt, trà ít ngọt với ngân sách 400k",
+        "context": {}
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "bundle_budget": {
+          "question": "ngân sách 400k",
+          "budget_vnd": 400000
+        },
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem ngọt",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "sweet"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà ít ngọt",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "low"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_followup_types",
+      "input": {
+        "message": "cho tôi bánh kem ít ngọt và trà ngọt vừa nhé",
+        "context": {
+          "active_combo": {
+            "components": [
+              {
+                "type": "cream_cake"
+              },
+              {
+                "type": "tea"
+              }
+            ],
+            "budget_vnd": 400000
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem ít ngọt",
+            "product_mentions": [],
+            "search_scope": "refine",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "low"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà ngọt vừa",
+            "product_mentions": [],
+            "search_scope": "refine",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_followup_unspecified",
+      "input": {
+        "message": "cho tôi món ít ngọt hơn nhé",
+        "context": {
+          "active_combo": {
+            "components": [
+              {
+                "type": "cream_cake"
+              },
+              {
+                "type": "tea"
+              }
+            ],
+            "budget_vnd": 400000
+          }
+        }
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "món ít ngọt hơn",
+            "product_mentions": [],
+            "search_scope": "refine",
+            "filters": {
+              "product_type": null,
+              "sweetness": "low"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_no_budget_tastes",
+      "input": {
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_request": {
+            "operation": "select_product",
+            "quantity": 2,
+            "mentions": [
+              "Donut"
+            ]
+          }
+        },
+        "message": "cho tôi bánh kem ngọt vừa, trà ít ngọt và cà phê đắng nhé"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem ngọt vừa",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "medium"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà ít ngọt",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "low"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "cà phê đắng",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "strong"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_approximate_budget",
+      "input": {
+        "message": "cho mình bánh kem ngọt nhiều, trà ngọt vừa trong tầm giá 500k",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "name"
+          }
+        }
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong tầm giá 500k",
+          "budget_vnd": 500000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem ngọt nhiều",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "high"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà ngọt vừa",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_cake_coffee_low_budget",
+      "input": {
+        "message": "mình có khoảng 550k, tư vấn bánh kem ít ngọt với cà phê đậm",
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          },
+          "pending_order_question": {
+            "field": "phone"
+          }
+        }
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "mình có khoảng 550k",
+          "budget_vnd": 550000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh kem ít ngọt",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "sweetness": "low"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "cà phê đậm",
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "strong"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_fruit_medium_tea_low",
+      "input": {
+        "context": {},
+        "message": "Với ngân sách 480k, tư vấn bánh kem trái cây ngọt vừa và trà ít ngọt"
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "ngân sách 480k",
+          "budget_vnd": 480000
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh kem trái cây ngọt vừa",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "cream_cake",
+              "taste_family": "fruit",
+              "sweetness": "medium"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "trà ít ngọt",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "low"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_coffee_no_budget",
+      "input": {
+        "context": {
+          "order_draft": {
+            "state": "COLLECTING"
+          }
+        },
+        "message": "gợi ý bánh nhỏ vị trà xanh và cà phê đắng"
+      },
+      "output": {
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "bánh nhỏ vị trà xanh",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "taste_family": "matcha"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "question": "cà phê đắng",
+            "product_mentions": [],
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "strong"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_tea_sweet_budget",
+      "input": {
+        "message": "cho mình combo bánh nhỏ và trà ngọt trong giá 80 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong giá 80 nghìn",
+          "budget_vnd": 80000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà ngọt",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "sweet"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_tea_high_budget",
+      "input": {
+        "message": "gợi ý combo bánh nhỏ và trà ngọt nhiều trong giá 80 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong giá 80 nghìn",
+          "budget_vnd": 80000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà ngọt nhiều",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "high"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_tea_low_budget",
+      "input": {
+        "message": "gợi ý combo bánh nhỏ và trà ít ngọt trong giá 80 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong giá 80 nghìn",
+          "budget_vnd": 80000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "trà ít ngọt",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "tea",
+              "sweetness": "low"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_coffee_strong_budget",
+      "input": {
+        "message": "gợi ý bánh nhỏ với cà phê đắng trong mức giá 95 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong mức giá 95 nghìn",
+          "budget_vnd": 95000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "cà phê đắng",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "strong"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_coffee_creamy_budget",
+      "input": {
+        "message": "gợi ý bánh nhỏ vị vani với cà phê béo mặn nhẹ trong mức giá 95 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong mức giá 95 nghìn",
+          "budget_vnd": 95000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ vị vani",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": "vani"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "cà phê béo mặn nhẹ",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "creamy"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "combo_mini_coffee_mild_budget",
+      "input": {
+        "message": "gợi ý bánh nhỏ vị dâu với cà phê dịu mát ít đắng trong mức giá 95 nghìn",
+        "context": {}
+      },
+      "output": {
+        "bundle_budget": {
+          "question": "trong mức giá 95 nghìn",
+          "budget_vnd": 95000,
+          "price_inclusive": true
+        },
+        "intents": [
+          "recommendation"
+        ],
+        "requests": [
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "bánh nhỏ vị dâu",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "mini",
+              "flavor": "dâu"
+            }
+          },
+          {
+            "intents": [
+              "recommendation"
+            ],
+            "product_mentions": [],
+            "question": "cà phê dịu mát ít đắng",
+            "quantity": 1,
+            "search_scope": "new",
+            "filters": {
+              "product_type": "coffee",
+              "coffee_style": "mild"
             }
           }
         ]

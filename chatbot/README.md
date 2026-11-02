@@ -8,6 +8,208 @@ Mặc định đọc **24 sản phẩm mẫu** của nhóm từ `../static/produ
 
 
 
+## V67 — kiểu cà phê và điều kiện riêng trong combo (01/11/2026)
+
+Đã tái hiện câu “đề xuất cho tôi bánh nhỏ và cà phê đắng trong giá 80k nhé”: Qwen ghi flavor=strong thay vì coffee_style=strong và bỏ ngân sách; lượt sửa bổ sung tiền nhưng vẫn sai field, kết thúc missing_coffee_preference sau 22,79s.
+
+- app/schemas.py chuẩn hóa nhãn kiểu cà phê đặt nhầm trong flavor, chỉ khi product_type=coffee và nhãn tương đương chính xác. Hai field mâu thuẫn vẫn lỗi; vẫn kiểm chứng với câu nguồn. Không suy kiểu cà phê hay chọn sản phẩm thay Qwen.
+- app/text_utils.py chứa bằng chứng sở thích dùng chung; app/order_nlu.py dùng lại thay các bảng lặp. “Ít đắng” không được coi là “đắng”.
+- app/llm_client.py chọn mẫu theo cả độ ngọt, nhóm vị và kiểu cà phê, lọc mẫu có kiểu cà phê không được khách nêu. Ba mẫu mini + coffee bổ sung vào data/nlu_few_shots.json, tổng 314 mẫu; vẫn gửi tối đa hai mẫu, không tăng context/retry hoặc đổi model.
+- Thêm ba kiểm tra vào scripts/check_checkout.py và bốn ca dev-533…536 vào dialogue dev_combo_coffee_preferences_v67. Không thêm file docs/tests và không thay bộ test cuối.
+
+Kết quả đã chạy:
+- **96/96** kiểm tra logic; fake **536/536 dev + 60/60 test**; cú pháp và 314 mẫu Pydantic hợp lệ.
+- **4/4** câu Qwen thật đạt cả nhãn NLU lẫn hành vi, một lần gọi mỗi câu: hai câu gốc 80k/86k, bánh nhỏ vani + cà phê béo mặn nhẹ 90k, bánh kem trái cây ít ngọt + trà ngọt vừa 400k. Thời gian lần lượt **24,73 / 12,68 / 13,27 / 14,84s**; chưa đo nguyên nhân lượt đầu chậm hơn.
+- Thử lại đúng hai câu gốc qua API/Qwen khi đã có bản nháp (thiết lập bằng fake): HTTP 200, mỗi lượt ba combo **80.000đ**, bản nháp giữ nguyên, không ghi đơn. Ngân sách 86k còn dư 6k. Thời gian **12,07 / 11,81s**.
+- SQLite RAM; không sửa menu, DB khách, frontend hoặc file ngoài chatbot. Chưa kiểm tra trực quan trình duyệt hoặc tất cả câu có thể có. Đây là kiểm tra vài cặp theo yêu cầu, không phải chứng minh độ chính xác mọi câu.
+
+Dừng server cũ bằng Ctrl+C và chạy lại run_web.py hoặc run_tunnel.py đang dùng; F5 không nạp lại Python.
+
+## V66 — combo bánh nhỏ và trà trong giá 70k (01/11/2026)
+
+- Nguyên nhân đã tái hiện: budget_evidence đọc “trong giá 70k” thành giá đúng 70k; Qwen gộp hai nhóm và gán ngọt vừa cho bánh. Validator trả ungrounded_advice_preference, không phải menu hết món.
+- app/text_utils.py nhận “trong giá/trong mức giá” là trần ngân sách, vẫn giữ giá chính xác, khoảng giá và số lượng. app/llm_client.py ưu tiên few-shot có điều kiện ngọt phù hợp sau khi lọc nhóm/cấu trúc; không thay Qwen bằng keyword intent. data/nlu_few_shots.json thêm ba mẫu mini + tea ngọt/ngọt nhiều/ít ngọt. Vẫn tối đa hai mẫu/lượt, không tăng context hoặc số lần retry.
+- scripts/check_checkout.py: **93/93** kiểm tra đạt. evaluation/intent_context_dev.json thêm sáu ca dev-527…532; fake **532/532 dev + 60/60 test** đạt. Tổng **311** few-shot hợp lệ. Không thay bộ test cuối.
+- Qwen thật trên cả sáu ca mới: **6/6 hành vi đạt**, **4/6 toàn bộ nhãn trích xuất khớp**, không lỗi model/nguồn, mỗi câu một lần gọi; **13,17–14,57s**. Câu gốc **13,27s**, trả ba combo 60.000đ, dư 10.000đ; ngân sách 55k trả combo cần thêm 5k. Mức ngọt chỉ áp cho trà. Đây là kiểm tra chọn lọc, không phải độ chính xác toàn chatbot.
+- Trước sửa, câu gốc cần hai lượt model vẫn lỗi, đo 58,14s. Các ca chat mới từng chọn mẫu không có độ ngọt và lỗi; đã sửa selector rồi chạy lại sáu ca trên. Ba cách nói của câu 70k cũng đã được thử qua API với bản nháp đang thu thập, không ghi đơn hoặc thay draft.
+- Mọi kiểm tra dùng SQLite RAM. Không sửa menu/database khách, model, frontend hoặc file ngoài chatbot; không tạo docs/tests mới. Chưa kiểm tra trực quan trình duyệt. Dừng server Python cũ và chạy lại; F5 không nạp lại Python.
+
+## V65 — combo nhiều yêu cầu và ngữ cảnh (01/11/2026)
+
+Đã sửa trong chatbot, giữ Qwen và luồng đặt hàng hiện có:
+
+- app/text_utils.py: “trong tầm giá/khoảng giá 400k” là trần ngân sách xấp xỉ, không phải giá đúng 400k cho từng món; vẫn giữ ý nghĩa “đúng/cùng giá”.
+- app/llm_client.py: schema cho phép ngân sách xuất cuối JSON; chọn mẫu cùng cấu trúc combo, không ghép mẫu giá riêng một món; tìm mới không gửi lại tóm tắt combo cũ. Tiền vừa xuất hiện được đưa vào context dưới dạng số VNĐ, nhưng Qwen vẫn quyết định intent và ngân sách thuộc phần nào.
+- app/order_nlu.py: chỉ gắn lại đoạn nguồn khi các đối tượng Qwen chọn có vị trí duy nhất, không đoán món hay tạo filter. Kiểm tra vị/độ ngọt/kiểu cà phê theo từng đoạn; tìm mới không mang combo cũ sang, câu giữ điều kiện cũ vẫn dùng context. Bản nháp/REVIEW không bị sửa khi chỉ tư vấn.
+- Retry vẫn tối đa một lần trong cùng deadline: giữ JSON vừa sinh, bỏ few-shot ở lượt sửa. Khi validator xác minh thiếu ngân sách CHUNG, schema lượt sửa bắt buộc trường bundle_budget; Qwen vẫn tự trích giá trị và chịu kiểm chứng. Hai giá riêng từng món không bị ép sang combo. Không tăng num_ctx, không đổi/tải model.
+- Bổ sung 26 lượt dev trong hai hội thoại dev_combo_budget_collecting_v65 và dev_combo_budget_pending_v65: nhiều vị, tiền viết khác nhau, không ngân sách, thiếu tiền, 2–4 loại và số lượng riêng. Không đưa nhãn test vào prompt. Hiện có 308 few-shot trên đĩa; tối đa hai mẫu/lượt, câu combo phù hợp dùng một mẫu.
+
+Kết quả xác minh 01/11/2026:
+
+- **90/90** kiểm thử scripts/check_checkout.py đạt, gồm form/API, quyền session, REVIEW, ngân sách chung khác giá riêng và model lỗi giữ bản nháp. Sau tinh gọn hướng dẫn retry, hai kiểm tra nhánh retry cũng chạy lại và đạt.
+- Fake + SQLite RAM: **526/526 dev + 60/60 test** đạt; **308** few-shot hợp lệ, **37** file Python hợp cú pháp. Fake kiểm tra logic, không đo khả năng hiểu của Qwen.
+- Qwen thật, chuỗi dev_combo_budget_pending_v65: **13/13 hành vi đạt**, không lỗi model/nguồn; đối chiếu toàn bộ nhãn trích xuất đạt **10/13**. Hành vi được chấm gồm loại/vị/số lượng từng thành phần, tổng tiền, combo khác nhau và giữ bản nháp. Không gọi đây là độ chính xác toàn chatbot.
+- Trong chuỗi này, 12/13 lượt chỉ gọi Qwen một lần. Hai câu gốc về ba nhóm không ngân sách và bánh ngọt nhiều + trà ngọt vừa khoảng 400k mất **15,15 / 16,01 giây**. Câu bốn nhóm mất **22,43 giây**; câu sô cô la + cà phê béo mặn ngân sách 500k cần sửa JSON một lần, **29,91 giây**. Đây là số đo thực tế, tốc độ còn phụ thuộc tải CPU/GPU.
+- Thử thêm qua API TestClient với Qwen thật: dựng REVIEW bằng dữ liệu giả, gây một lỗi model giả lập, rồi gửi hai câu gốc **không dấu**. Cả hai HTTP 200, không lỗi; tổng combo **390k/450k/520k** và **385k**, bản nháp giữ nguyên, chưa ghi đơn. Thời gian **14,87 / 15,23 giây**.
+- Lần chạy trước sửa nhánh retry cuối chỉ đạt **12/13**: Qwen bỏ ngân sách chung. Đã sửa và chạy lại cùng chuỗi đạt 13/13; không tính lượt lỗi là đạt. Chưa chạy Qwen toàn bộ 586 lượt, chưa kiểm tra trực quan trình duyệt/tunnel trong đợt này.
+
+Tất cả kiểm tra dùng SQLite RAM, không ghi vào database khách. Chỉ sửa các file đã có trong chatbot; không tạo docs/tests hoặc sửa website bên ngoài. Không thay model, cấu hình bộ nhớ hay tải model mới.
+
+Lệnh kiểm tra trong thư mục chatbot:
+
+```powershell
+.\.venv\Scripts\python.exe -B -X utf8 -m unittest -q scripts.check_checkout
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine fake --split dev
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine fake --split test
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine ollama --dialogue dev_combo_budget_pending_v65
+```
+
+Thử lại trong cùng hội thoại: đặt 2 bánh cuộn vani → hỏi bánh kem, trà ngọt vừa và cà phê → hỏi bánh kem ngọt nhiều, trà ngọt vừa trong tầm giá 400k → gợi ý bánh nhỏ vị trà xanh và cà phê đắng. Với menu hiện tại, yêu cầu 400k có combo Choco ngọc trai + trà sữa, tổng 385.000đ; bản nháp ban đầu vẫn giữ nguyên.
+
+Sau sửa Python phải dừng server cũ bằng Ctrl+C rồi chạy lại run_web.py hoặc run_tunnel.py; F5 chỉ tải lại trình duyệt, không nạp code Python mới. Không cần xóa lịch sử hay tạo chat mới để áp dụng cách tách ngữ cảnh.
+
+## Combo chưa có ngân sách và nút đặt trên thẻ — v64, 31/10/2026
+
+- Hai câu “cho tôi bánh kem ngọt vừa và cà phê đắng nhé” / “cho tôi bánh kem, trà ngọt vừa và cà phê nhé bạn” là yêu cầu gợi ý nhiều loại, chưa phải chọn sản phẩm cụ thể để gửi đơn. Qwen trích từng clause; code ghép tối đa ba mức giá thật trước khi hỏi ngân sách, không tạo một con số ngân sách giả.
+- recommend_bundles nhận budget=None: lấy tổ hợp rẻ nhất, đắt nhất và tổ hợp gần khoảng giữa nhất nếu có mức giá khác nhau. Chỉ giữ tối đa ba tổ hợp trong RAM, giữ nguyên vị/độ ngọt/số lượng, không nhân bản combo để đủ ba. Nếu chỉ có một mức giá phù hợp thì đưa một combo. Truy vấn có giá riêng cho từng loại vẫn lọc riêng.
+- Bộ nhớ combo có thể chưa có ngân sách. Câu trả lời tiếp “tôi có khoảng 450k” áp lên tổng combo, giữ loại/vị đã chọn. Các mức thấp/vừa/cao là so sánh giữa những combo đáp ứng điều kiện của khách.
+- Dưới mỗi thẻ có Đặt combo này hoặc Đặt món này. Nút gọi POST /api/checkout/start với conversation_id và ID/số lượng; không gọi Qwen, không gửi giá từ trình duyệt. Server xác thực session, kiểm tra lại sản phẩm/giá và mở form hiện có. Thông tin liên hệ đã nhớ được điền lại; vẫn phải Xem lại rồi Xác nhận gửi yêu cầu. Nguồn group_files chỉ lưu yêu cầu chờ tư vấn.
+- Bấm lại cùng lựa chọn giữ cùng nháp; nếu đang có một nháp khác, API báo cần hoàn tất/hủy trước, không ghi đè. Bắt đầu món mới sau khi lưu yêu cầu được hỗ trợ.
+- Tài nguyên web tăng v64. Chỉ sửa trong chatbot; không tạo docs/ hoặc tests/, không ghi/reset DB khách.
+
+Đã chạy: 75/75 unittest bằng SQLite RAM/model fake; dev 500/500 và test 60/60. Mười kỳ vọng hiển thị dev được đổi có chủ đích từ 4 thẻ riêng/loại sang tối đa 3 combo theo mức giá; giữ nguyên nhãn NLU, pool sản phẩm, kiểm tra từng loại và bảo toàn bản nháp. Test cuối không đổi. Scorer kiểm tra thứ tự mức giá, đủ loại món, tổng tiền và kết quả từng thành phần.
+
+Qwen thật: hai câu gốc đạt một inference/lượt (12,11s / 12,74s), giá 365/425/495k và 390/450/520k. Hội thoại kiểm tra cuối: câu ba loại 15,49s; bổ sung 450k sau đó 6,14s và trả ba combo tổng 390/420/430k. Thời gian là số đo từng lần, không phải cam kết tốc độ. JavaScript và DOM giả đạt kiểm tra nút đặt, ID/số lượng gửi đúng, mở form; chưa bấm thử trực quan qua trình duyệt/tunnel.
+
+## Độ ngọt và câu nối combo — v63, 31/10/2026
+
+Đã tái hiện bằng Qwen thật: bánh kem ngọt + trà ít ngọt bị model gán high/medium cho ngọt chung và bị validator từ chối; câu nối ít ngọt hơn bị tự gán cream_cake; câu sửa hai món thiếu question hoặc tự thêm cho tôi vào clause thứ hai. Đây là lỗi trích xuất/kiểm chứng và thiếu ngữ cảnh combo, không phải thiếu sản phẩm.
+
+- app/order_nlu.py: chuẩn hóa mức ngọt model đã trích về sweet khi clause combo chỉ nói ngọt chung; không đổi mức ít/vừa/nhiều rõ ràng. Kiểm chứng filter theo từng clause ở mọi lượt nhiều yêu cầu, không cho mức ngọt của trà làm bằng chứng cho bánh.
+- app/llm_client.py: gửi active_combo ngắn gồm loại, mức ngọt, số lượng và ngân sách; question của thành phần bundle bắt buộc là chuỗi. Chọn một ví dụ đúng dạng chỉnh combo thay hai ví dụ gần giống. Ba mẫu mới trong data/nlu_few_shots.json là hướng dẫn few-shot, không huấn luyện lại model.
+- app/conversation.py: bundle_context giữ bộ lọc từng món/ngân sách riêng với bản nháp; continue_combo chỉ nối yêu cầu recommendation refine đã kiểm chứng. Đổi vị một món giữ món còn lại/ngân sách; tìm mới độc lập bỏ ngữ cảnh combo. Món ít ngọt hơn chưa rõ là bánh hay trà thì hỏi chọn món bằng nút, không báo lỗi và không tự chọn. Hội thoại cũ cần hỏi combo một lượt để có bộ nhớ này; không cần xóa lịch sử.
+- Giữ Qwen, giới hạn context/token, keep-alive và tối đa một lần sửa JSON. Không có lượt model bổ sung để viết lời giới thiệu hoặc tính tiền; không thêm package, docs/tests hay sửa database đang dùng.
+
+Kiểm tra thực tế: 72/72 nhóm unittest (scripts.check_checkout), fake dev 500/500 và test 60/60; fake kiểm chứng logic, không phải độ chính xác Qwen. Bảy lượt Qwen sau sửa đạt, mỗi lượt một inference. Câu ngọt hỗn hợp trước sửa mất 39,68s rồi lỗi; sau sửa 15,15s, cách đảo ngân sách 12,98s. Câu chỉnh hai mức ngọt trước lỗi 19,21s, sau đạt 8,22s. Câu chưa rõ món 4,62–5,23s và chọn bánh kem ít ngọt 4,81s. Thời gian theo các lần đo này, không bảo đảm mọi lượt nhanh như nhau; phần lớn thời gian còn lại là model sinh JSON (khoảng 10–12 token/giây). Chưa bấm thử giao diện/tunnel trực quan trong lượt sửa này.
+
+Chạy lại run_web.py hoặc run_tunnel.py để nạp code mới. Chỉ khởi động một launcher theo cách đang dùng.
+
+## Lời tư vấn combo — v62, 31/10/2026
+
+- Đoạn giới thiệu combo chỉ 2–3 câu, xưng mình/bạn và kết bằng câu hỏi đổi món, chọn món ít ngọt hơn hoặc chỉnh số lượng. Không hứa cửa hàng có thể giảm đường của món.
+- Mỗi thẻ Combo có một câu giải thích dựa trên loại món/độ ngọt/vị đã biết. Giá, số lượng và tổng tiền nằm trên thẻ; tiền dư hoặc tiền cần thêm được Python tính và API kiểm tra.
+- Không thêm lượt gọi Qwen, không tăng prompt hay đổi thuật toán chọn món. Thẻ lịch sử cũ vẫn đọc được; chúng có thể chưa có lý do/tiền dư.
+- Kiểm tra hồi quy: python -B -X utf8 -m unittest -q scripts.check_checkout.
+
+
+## Độ ngọt nhiều món và thiếu ngân sách — v61, 31/10/2026
+
+Đã tái hiện hai câu trong ảnh bằng Qwen: “440k ... bánh kem ngọt, trà ngọt, cà phê” lỗi ungrounded_advice_preference (model gán mức ngọt cụ thể khi khách chỉ nói ngọt); “380k ... bánh kem, trà, bánh ngọt” lỗi invalid_bundle_component (bánh ngọt chưa được nhận là nhóm mini). Đây là lỗi hiểu/kiểm chứng trước bước tính giá, không chứng minh ngân sách thiếu.
+
+- Với nhóm món, ngọt chung được biểu diễn bằng sweetness=sweet, lọc sản phẩm có metadata ngọt vừa HOẶC ngọt nhiều; không tự chọn chính xác high/medium và không đổi profile sản phẩm. Ngọt nhiều/vừa/ít vẫn lọc đúng mức riêng. Câu tư vấn đơn chỉ nói ngọt vẫn có thể hỏi mức như trước.
+- Bánh ngọt là cách gọi nhóm bánh nhỏ trong menu; bánh ngọt nhiều/vừa vẫn là yêu cầu mức ngọt. Vị và mức ngọt được kiểm chứng theo từng cụm món, không truyền vị của bánh sang trà/cà phê.
+- Nếu đủ các món đúng điều kiện nhưng ngân sách không đủ: recommend_bundles lấy tối đa hai tổ hợp KHÁC NHAU có tổng tiền thấp nhất bằng hàng đợi ưu tiên (heap). Chỉ nới trần tổng, không nới vị, dị ứng, số lượng hoặc trần giá riêng. Từng khung hiển thị Cần thêm = tổng nhóm - ngân sách khách.
+- Nhóm thông thường vẫn tối đa ba phương án trong ngân sách. Nếu chỉ tồn tại một tổ hợp đúng vị thì chỉ đưa một; không nhân đôi nhóm cho đủ hai. Thiếu sản phẩm/giá/dữ liệu hoặc lỗi nguồn thì không bịa tổ hợp hay số tiền cần thêm. Tổng đúng bằng ngân sách bao gồm biên vẫn là đủ tiền; câu yêu cầu dưới nghiêm ngặt không bị coi thành không quá.
+- BundleView kiểm tra budget_vnd/extra_needed_vnd đi cùng nhau và phép trừ chính xác. static/chat.js/style.css hiển thị dòng Cần thêm trong khung, không tạo đơn hoặc đổi ngân sách đã lưu của khách.
+- Ba ví dụ few-shot bổ sung (300 mẫu trên đĩa, tối đa hai chọn mỗi lượt), chỉ là hướng dẫn/kiểm chứng, không huấn luyện lại Qwen. Giữ model, 4096 context, 768 token, prewarm, tối đa một lần sửa JSON. Phiên bản tài nguyên web đổi v61 để tránh cache.
+
+Kết quả nguồn hiện tại: 440k cho bánh kem ngọt + trà ngọt + cà phê có nhóm 390k/430k/430k. 380k cho bánh kem + trà + bánh ngọt là đủ (320k + 25k + 35k). Với 350k, hai nhóm rẻ nhất đều 380k, mỗi nhóm cần thêm 30k. 1 bánh kem sô cô la ngọt nhiều + 2 cà phê muối tổng 450k: khách có 300k cần thêm 150k; chỉ có một tổ hợp đúng tên/vị nên không tạo nhóm thứ hai giả.
+
+Đã chạy: 68/68 kiểm tra chức năng bằng SQLite RAM/model fake; dev 500/500, test 60/60; kiểm tra cú pháp JavaScript và DOM giả cho hai khung thiếu 30k và nhóm đủ tiền không hiện thiếu. Qwen thật đã kiểm tra hai câu gốc, thiếu 350k, số lượng/vị riêng và vị không có. Lượt đầu thử vị trà xanh+cà phê còn lỗi; đã bổ sung ví dụ phạm vi vị và thử lại thành công một inference. Ba lượt sau chỉnh prompt cuối (vị không có, ngọt chung, thiếu tiền) đều thành công; các câu đã đạt trước đó mất khoảng 14–16 giây, không khẳng định mọi cách nói đều đúng.
+
+Đo riêng ghép nhóm vượt ngân sách bốn loại trên 30 lần: trung vị 15,96 ms, peak cấp phát Python khoảng 107,4 KiB; không gồm Qwen. Không ghi/reset database đang dùng, không thêm thư viện, docs/ hoặc tests/. Chưa bấm kiểm tra trực quan trình duyệt trong đợt này. Dừng/chạy lại run_web.py hoặc run_tunnel.py và tải lại trang để dùng bản mới.
+
+## Khung nhóm món và rà soát ngân sách/vị — v60, 31/10/2026
+
+Mỗi phương án nay có một khung riêng: tên nhóm, ảnh 48×48, tên món có liên kết, vị/độ ngọt có trong nguồn, số lượng, thành tiền và tổng tiền hàng. Đoạn trả lời chỉ nêu số nhóm/ngân sách; không lặp danh sách dài hoặc thẻ sản phẩm rời. CSS tự xếp một cột trong widget hẹp và nhiều cột khi đủ rộng. Không thêm thư viện frontend.
+
+- app/advice.py: lọc điều kiện từng món rồi ghép tối đa ba nhóm. Mỗi nhóm đủ các loại và số lượng khách yêu cầu, giữ cận giá tổng và giá riêng, không bỏ vị/độ ngọt để đủ ba nhóm. Ưu tiên đa dạng món; chỉ lặp một phần khi cần, không lặp toàn bộ tổ hợp kể cả thay biến thể. Không đưa sản phẩm inactive/hết hàng/không có giá vào nhóm.
+- bundle_cards và bundle_summary tách dữ liệu khung khỏi lời mở đầu. Giá do Python lấy từ repository và tính, không hỏi model tính giá hoặc viết thêm một lượt.
+- app/api.py: recommendation_groups là danh sách tối đa ba nhóm, mỗi nhóm 2–4 thành phần; Pydantic kiểm tra số lượng × đơn giá = thành tiền và tổng các dòng = tổng nhóm. products cũ vẫn giữ cho ngữ cảnh/câu hỏi khác; frontend bỏ thẻ lẻ trùng nhóm.
+- app/conversation.py và app/storage.py: giữ dữ liệu khung theo ID tin nhắn trong JSON hội thoại sẵn có, tối đa 50 câu trả lời có nhóm. Khi chuyển trang/tải lại, API gắn đúng khung vào lịch sử; không chép ảnh/khung vào prompt, không sửa bản nháp hoặc schema database.
+- app/text_utils.py, app/order_nlu.py, app/llm_client.py: đã tái hiện câu “1 bánh kem vị sô cô la và 2 cà phê muối” bị gom thành một yêu cầu. Tên món cụ thể trước đây bị che khỏi phép kiểm chứng loại, còn từ “vị” lấn sang nhóm sau “và”. Nay đối chiếu loại của tên món từ repository, giữ từng thành phần riêng và bác output bỏ ngân sách chung. Thêm đúng một few-shot phù hợp; 297 mẫu trên đĩa nhưng vẫn tối đa hai ví dụ mỗi lượt, không fine-tune hoặc thay Qwen.
+- static/chat.js, static/style.css, static/index.html: dựng khung bằng textContent, ảnh cùng kích thước, giữ liên kết sản phẩm/nhúng widget, cập nhật phiên bản tài nguyên để tránh cache cũ.
+
+**Đã kiểm tra:** 63/63 nhóm hồi quy bằng SQLite RAM/model fake; dev 500/500 và test 60/60; 297 mẫu hợp schema. Cú pháp JavaScript và DOM giả xác nhận 3 khung/6 dòng, không lặp thẻ rời, ảnh 48×48, render tên như văn bản, thẻ lẻ cũ vẫn dùng được. Chưa xác minh trực quan trên Cốc Cốc: công cụ mở cửa sổ hết thời gian chờ cấp quyền.
+
+**Qwen thật:** sau bản sửa, năm câu liên tiếp đều đạt, mỗi câu một lần gọi: tổng 440k bánh kem+cà phê (365k/395k/405k); trà ngọt nhiều dưới 30k (Trà sữa Thái xanh 25k); 1 bánh sô cô la+2 cà phê muối tổng 500k (một nhóm 450k); bốn loại tổng 500k (425k/455k/465k); bánh kem vị trà xanh+cà phê không có nhóm hợp lệ và không tự đổi vị. Thời gian 6,49–19,82 giây trên máy thử. Không phải đánh giá toàn bộ tập bằng model thật.
+
+Đo riêng ghép bốn thành phần, 30 lần: trung vị 10,71 ms; peak cấp phát Python khoảng 109 KiB (không gồm RAM/thời gian Qwen). Giữ model, 4096 context, 768 token, prewarm và giới hạn sửa JSON một lần. Server kiểm tra riêng đã dừng, database đang dùng không bị ghi/reset.
+
+Dừng rồi chạy lại run_web.py hoặc run_tunnel.py để nạp backend mới; tải lại trang. Các tin nhắn tạo trước bản này vẫn giữ dạng văn bản cũ, không tự tính lại giá lịch sử. File kiểm tra: scripts/check_checkout.py; không tạo docs/ hay tests/.
+
+## Cặp bánh kem–cà phê và đơn vị tiền — v59, 31/10/2026
+
+Đã tái hiện câu “tôi có 450k hãy đề xuất cho tôi bánh kem với cà phê” bị lỗi cả ở phiên mới và sau tư vấn bánh/trà. Bộ ví dụ thiếu cặp này nên chọn mẫu cà phê đơn và bánh nhỏ; Qwen hiểu coffee thành flavor của bánh, rồi chép cả câu vào từng request hoặc bỏ ngân sách tổng. Đây là lỗi NLU/chọn mẫu, không phải menu thiếu món.
+
+Bổ sung năm cặp còn thiếu để phủ sáu cặp của bốn loại hiện có; ngân hàng 296 mẫu, vẫn tối đa hai mẫu/lượt. Sửa hướng dẫn và thông báo sửa JSON để cà phê là món riêng, mỗi nhóm có clause riêng. Không thay model/context/token/retry, repository hoặc thuật toán ghép món.
+
+normalize_money_evidence trong app/text_utils.py cho kiểm chứng bundle hiểu 450k/450 nghìn/450.000đ cùng giá trị; không biến regex thành bộ hiểu câu. app/order_nlu.py vẫn kiểm tra số tiền xuất hiện thật trong câu khách và giữ từ chỉ hướng giá; số tiền khác hoặc đổi có thành dưới bị từ chối. Nhờ vậy không gọi model sửa lại chỉ vì đổi đơn vị tiền.
+
+Bản cuối: 56/56 nhóm API/logic; fake dev 500/500 + test 60/60; 296 mẫu hợp schema. Năm lời gọi Qwen thật cho câu 450k (phiên mới, sau bánh ngọt, sau bánh–trà, 450000 và câu không dấu) đều đúng, mỗi lượt một lần gọi, 11,06–11,67 giây trên máy thử. Hai ngữ cảnh trước được dựng qua controller với NLU giả trong RAM; không tính chúng là lượt Qwen thật. Kết quả ba nhóm tổng 365.000đ / 395.000đ / 405.000đ. Không tạo đơn hoặc ghi DB đang dùng; chưa bấm thử trình duyệt trong đợt này.
+
+Dừng web cũ rồi chạy lại run_web.py hoặc run_tunnel.py để nạp mã mới. Các mục dưới là lịch sử các lần sửa trước.
+
+## Tư vấn độ ngọt và tổng ngân sách — v58, 30/10/2026
+
+Đã sửa bộ chọn ví dụ: chuẩn hóa mẫu cũ từng ghi “ít ngọt” trong flavor sang sweetness trước khi so sánh. Không lấy mẫu ít ngọt cho câu ngọt nhiều, không lấy mẫu giá bánh B cho câu tìm cả nhóm. Thêm 10 mẫu; ngân hàng 291 mẫu nhưng mỗi lượt vẫn chọn tối đa hai. Đây là few-shot (ví dụ hướng dẫn), không huấn luyện lại Qwen.
+
+- Trà ngọt nhiều dưới 30k: Trà sữa Thái xanh, 25.000đ, lấy từ profile/menu hiện có. Dưới 25.000đ không có món này; không tự nới giá.
+- Tổng 400k cho bánh kem và trà: gợi ý tối đa ba nhóm khác nhau, ví dụ 345.000đ / 375.000đ / 385.000đ. Mỗi loại mặc định một món; số lượng khách nói thay thế mặc định. Hương vị, độ ngọt và dị ứng được lọc trước khi ghép; không bỏ điều kiện để đủ ba nhóm.
+- Câu “bánh kem dưới 400k và cà phê trên 40k” vẫn là hai giới hạn riêng; không tự coi là ngân sách tổng. Nếu chỉ có một nhóm hợp lệ thì trả một, không nhân đôi toàn bộ nhóm.
+- BundleBudget trong app/schemas.py lưu ngân sách tổng riêng; quantity trong từng InformationRequest chỉ là số lượng tư vấn, không sửa đơn. app/order_nlu.py kiểm chứng nguồn câu/tiền/số lượng; app/advice.py lọc nguồn và tính tổng; app/conversation.py gọi cùng luồng API. Thẻ ảnh cũ vẫn dùng các sản phẩm nguồn, không sửa frontend.
+- Nhánh JSON bundle đặt ngân sách đầu tiên và buộc xét quantity từng món. Không gửi menu/giá bán vào prompt. Không thay model, context 4096, giới hạn 768 token, prewarm hoặc giới hạn sửa JSON một lần.
+
+Đã chạy 52 nhóm API/checkout bằng model giả và SQLite RAM; fake dev 500/500 + test 60/60 đạt. Qwen thật: 9/9 câu kiểm tra chức năng đạt, gồm chuỗi ba câu gốc, ba/bốn loại, số lượng riêng, vị riêng, ngân sách cuối câu, hai cận độc lập và câu không dấu. Tám câu một lần gọi khoảng 6,23–19,73 giây; câu có 2 trà cần sửa JSON một lần, 35,91 giây. Không phải đánh giá toàn bộ 560 câu bằng model thật.
+
+Đo riêng ghép bốn món trên 40 lần: trung vị 21,51 ms; peak cấp phát Python khoảng 106,4 KiB, không bao gồm RAM Qwen. Thuật toán duyệt từng nhóm và loại nhánh vượt trần, chỉ giữ tối đa ba kết quả; không gọi model thêm để tính hoặc viết lại câu trả lời. Tốc độ Qwen vẫn phụ thuộc cấu hình/tải máy.
+
+Chỉ sửa trong chatbot; không đổi dữ liệu sản phẩm, database đang dùng hoặc mã website nhóm, không tạo docs/tests. Dừng web cũ rồi chạy lại run_web.py hoặc run_tunnel.py để nạp mã mới. Kiểm tra: .\.venv\Scripts\python.exe -B -X utf8 -m unittest -q scripts.check_checkout.
+
+## Chạy web và tạo link Internet
+
+Chạy web local riêng như trước:
+
+```powershell
+Set-Location 'D:\sweet-bakery-nhom6\chatbot'
+.\.venv\Scripts\python.exe -B -X utf8 run_web.py
+```
+
+Chương trình in **http://127.0.0.1:8000/website/**. Qwen và việc nạp trước model giữ nguyên.
+
+Muốn vừa chạy web vừa lấy link cho điện thoại hoặc máy khác, chỉ cần **một Terminal, một lệnh**:
+
+```powershell
+Set-Location 'D:\sweet-bakery-nhom6\chatbot'
+.\.venv\Scripts\python.exe -B -X utf8 run_tunnel.py
+```
+
+run_tunnel.py tự gọi run_web.py bằng đúng Python đang dùng, chờ web sẵn sàng rồi tạo tunnel. Nếu web chatbot đã chạy ở cổng đó, chương trình dùng lại và không mở web thứ hai. Nếu cổng bị ứng dụng khác chiếm, chương trình báo lỗi; không dừng ứng dụng đó. Không cần chờ model nạp xong để tạo link; chat AI cần Ollama/model sẵn sàng.
+
+File này dùng cloudflared đã có trong runtime (hoặc PATH), không tự tải. Khi kết nối thành công, nó in link dạng **https://ten-ngau-nhien.trycloudflare.com/website/**; sao chép nguyên link đó cho người khác. Không cần tự thêm /website/ hoặc gõ lệnh cloudflared.
+
+Giữ Terminal mở và máy có Internet. Ctrl+C dừng tunnel cùng web do run_tunnel.py tự tạo. Nếu web vốn chạy riêng, web đó vẫn được giữ. Ollama không bị dừng. Quick Tunnel đổi link mỗi lần tạo tunnel mới.
+
+Mặc định cổng 8000, chế độ ollama và nạp trước model. Có thể dùng run_tunnel.py --port 8001 để đổi cổng; --no-prewarm hoặc --chat-mode rule được chuyển cho web tự khởi động. Web đang chạy sẵn giữ cấu hình cũ.
+
+Đã kiểm tra 16 nhóm launcher: tự chạy/dùng lại web, lỗi khởi động, cổng bận, Ctrl+C và dọn đúng tiến trình con. Phép thử tunnel thật dùng cổng riêng, rule mode và SQLite RAM; không gọi Qwen, không ghi đơn vào database đang dùng.
+
+## Tìm mới với “món dưới 100k” — 30/10/2026, v57
+
+Đã tái hiện: “gợi ý bánh ngọt nhỏ” → “Trà xanh” → “gợi ý món dưới 100k nhé”. Qwen trả product_type=mini, thiếu search_scope=new; Python giữ taste_family=matcha theo nhánh refine nên chỉ có Bánh cuộn trà xanh. Nguyên nhân gồm thiếu từ đồng nghĩa “món” trong bằng chứng/chọn ví dụ và giá trị nhóm cũ trong context khiến model chép lại.
+
+- app/text_utils.py chuẩn hóa món/món ăn/mặt hàng tương đương sản phẩm để chọn mẫu và kiểm chứng; không sửa tin nhắn gốc hoặc tự gán intent. Cận tiền dạng không đơn vị vẫn cần số rõ, không coi số lượng nhỏ là ngân sách.
+- app/llm_client.py bổ sung quy tắc tìm mới, ví dụ có/không dấu và giảm giá trị loại/vị cũ trong bản sao context gửi Qwen khi khách hỏi ngân sách cho sản phẩm chung. Chỉ còn thông tin các trường từng biết; các bước hỏi cũ không được gửi như việc đang cần trả lời. State thật, lịch sử và bản nháp không bị xóa. Câu giữ/vẫn/cùng vị hoặc tham chiếu vẫn nhận ngữ cảnh phù hợp. Thêm cụm bánh ngọt nhỏ=mini rõ ràng để giảm sửa JSON ở lượt đầu.
+- app/order_nlu.py bác việc tự thu hẹp món chung thành nhóm cũ; kiểm tra phạm vi mới cả khi state chỉ có nhóm vị/độ ngọt. “Vị trà xanh” không tự thành nhóm trà khi khách chỉ bổ sung ngân sách. Qwen vẫn là bộ hiểu câu chính, schema/repository vẫn kiểm chứng kết quả.
+
+Hành vi: “gợi ý món dưới 100k” là tìm menu mới và bỏ loại/vị cũ; “dưới 100k thôi”, “vẫn vị trà xanh” hoặc “gợi ý món cùng vị dưới 100k” giữ nhu cầu đang trao đổi; “món đó giá bao nhiêu” tra món tham chiếu. Xem thêm theo đúng phạm vi mới và không trùng trong đợt tìm. Không sửa đơn đang thu thập.
+
+**Đã chạy:** 37/37 nhóm API trên SQLite RAM (thêm sáu nhóm về lỗi mới, từ đồng nghĩa, giữ tham chiếu, JSON sửa một lần và context không bị sửa tại chỗ). Bộ hội thoại hiện **500 lượt dev / 155 hội thoại + 60 lượt test / 31 hội thoại**, fake đạt 500/500 + 60/60. Thêm 9 lượt có nhãn; không đưa câu/đáp án bộ test cuối vào prompt. Ngân hàng few-shot **281 mẫu**, tối đa 2 mẫu được chọn mỗi lượt; đây không phải fine-tuning.
+
+**Qwen thật với mã cuối:** 9 lượt kiểm tra chức năng qua API/RAM đều đúng, gồm ba câu gốc, xem thêm, câu không dấu, câu hỏi mới chưa có trong few-shot, giữ vị và tham chiếu món. Tám lượt một lần gọi; “gợi ý món cùng vị dưới 100k” cần sửa JSON một lần (hai lần gọi). Câu mới có dấu 6,74 giây, không dấu 6,50 giây; toàn bộ khoảng 2,95–11,82 giây/lượt trên máy thử. Trước giảm context, câu không dấu vẫn chép mini sau hai lần gọi rồi bị từ chối. Đây là kiểm tra nhỏ, chưa đo toàn bộ 560 mẫu bằng Qwen và chưa bảo đảm mọi cách nói đều đúng. Giữ model, context 4096, giới hạn sinh 768 token, deadline và một lần sửa JSON như trước.
+
+Chỉ cập nhật trong chatbot; không đổi frontend/website nhóm, cấu hình máy hoặc database đang dùng. Dừng rồi chạy lại run_web.py, bấm Chat mới để thử đúng chuỗi ba câu. Có thể giữ Terminal Cloudflare chạy để tiếp tục dùng link hiện tại.
+
 ## Nút xem thêm cho cả tìm trực tiếp — 27/10/2026
 
 Đã sửa nhánh bị bỏ sót: “tìm bánh dưới 400k” có advice=none, trước đây chỉ trả 4 món và không có nút dù còn kết quả. Hiện mọi truy vấn gợi ý/tìm sản phẩm đều dùng phân trang. Lượt đầu của tìm trực tiếp giữ tối đa 4 món; các lượt xem thêm trả tối đa 3 món chưa xem. Chỉ ẩn nút khi hết toàn bộ kết quả phù hợp. Không thêm lại nút hỏi giá dưới thẻ.
@@ -322,7 +524,7 @@ ollama list
 .\.venv\Scripts\python.exe -B -X utf8 run_web.py
 ```
 
-Mở **http://127.0.0.1:8000/**. Website nhóm được phục vụ chỉ đọc tại `/website/`; danh mục chatbot ở `/api/catalog`, trạng thái ở `/health`. Dừng bằng Ctrl+C; có thể chạy `run_web.py --port 8001` nếu cổng bận.
+Mở **http://127.0.0.1:8000/website/**. Website nhóm được phục vụ chỉ đọc tại `/website/`; danh mục chatbot ở `/api/catalog`, trạng thái ở `/health`. Dừng bằng Ctrl+C; có thể chạy `run_web.py --port 8001` nếu cổng bận.
 
 Nếu chưa có môi trường ảo: `py -3.12 -m venv .venv`, rồi cài requirements như trên. Môi trường ảo tách thư viện dự án khỏi Python hệ thống; không đưa `.venv` vào Git. Trong VS Code chọn **Python: Select Interpreter → .venv/Scripts/python.exe**.
 
