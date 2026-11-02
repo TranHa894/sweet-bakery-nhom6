@@ -43,6 +43,14 @@ def normalize_advice_values(value):
         "ca phe kem": ("taste_family", "coffee_cream"), "ca phe va kem": ("taste_family", "coffee_cream"),
         "it ngot": ("sweetness", "low"), "ngot vua": ("sweetness", "medium"), "ngot nhieu": ("sweetness", "high"),
     }
+    if value.get("product_type") == "coffee":
+        # Model đã nêu kiểu cà phê nhưng đặt nhầm vào flavor. Chỉ chuyển
+        # nhãn tương đương chính xác; validator vẫn kiểm chứng câu nguồn.
+        aliases.update({word: ("coffee_style", style) for style, words in {
+            "strong": ("strong", "dang", "dam", "dam dang"),
+            "creamy": ("creamy", "beo man nhe", "beo", "de uong"),
+            "mild": ("mild", "diu", "it dang", "diu mat it dang"),
+        }.items() for word in words})
     normalized = normalize_text(value["flavor"]).replace(",", " ").replace(".", " ")
     pair = aliases.get(" ".join(normalized.split()))
     if pair:
@@ -73,7 +81,7 @@ class TurnUpdates(BaseModel):
     min_price_inclusive: bool | None = None
     product_type: ProductType | None = None
     flavor: str | None = Field(default=None, max_length=100)
-    sweetness: Literal["high", "medium", "low"] | None = None
+    sweetness: Literal["high", "medium", "low", "sweet"] | None = None
     taste_family: Literal["fruit", "chocolate", "cream", "milk_tea", "fruit_tea", "matcha", "vanilla", "coffee_cream"] | None = None
     coffee_style: Literal["strong", "creamy", "mild"] | None = None
     servings: int | None = Field(default=None, ge=1)
@@ -125,7 +133,7 @@ class QueryConstraints(BaseModel):
     min_price_inclusive: bool | None = None
     product_type: ProductType | None = None
     flavor: str | None = Field(default=None, max_length=100)
-    sweetness: Literal["high", "medium", "low"] | None = None
+    sweetness: Literal["high", "medium", "low", "sweet"] | None = None
     taste_family: Literal["fruit", "chocolate", "cream", "milk_tea", "fruit_tea", "matcha", "vanilla", "coffee_cream"] | None = None
     coffee_style: Literal["strong", "creamy", "mild"] | None = None
     servings: int | None = Field(default=None, ge=1)
@@ -145,6 +153,23 @@ class QueryConstraints(BaseModel):
         return self
 
 
+class BundleBudget(BaseModel):
+    """Ngân sách cho TỔNG nhóm món, tách khỏi cận giá riêng của từng món."""
+
+    model_config = ConfigDict(strict=True, extra="forbid")
+    question: str = Field(min_length=1, max_length=500)
+    budget_vnd: int = Field(ge=0)
+    price_inclusive: bool = True
+    min_budget_vnd: int | None = Field(default=None, ge=0)
+    min_price_inclusive: bool = True
+
+    @model_validator(mode="after")
+    def valid_range(self):
+        validate_budget_range(self.min_budget_vnd, self.budget_vnd,
+                              self.min_price_inclusive, self.price_inclusive)
+        return self
+
+
 class InformationRequest(BaseModel):
     """Một câu hỏi có đối tượng riêng; size ở đây chỉ lọc tra cứu, không sửa đơn."""
 
@@ -157,6 +182,8 @@ class InformationRequest(BaseModel):
     reference: Reference = "none"
     price_preference: Literal["none", "lowest", "highest", "cheaper_than", "more_expensive_than"] = "none"
     advice: Literal["none", "guided", "any", "more"] = "none"
+    quantity: int = Field(default=1, ge=1, le=1000,
+        description="Count for THIS bundle component, not money or an order update. Omit for default 1.")
     search_scope: Literal["refine", "new"] = "refine"
     size: str | None = Field(default=None, max_length=100)
     filters: QueryConstraints = Field(default_factory=QueryConstraints)
@@ -209,6 +236,7 @@ class LLMTurn(BaseModel):
     handoff_reason: Literal["none", "customer_requested", "severe_allergy", "complaint", "unsupported_business"]
     order_negated: bool = Field(default=False, description="True ONLY when declining an order action, e.g. không đặt A, chỉ hỏi giá. The named cake can still be the query target. No order mutations allowed.")
     order_update: bool = Field(default=False, description="True only for an explicit order change or missing-slot answer; asking price/storage about another cake is NOT an order change.")
+    bundle_budget: BundleBudget | None = None
     requests_overflow: bool = False
     # Giữ đọc payload nội bộ cũ; output LLM mới được chặn ở LLMWireTurn.
     requests: list[InformationRequest] = Field(default_factory=list, max_length=16,
@@ -230,6 +258,15 @@ class LLMTurn(BaseModel):
             raise ValueError("order_items needs order_request intent")
         if self.order_items and self.order_operation not in {"select_product", "add_product", "remove_product"}:
             raise ValueError("order_items requires explicit select_product/add_product/remove_product operation; information-only cakes must not be included.")
+        recommendations = [r for r in self.requests if "recommendation" in r.intents]
+        if self.bundle_budget is not None and (
+                not 2 <= len(recommendations) <= MAX_INFORMATION_REQUESTS or any(r.reference != "none"
+                or r.price_preference in {"cheaper_than", "more_expensive_than"} for r in recommendations)):
+            raise ValueError("A bundle needs at least two explicit recommendation components, not old-card references.")
+        if (any(r.quantity != 1 for r in self.requests) and self.bundle_budget is None
+                and not (2 <= len(recommendations) <= MAX_INFORMATION_REQUESTS
+                         and all(r.reference == "none" for r in recommendations))):
+            raise ValueError("Recommendation quantities require multiple combo components or a total budget.")
         if any(not set(request.intents).issubset(self.intents) for request in self.requests):
             raise ValueError("request intents must also be declared in top-level intents")
         if len(self.requests) > 1 and any(
@@ -410,6 +447,7 @@ CurrentTurn = TypedDict("CurrentTurn", {
     "intents": list[Intent], "product_mentions": list[str], "reference": str,
     "product_ids": list[str], "filters": SearchFilters,
     "requests": NotRequired[list[dict]], "order_product_ids": NotRequired[list[str]],
+    "bundle_budget": NotRequired[dict], "quantity": NotRequired[int],
     "question": NotRequired[str], "ambiguous": NotRequired[bool],
     "price_preference": NotRequired[str], "comparison_product_ids": NotRequired[list[str]],
     "search_scope": NotRequired[str], "result_product_ids": NotRequired[list[str]],
@@ -450,6 +488,7 @@ ChatResponse = TypedDict("ChatResponse", {
     "nlu": NLUResult, "products": list[Product], "state": ChatState,
     "requires_clarification": bool, "error": str | None, "policy": PolicyResponse | None,
     "catalog_source": NotRequired[str],
+    "recommendation_groups": NotRequired[list[dict]],
 })
 Conversation = TypedDict("Conversation", {
     "id": str, "history": list[ChatMessage], "needs": ChatState,

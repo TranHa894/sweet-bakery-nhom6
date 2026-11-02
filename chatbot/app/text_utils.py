@@ -63,7 +63,7 @@ _SHOPPING_ALIASES = {
     "ca phe": ("coffee", "cafe", "caphe", "ca fe", "cf"),
     "bao nhieu": ("bao nhiu", "bao nhieu", "bnhieu", "bn"),
     "gia": ("gia ca",),
-    "san pham": ("sp",),
+    "san pham": ("sp", "mon an", "mon", "mat hang"),
     "goi y": ("gioi thieu", "de xuat", "tu van"),
 }
 _SHOPPING_PATTERNS = [
@@ -77,16 +77,21 @@ def normalize_shopping_terms(text: str) -> str:
     value = normalize_business_evidence(text)
     for canonical, pattern in _SHOPPING_PATTERNS:
         value = pattern.sub(canonical, value)
+    # “Bánh ngọt” là nhóm bánh nhỏ của menu; “bánh ngọt nhiều/vừa” là mức ngọt.
+    value = re.sub(r"\bbanh ngot(?=\s*(?:[,.;!?]|$|va\b|voi\b|duoi\b|tren\b|gia\b|co\b|vi\b))", "banh nho", value)
     return value
 
 
-def mentioned_catalog_groups(text: str, ignored_names=()) -> set[str]:
+def mentioned_catalog_groups(text: str, ignored_names=(), *, named_groups=None) -> set[str]:
     """Chỉ chọn ví dụ/kiểm chứng nhóm rõ; không tạo intent, filter hay ID."""
     value = normalize_shopping_terms(text.replace(";", ",").replace("?", ",").replace("!", ","))
-    for name in sorted(ignored_names, key=len, reverse=True):
+    labels = {"cream_cake": "banh kem", "mini": "banh nho", "coffee": "ca phe", "tea": "tra"}
+    named_groups = named_groups or {}
+    for name in sorted(set(ignored_names) | set(named_groups), key=len, reverse=True):
         phrase = normalize_shopping_terms(name)
         if phrase:
-            value = re.sub(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", " ", value)
+            replacement = labels.get(named_groups.get(name), " ")
+            value = re.sub(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", replacement, value)
     groups = set()
     mapping = {"banh kem": "cream_cake", "banh nho": "mini", "ca phe": "coffee",
                "tra": "tea", "do uong": "drink", "banh": "cake"}
@@ -94,7 +99,7 @@ def mentioned_catalog_groups(text: str, ignored_names=()) -> set[str]:
                r"banh(?=\s*(?:,|va\b|voi\b|gia\b|duoi\b|tren\b|nao\b|co\b|vi\b|$)))\b")
     for match in re.finditer(pattern, value):
         kind = mapping[match[0]]
-        before = re.split(r"[,.;]", value[:match.start()])[-1]
+        before = re.split(r"[,.;]|\b(?:va|voi)\b", value[:match.start()])[-1]
         if re.search(r"\b(?:khong|tranh|ngoai tru|bo)(?:\s+(?:can|muon|chon|tim|lay|phai))*\s*$", before):
             continue
         if kind in {"tea", "coffee"} and re.search(r"\b(?:vi|huong)\b[^,.;]*$", before):
@@ -114,9 +119,12 @@ MONEY_UNIT = r"(?:nghin|ngan|trieu|tr|k|vnd|dong|d|₫)"
 _MONEY_LITERAL = re.compile(r"(?<!\w)(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")(?!\w)")
 _MONEY_RANGE = re.compile(r"(?<!\w)(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")?\s*"
     r"(?:-|–|—|~|den|toi)\s*(" + MONEY_NUMBER + r")\s*(" + MONEY_UNIT + r")?(?!\w)")
+# Cụm ngân sách xấp xỉ phải thắng từ "giá" đứng sát số; không phải giá đúng.
+APPROXIMATE_BUDGET_CUE = (r"(?:trong\s+)?(?:tam(?:\s+khoang)?|khoang)(?:\s+(?:gia|tien))?(?:\s+khoang)?"
+                          r"|trong\s+(?:muc\s+)?gia")
 _BUDGET_CUES = {
     "upper_strict": r"duoi|it hon|thap hon|chua toi|re hon",
-    "upper_inclusive": r"khong (?:qua|vuot|hon|tren)|khong nhieu hon|dung qua|toi da|khoang|tam|co|con|ngan sach(?: la)?",
+    "upper_inclusive": r"khong (?:qua|vuot|hon|tren)|khong nhieu hon|dung qua|toi da|co|con|ngan sach(?: la)?" + "|" + APPROXIMATE_BUDGET_CUE,
     "lower_strict": r"tren|hon|cao hon|nhieu hon|dat hon|mac hon",
     "lower_inclusive": r"khong (?:duoi|it hon|thap hon)|it nhat|toi thieu|tu",
     "exact": r"cung gia|dong gia|bang gia|gia dung|gia(?: la)?|dung|chinh xac",
@@ -132,6 +140,12 @@ def parse_money(amount: str, unit: str | None) -> int:
     return int(round(number * multiplier))
 
 
+def normalize_money_evidence(text: str) -> str:
+    """Chỉ so câu nguồn: 450k/450 nghìn/450.000đ cùng giá trị, giữ các từ khác."""
+    value = normalize_shopping_terms(text)
+    return _MONEY_LITERAL.sub(lambda match: str(parse_money(match[1], match[2])), value)
+
+
 def budget_evidence(text: str) -> dict:
     """Bằng chứng tiền để chọn mẫu và bác output sai; KHÔNG áp filter thay Qwen."""
     raw = numeric_evidence_text(text)
@@ -141,7 +155,7 @@ def budget_evidence(text: str) -> dict:
                   for m in re.finditer(r"(?<!\w)(\d+)tr(\d)(?!\w)", raw))
     expected, shapes, spans = {}, set(), []
     money_context = bool(re.search(r"\b(?:gia|tien|ngan sach|muc|tai chinh)\b", raw)
-        or (re.search(r"\b(?:san pham|sp|banh|tra|ca phe)\b", raw)
+        or (re.search(r"\b(?:san pham|sp|mon|mat hang|banh|tra|ca phe)\b", raw)
             and re.search(r"\b(?:tu|khoang)\b", raw)
             and not re.search(r"\b(?:ngay|thang|nam)\b", raw)))
     for match in _MONEY_RANGE.finditer(raw):
@@ -182,3 +196,16 @@ def budget_evidence(text: str) -> dict:
         else:
             expected.update(budget_vnd=value, price_inclusive=True); shapes.add("upper_inclusive")
     return {"values": values, "shapes": shapes, "expected": expected}
+
+
+# Cùng bằng chứng cho validator và chọn ví dụ; không trích intent/slot thay LLM.
+ADVICE_PREFERENCE_CUES = {
+    "sweetness": {"low": r"\bit ngot\b", "medium": r"\bngot vua\b", "high": r"\bngot (?:nhieu|dam)\b",
+                  "sweet": r"(?<!it )(?<!khong )\bngot\b(?!\s+(?:nhieu|dam|vua)\b)"},
+    "taste_family": {"fruit": r"\btrai cay\b", "chocolate": r"\b(?:chocolate|choco|socola|so co la)\b",
+        "cream": r"\b(?:vi kem|kem sua|vani|vanilla|trang tri)\b", "milk_tea": r"\btra sua\b",
+        "fruit_tea": r"\btra trai cay\b", "matcha": r"\b(?:tra xanh|matcha)\b",
+        "vanilla": r"\b(?:vani|vanilla)\b", "coffee_cream": r"\bca phe\s+(?:va\s+)?kem\b"},
+    "coffee_style": {"strong": r"\b(?:dam|tinh tao)\b|(?<!it )\bdang\b", "creamy": r"\b(?:beo|man|de uong)\b",
+        "mild": r"\b(?:diu|mat|it dang)\b"},
+}

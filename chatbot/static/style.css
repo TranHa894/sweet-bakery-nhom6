@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --font-ui: "Segoe UI", Arial, sans-serif;
   --primary: #176348;
   --primary-hover: #0c4832;
   --ink: #263e34;
@@ -8,7 +9,7 @@
   --line: #e5e9e3;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 Arial, sans-serif; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--font-ui); }
 a { color: inherit; text-decoration: none; }
 button, textarea { font: inherit; }
 button { cursor: pointer; }
@@ -24,7 +25,7 @@ a:focus-visible, button:focus-visible, textarea:focus-visible { outline: 3px sol
 .workspace { width: min(960px, 92%); margin: 24px auto; }
 .chat-panel { display: flex; flex-direction: column; height: calc(100dvh - 138px); min-height: 460px; overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 30px #173e2f08; }
 .chat-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 19px 24px 15px; }
-.chat-header h1 { margin: 0; font: 23px/1.25 Georgia, serif; }
+.chat-header h1 { margin: 0; font: 600 23px/1.4 var(--font-ui); }
 #connection-status { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
 .chat-panel.is-busy #connection-status { color: var(--primary); }
 .button { padding: 10px 15px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
@@ -37,7 +38,7 @@ a:focus-visible, button:focus-visible, textarea:focus-visible { outline: 3px sol
 #data-notice { margin: 0; color: var(--muted); font-size: 11px; }
 .messages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; scrollbar-width: thin; }
 .welcome { max-width: 440px; margin: 30px auto; text-align: center; }
-.welcome h2 { margin: 0 0 10px; font: 27px/1.25 Georgia, serif; }
+.welcome h2 { margin: 0 0 10px; font: 600 27px/1.4 var(--font-ui); }
 .welcome p { margin: 0; color: var(--muted); }
 .quick-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 19px; }
 .quick-actions button { border: 1px solid #d9e0d6; border-radius: 6px; padding: 9px 12px; background: white; color: var(--primary); font-size: 12px; }
@@ -162,3 +163,33 @@ html.embedded, html.embedded body { height: 100%; overflow: hidden; }
 .checkout-product-heading { display: flex; align-items: center; gap: 10px;
   min-width: 0; grid-column: 1 / -1; }
 .checkout-product-heading > strong { min-width: 0; overflow-wrap: anywhere; }
+
+/* Mỗi phương án là một nhóm trọn vẹn; co theo chiều rộng thực của iframe. */
+.bundle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr));
+  gap: 12px; margin-top: 12px; width: 100%; max-width: 880px; }
+.bundle-card { min-width: 0; border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px; background: white; }
+.bundle-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 6px; color: var(--primary); }
+.bundle-heading h3 { margin: 0; font-size: 15px; }
+.bundle-item { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 4px 10px;
+  align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.bundle-item .checkout-thumbnail { grid-row: span 2; }
+.bundle-details { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.bundle-details > strong { font-size: 14px; line-height: 1.35; }
+.bundle-details a:hover { text-decoration: underline; }
+.bundle-taste, .bundle-unit { color: var(--muted); font-size: 12px; }
+.bundle-line-price { grid-column: 2; font-size: 13px; color: var(--ink); }
+.bundle-total { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px;
+  padding-top: 12px; font-size: 13px; }
+.bundle-total strong { color: var(--primary); }
+.bundle-note { color: var(--muted); font-size: 11px; margin: 8px 0 0; }
+
+.bundle-shortfall { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px;
+  margin-top: 10px; padding: 9px 10px; border-radius: 6px;
+  background: #fff3df; color: #874516; font-size: 13px; }
+
+.bundle-reason { margin: 8px 0 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.bundle-savings { margin: 8px 0 0; color: var(--primary); font-size: 13px; }
+
+.card-order { display: block; width: 100%; margin-top: 12px; white-space: normal; }

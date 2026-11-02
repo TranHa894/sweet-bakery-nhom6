@@ -1,8 +1,8 @@
 {
-  "version": "intent-context-v35-cake-choice",
-  "annotation_revision": 32,
+  "version": "intent-context-v57-generic-menu",
+  "annotation_revision": 33,
   "split": "test",
-  "sample_count": 56,
+  "sample_count": 60,
   "source": "manually_labelled_synthetic",
   "is_mock": true,
   "scope": "Qwen NLU and controller, not overall/production evaluation",
@@ -2888,6 +2888,210 @@
             ],
             "advice_pending": "product_type"
           }
+        }
+      ]
+    },
+    {
+      "id": "test_generic_menu_question",
+      "mode": "group_files",
+      "tags": [
+        "generic_menu",
+        "held_out"
+      ],
+      "turns": [
+        {
+          "message": "gợi ý bánh nhỏ vị trà xanh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": null,
+                  "taste_family": "matcha"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0014"
+            ],
+            "order_count": 0
+          },
+          "id": "test-057",
+          "turn_index": 1
+        },
+        {
+          "message": "có món nào giá dưới 100000 đồng không?",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": null,
+                  "flavor": null,
+                  "budget_vnd": 100000,
+                  "price_inclusive": false
+                }
+              }
+            ]
+          },
+          "expected": {
+            "recommendation_pool": [
+              "SP0019",
+              "SP0020",
+              "SP0021",
+              "SP0013",
+              "SP0014",
+              "SP0015",
+              "SP0016",
+              "SP0017",
+              "SP0018",
+              "SP0022",
+              "SP0023",
+              "SP0025"
+            ],
+            "recommendation_count": 3,
+            "draft_unchanged": true,
+            "order_count": 0,
+            "filters": {
+              "max_price_vnd": 100000,
+              "price_inclusive": false
+            },
+            "no_product_codes": true
+          },
+          "id": "test-058",
+          "turn_index": 2
+        }
+      ]
+    },
+    {
+      "id": "test_generic_menu_keep_explicit",
+      "mode": "group_files",
+      "tags": [
+        "generic_menu",
+        "held_out",
+        "keep_context"
+      ],
+      "turns": [
+        {
+          "message": "gợi ý bánh nhỏ vị trà xanh",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "new",
+                "filters": {
+                  "product_type": "mini",
+                  "flavor": null,
+                  "taste_family": "matcha"
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0014"
+            ],
+            "order_count": 0
+          },
+          "id": "test-059",
+          "turn_index": 1
+        },
+        {
+          "message": "giữ loại bánh nhỏ vị trà xanh, tối đa 100 ngàn",
+          "label": {
+            "intents": [
+              "recommendation"
+            ],
+            "action": "none",
+            "product_mentions": [],
+            "reference": "none",
+            "updates": {},
+            "clear_slots": [],
+            "ambiguous": false,
+            "handoff_reason": "none",
+            "requests": [
+              {
+                "intents": [
+                  "recommendation"
+                ],
+                "product_mentions": [],
+                "question": null,
+                "advice": "guided",
+                "search_scope": "refine",
+                "filters": {
+                  "product_type": null,
+                  "flavor": null,
+                  "budget_vnd": 100000,
+                  "price_inclusive": true
+                }
+              }
+            ]
+          },
+          "expected": {
+            "product_ids": [
+              "SP0014"
+            ],
+            "draft_unchanged": true,
+            "order_count": 0,
+            "filters": {
+              "product_type": "mini",
+              "taste_family": "matcha",
+              "max_price_vnd": 100000,
+              "price_inclusive": true
+            }
+          },
+          "id": "test-060",
+          "turn_index": 2
         }
       ]
     }

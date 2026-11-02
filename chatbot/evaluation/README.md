@@ -1,5 +1,87 @@
 # Evaluation — dữ liệu kiểm tra chatbot
 
+## V67 — bánh nhỏ/cà phê và vị riêng theo món
+
+Dialogue dev_combo_coffee_preferences_v67 thêm bốn lượt dev-533…536: hai câu gốc 80k/86k, vani + cà phê béo mặn, bánh kem trái cây ít ngọt + trà ngọt vừa. Kiểm tra sản phẩm theo từng thành phần, số lượng, ngân sách, tổng tiền và draft.
+
+Kết quả: 96/96 kiểm tra script; fake 536/536 dev + 60/60 test; 314 few-shot hợp lệ. Qwen thật 4/4 behavior và extraction_exact, một inference/câu, 24,73/12,68/13,27/14,84s. Thêm hai lượt API/Qwen lặp lại câu gốc khi có draft: HTTP 200, tổng 80k, draft không đổi, không ghi đơn, 12,07/11,81s. Không suy độ chính xác toàn chatbot từ các smoke này. Không đổi test cuối, không tạo report, dùng SQLite RAM.
+
+Chạy riêng: `.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine ollama --dialogue dev_combo_coffee_preferences_v67`.
+
+## V66 — “trong giá” và độ ngọt theo từng món
+
+Bổ sung dialogue dev_within_price_combo_v66 (dev-527…532): câu gốc 70k, “trong mức giá 70 nghìn”, không dấu 70000, thiếu tiền 55k, đúng trần 60k, trà ngọt nhiều/ít ngọt. Kỳ vọng gồm pool từng món, số lượng, tổng ngân sách và giữ draft. Bộ test cuối không đổi.
+
+Kết quả: 93/93 kiểm tra script; fake 532/532 dev + 60/60 test; 311 few-shot hợp lệ. Qwen thật chạy sáu ca đạt 6/6 behavior, 4/6 extraction_exact, không model/source error; 13,17–14,57s, một inference mỗi câu. Không lấy điểm fake làm độ chính xác model; chưa kiểm tra trực quan GUI. Các lần lỗi trong quá trình chẩn đoán không được tính là đạt. SQLite RAM, không ghi report hoặc DB khách.
+
+Chạy riêng: `.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine ollama --dialogue dev_within_price_combo_v66`.
+
+## V65 — nhiều vị/ngân sách trong hội thoại đang đặt hàng
+
+Thêm 26 lượt dev (dev-501…526), hai dialogue dev_combo_budget_collecting_v65 và dev_combo_budget_pending_v65. Mỗi dialogue gồm một lượt đặt trước rồi 12 câu tư vấn mới, có/không ngân sách, viết tắt, vị, nhiều nhóm và số lượng riêng. Tiêu chí mới kiểm tra pool sản phẩm theo từng thành phần, số lượng, tổng tiền/tiền cần thêm và combo không trùng; luôn kiểm tra bản nháp không đổi.
+
+Kết quả chốt: **90/90** kiểm tra scripts/check_checkout.py; fake **526/526 dev + 60/60 test** đạt, 308 few-shot hợp lệ. Hai nhánh retry được kiểm tra lại sau tinh gọn hướng dẫn. Không thay bộ test cuối, không ghi report mặc định, không dùng DB khách hoặc tạo thư mục tests/docs.
+
+Qwen thật trên dev_combo_budget_pending_v65: **13/13 behavior**, **10/13 extraction_exact**, không lỗi model/nguồn. 12 lượt dùng một inference; lượt dev-520 cần sửa JSON, 29,91s. Hai câu gốc dev-515/dev-516: 15,15/16,01s; câu bốn nhóm 22,43s. Lần chạy ngay trước sửa retry đạt 12/13, lỗi thiếu ngân sách chung ở dev-520; lần cuối đã kiểm tra lại, không gộp lượt lỗi thành lượt đạt. Các tiêu chí kiểm tra pool theo thành phần, số lượng, ngân sách, tổng tiền và draft đều đạt.
+
+Thêm hai câu không dấu gọi qua API TestClient/Qwen thật sau một lỗi model giả lập, với REVIEW thiết lập bằng fake: HTTP 200, tổng tiền đúng, không ghi đơn và không thay draft; 14,87/15,23s. SQLite RAM. Đây là kiểm tra phục hồi sau lỗi có chủ đích, không phải hai lần model thực sự lỗi. Chưa đánh giá Qwen toàn bộ 586 lượt hoặc kiểm tra trực quan giao diện/tunnel. Chi tiết xem README gốc.
+
+## V64 — combo chưa có ngân sách và nút đặt
+
+75/75 kiểm tra trong scripts/check_checkout: tối đa ba mức giá có thật, đúng vị từng món, một mức giá không giả thành ba; trả ngân sách sau gợi ý dùng tổng combo; nút đặt không gọi LLM; session riêng, không ghi đè nháp, review/confirm, nhớ liên hệ cho lần sau.
+
+Dev 500/500 + test 60/60 bằng model fake. Mười kỳ vọng dev về số thẻ riêng được cập nhật theo yêu cầu mới: combo thấp/vừa/cao hoặc một combo khi đồng giá; giữ nguyên nhãn NLU và giới hạn pool/loại, bổ sung kiểm tra tổng tiền và mức giá. Không đổi test cuối hoặc lấy nhãn test vào few-shot.
+
+Bốn lượt Qwen thật sau thay đổi đạt một inference/lượt: hai câu gốc 12,11/12,74s; kiểm tra hội thoại ba loại rồi 450k mất 15,49/6,14s. DOM giả/cú pháp JS đạt; chưa kiểm tra trực quan trình duyệt. Tổng 304 few-shot trên đĩa, vẫn chỉ chọn tối đa hai mỗi lượt. Không tạo report mới hoặc dùng DB khách.
+
+## V63 — độ ngọt theo món và nối combo
+
+72/72 kiểm tra trong scripts/check_checkout đạt: chuẩn hóa ngọt chung mà không nới mức rõ ràng; filter không lẫn giữa hai món; không cần retry cho JSON hợp lệ chỉ khác mức ngọt chung; giữ ngân sách khi sửa vị; hỏi chọn món chưa rõ; tìm mới không kế thừa combo; model lỗi giữ state; không tạo đơn. Dev 500/500 + test 60/60 bằng model fake đã chạy, không sửa đáp án.
+
+Qwen thật: 7 lượt sau sửa không lỗi, mỗi lượt một lần gọi (4,62–15,15s), gồm hai cách nói ngân sách, độ ngọt hỗn hợp, câu nối chưa rõ và chọn món, đổi riêng mức của hai loại. Không coi đây là đánh giá toàn bộ model. Tổng 303 few-shot trên đĩa, tối đa hai/lượt, dạng combo sửa vị chỉ chọn một ví dụ phù hợp. Không ghi report mới, không dùng DB khách và chưa kiểm tra trực quan trình duyệt.
+
+## V61 — ngọt chung và thiếu ngân sách (31/10/2026)
+
+68/68 nhóm trong scripts/check_checkout.py đạt. Bổ sung: ngọt chung giữ theo từng món; bánh ngọt=mini; 380k đủ tiền; 350k thiếu 30k; hai tổ hợp rẻ nhất so với duyệt toàn bộ trong test; số lượng và vị/allergen/trần đơn giá không bị nới; số tiền thiếu đúng phép trừ; tải lại và bản nháp được giữ.
+
+Fake dev 500/500 + test 60/60 đạt, không đổi đáp án. Ngân hàng few-shot 300 mẫu, chỉ chọn tối đa hai/lượt. Qwen thật: tái hiện đúng hai mã lỗi ban đầu; hai câu gốc + thiếu ngân sách + tên/vị/số lượng riêng đã đạt; câu vị không có còn lỗi ở lần kiểm tra đầu và đạt sau sửa phạm vi vị. Ba lượt thử cuối với prompt mới đều một inference. Không báo kết quả fake thành độ chính xác toàn bộ của Qwen.
+
+JavaScript/DOM giả đạt kiểm tra dòng Cần thêm; chưa thử bằng mắt trên trình duyệt. Dữ liệu kiểm tra SQLite RAM; không có đơn hoặc thông tin khách thật.
+
+
+## V60 — nhóm món, ngân sách và vị (31/10/2026)
+
+- scripts/check_checkout.py: 63 nhóm đạt; thêm kiểm tra khung nhóm/tổng tiền, khôi phục lịch sử, quyền phiên, tên món cụ thể và số lượng, vị bắt buộc, sản phẩm inactive, không lặp toàn bộ nhóm khi khác biến thể.
+- Fake dev 500/500, test 60/60; không đổi nhãn hai tập để làm đạt.
+- Ngân hàng few-shot 297 ví dụ, tối đa hai gửi model. Mẫu mới chỉ thuộc ngân hàng hướng dẫn, không lấy đáp án test cuối.
+- Qwen thật: 5/5 câu liên tiếp đạt sau sửa (440k bánh–cà phê; trà ngọt nhiều dưới 30k; 1 bánh sô cô la + 2 cà phê muối; 4 loại trong 500k; vị không có thì không ghép nhóm). Mỗi câu một inference, 6,49–19,82s; tất cả hội thoại RAM, không tạo đơn.
+- Bộ kiểm tra frontend bằng DOM giả đạt; kiểm tra trực quan Cốc Cốc chưa hoàn tất do công cụ hết thời gian chờ quyền mở cửa sổ. Không coi DOM giả là đã thử trên trình duyệt.
+
+
+## Cặp loại và tiền tương đương — v59, 31/10/2026
+
+Đã chạy 56/56 nhóm trong scripts/check_checkout.py; thêm bốn nhóm về phủ sáu cặp, câu 450k sau các ngữ cảnh khác nhau, sửa nhầm coffee thành flavor và kiểm chứng tiền tương đương không retry. Sai số tiền/hướng giá vẫn bị từ chối. Chạy lại fake dev 500/500 + test 60/60, không đổi bộ nhãn.
+
+Qwen thật: năm lượt 450k/450000/không dấu ở các ngữ cảnh dựng trong RAM đều trả đúng ba cặp, tổng 365.000 / 395.000 / 405.000đ; mỗi lượt một lần gọi, khoảng 11–12 giây. Đây là kiểm tra chức năng của lỗi cụ thể, không phải đánh giá toàn bộ dataset bằng model thật. Ngân hàng few-shot 296 mẫu; vẫn tối đa hai mẫu/lượt, không thêm lượt diễn đạt hoặc tăng token/context.
+
+## Kiểm tra tư vấn trà và nhóm món — v58, 30/10/2026
+
+Bộ dev/test giữ nguyên 500/60 lượt; không đổi nhãn để khớp lỗi mới. Đã chạy lại fake, đạt 500/500 + 60/60. Thêm 15 nhóm hồi quy trong scripts/check_checkout.py, tổng 52/52 đạt: trà theo độ ngọt/ngân sách, giữ bản nháp, nhóm 2–4 loại, số lượng, tổng tiền và biên giá, không lặp nhóm, nguồn empty/lỗi, giá unknown/hết hàng, dị ứng, biến thể, JSON sửa một lần và mẫu cũ flavor=ít ngọt không lọt vào câu ngọt nhiều.
+
+Qwen thật chạy chuỗi 9 câu chức năng đạt 9/9; tám câu một lần gọi, một câu số lượng cần sửa JSON một lần. Đây là smoke test có kiểm tra ID sản phẩm, số nhóm, tổng tiền và revision bản nháp; chưa phải exact-match trên toàn bộ dữ liệu nhãn. Trong lúc cải thiện từng gặp bỏ trà, bỏ số lượng và chép độ ngọt từ few-shot; các lượt đó không được tính là đạt. Xem README chính để biết thời gian và nguyên nhân.
+
+Ngân hàng few-shot 291 mẫu, tối đa hai mẫu/lượt. Bộ test cuối không được đưa vào prompt. Kiểm tra chức năng mới bằng .\.venv\Scripts\python.exe -B -X utf8 -m unittest -q scripts.check_checkout; database kiểm tra trong RAM, không gọi Qwen cho lệnh này.
+
+## Bộ hiện tại v57 — phạm vi “món”, 30/10/2026
+
+Dev **500 lượt / 155 hội thoại**, test **60 lượt / 31 hội thoại**; thêm 5 lượt dev và 4 lượt test về yêu cầu món chung sau bánh trà xanh, khoảng tiền không đơn vị và giữ điều kiện rõ. Các nhóm mới: dev_generic_menu_restart, dev_generic_menu_range, test_generic_menu_question, test_generic_menu_keep_explicit. Không đưa câu/nhãn test vào few-shot.
+
+Đã chạy fake 500/500 + 60/60 đạt. scripts/check_checkout.py hiện 37/37 nhóm đạt, gồm sáu nhóm mới: bỏ nhóm/vị cũ khi tìm mới; câu cùng nghĩa; fragment/giữ vị; tham chiếu món đó; model trả phạm vi sai sửa tối đa một lần; context được giảm giá trị thừa mà state thật không đổi. Các nhóm cũ về đặt hàng, phân trang, phiên và nguồn lỗi vẫn đạt; DB RAM, không ghi dữ liệu khách.
+
+Qwen thật: 9 lượt kiểm tra chức năng với mã cuối đều đạt (không phải báo cáo exact-match trên cả bộ dữ liệu). Tám lượt một lần gọi; câu cùng vị cần hai lần. “Gợi ý món dưới 100k” và bản không dấu bỏ đúng loại/vị cũ, xem thêm giữ ngân sách; câu tham chiếu/giữ vị vẫn ra Bánh cuộn trà xanh. Đọc README chính mục v57 để xem chi tiết nguyên nhân, thời gian và giới hạn.
+
+Lệnh: .\.venv\Scripts\python.exe -B -X utf8 -m scripts.check_checkout. Đánh giá fake dùng -m scripts.evaluate_intent_context --split dev --engine fake hoặc --split test --engine fake; không cần ghi report ra file.
+
 ## Hồi quy nhánh tìm trực tiếp — 27/10/2026
 
 31/31 nhóm trong scripts/check_checkout.py đã đạt. Thêm 5 nhóm: “tìm bánh dưới 400k” có nút ngay ở lượt đầu 4 món; xem tiếp giữ điều kiện tới hết; nhóm chỉ có 3 món không tạo nút thừa; hỏi giá theo tên vẫn là thông tin; nhiều nhóm ngân sách riêng và nhóm kết quả chồng lấn không bị lặp/mất bộ lọc; xếp hạng rẻ nhất giữ nguyên khi xem thêm. DB RAM, model giả; không sửa dữ liệu đang dùng.
