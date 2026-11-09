@@ -1,2 +1,14 @@
-__pycache__/*
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytest_tmp/
+runtime/*
+!runtime/.gitkeep
+chatbot/runtime/*
+!chatbot/runtime/.gitkeep
+chatbot/.pytest_tmp/
+.env
 *.db
+*.sqlite3
+*.bak

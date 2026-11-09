@@ -1,8 +1,29 @@
 /* Sweet Bakery — giao diện HTML/CSS/JS thuần, không yêu cầu framework. */
 "use strict";
-document.addEventListener("DOMContentLoaded", () => {
-  const products = window.SWEET_PRODUCTS || [];
-  const config = window.SWEET_CONFIG || { mode: "demo" };
+document.addEventListener("DOMContentLoaded", async () => {
+  const config = window.SWEET_CONFIG || { mode: "api" };
+  let products = [];
+  try {
+    const response = await fetch(config.productsEndpoint || "/api/products", {
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error();
+    products = await response.json();
+    if (!Array.isArray(products) || !products.length) throw new Error();
+  } catch {
+    const main = document.querySelector("main");
+    main.replaceChildren();
+    const notice = document.createElement("p");
+    notice.className = "notice";
+    notice.textContent =
+      "Không tải được danh mục từ server. Hãy chạy CHAY-WEBSITE.bat và mở http://127.0.0.1:8000 (không mở bằng Live Server).";
+    const retry = document.createElement("button");
+    retry.textContent = "Thử lại";
+    retry.className = "btn-checkout";
+    retry.onclick = () => location.reload();
+    main.append(notice, retry);
+    return;
+  }
   const byId = new Map(products.map((p) => [p.id, p]));
   const KEY = "sweetBakeryCart";
   const $ = (s) => document.querySelector(s);
@@ -93,13 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const subtotal = () =>
     cart.reduce((n, i) => n + byId.get(i.productId).price * i.quantity, 0);
-  function pageURL(path) {
-    const url = new URL(path, location.href);
-    if (config.pageVersion) url.searchParams.set("site_v", config.pageVersion);
-    return url.href;
-  }
   const detailURL = (id) =>
-    pageURL(`chi-tiet-san-pham-demo.html?id=${encodeURIComponent(id)}`);
+    `chi-tiet-san-pham-demo.html?id=${encodeURIComponent(id)}`;
   function card(p) {
     return `<article class="product-card"><div class="img-wrap"><a href="${detailURL(p.id)}"><img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400"></a><button class="btn-add-cart" data-add="${p.id}" type="button">+ Thêm vào giỏ</button></div><div class="product-info"><h3><a href="${detailURL(p.id)}">${esc(p.name)}</a></h3><p class="price">${money(p.price)}</p></div></article>`;
   }
@@ -109,6 +125,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
     cart = readCart();
+    const present = cart.find((i) => i.productId === id)?.quantity || 0;
+    if (present + Number(qty) > byId.get(id).stock) {
+      toast(
+        "Số lượng vượt quá tồn kho hiện tại. Hãy giảm số lượng hoặc tải lại trang.",
+      );
+      return false;
+    }
     const next = cart.map((i) => ({ ...i }));
     const item = next.find((i) => i.productId === id);
     if ((item?.quantity || 0) + Number(qty) > 99) {
@@ -169,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     const buy = e.target.closest("[data-buy]");
     if (buy && add(buy.dataset.buy, $("#detail-quantity").value))
-      location.href = pageURL("thanh-toan.html");
+      location.href = "thanh-toan.html";
     const remove = e.target.closest("[data-remove]");
     if (remove) {
       cart = readCart();
@@ -296,9 +319,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const apiMode = config.mode === "api";
     if (apiMode) {
       $("#mode-note").textContent =
-        "Kiểm tra thông tin trước khi gửi yêu cầu đặt hàng. Phí giao hàng và thời gian nhận sẽ được xác nhận.";
+        "Đơn hàng sẽ được lưu vào database của nhóm. Đây là bản chạy local; phí giao hàng và thời gian nhận chờ xác nhận.";
       $("#submit-order").textContent = "Gửi yêu cầu đặt hàng";
     }
+    const locationBox = document.createElement("div");
+    const addressGrid=field("addressLine")?.closest(".form-grid");
+    if(addressGrid)addressGrid.before(locationBox);else form.append(locationBox);
+    window.SweetDelivery?.mount(locationBox, form);
     function validateField(el) {
       el.setCustomValidity("");
       if (el.type === "checkbox" || el.type === "radio") return;
@@ -307,7 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
         el.setCustomValidity("Vui lòng điền thông tin này.");
       else if (el.name === "fullName" && value.length < 2)
         el.setCustomValidity("Vui lòng nhập họ và tên từ 2 ký tự.");
-      else if (el.name === "addressLine" && value.length < 5)
+      else if (el.name === "addressLine" && value && value.length < 5)
         el.setCustomValidity("Vui lòng nhập địa chỉ cụ thể từ 5 ký tự.");
       else if (
         el.name === "phone" &&
@@ -346,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
           province: value("province"),
           ward: value("ward"),
           addressLine: value("addressLine"),
+          location: window.SweetDelivery?.value(form) || null,
         },
         delivery: {
           requestedDate: value("deliveryDate") || null,
@@ -422,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
           saveCart(remaining);
           $("#result-title").textContent = "Đã gửi yêu cầu đặt hàng";
           $("#result-message").textContent =
-            "Cửa hàng sẽ xác nhận thông tin, tổng tiền và thời gian giao hàng.";
+            "Đơn đã được lưu vào database. Nhóm có thể xem trong trang Quản lý. Chưa có thanh toán hoặc giao hàng thực tế.";
         } else {
           resultOrder = {
             ...payload,
@@ -447,7 +475,13 @@ document.addEventListener("DOMContentLoaded", () => {
             "Đơn này chưa gửi đến cửa hàng và chưa có thanh toán. Bạn có thể tải file JSON để kiểm thử. Giỏ hàng được giữ lại.";
         }
         $("#result-reference").textContent =
-          "Mã tham chiếu: " + resultOrder.orderId;
+          "Mã tham chiếu: " +
+          resultOrder.orderId +
+          (resultOrder.serverSummary
+            ? " · Tạm tính từ database: " +
+              money(resultOrder.serverSummary.subtotal) +
+              " · Phí giao hàng chờ xác nhận"
+            : "");
         $("#checkout-content").hidden = true;
         $("#checkout-empty").hidden = true;
         $("#order-result").hidden = false;
@@ -481,4 +515,5 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
   }
+  // Widget dùng script riêng để giữ phóng to/thu nhỏ và lịch sử qua chuyển trang.
 });

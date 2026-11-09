@@ -1,0 +1,6 @@
+{
+  "python.analysis.extraPaths": [
+    "./chatbot"
+  ],
+  "python.defaultInterpreterPath": "${workspaceFolder}/chatbot/.venv/Scripts/python.exe"
+}

@@ -11,7 +11,7 @@ from app.order_flow import order_items, create_review, confirm_review
 from app.order_service import local_now, normalize_contact_value
 from app.storage import fingerprint, draft_fingerprint
 
-CONTACT_FIELDS = ("fullName", "phone", "email", "province", "ward", "addressLine")
+CONTACT_FIELDS = ("fullName", "phone", "email", "province", "ward", "addressLine", "deliveryLocation")
 
 
 class CheckoutItem(BaseModel):
@@ -34,16 +34,24 @@ class CheckoutStart(BaseModel):
         return self
 
 
+class DeliveryLocation(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    latitude: float = Field(ge=-90,le=90)
+    longitude: float = Field(ge=-180,le=180)
+    accuracy: float | None = Field(default=None,ge=0,le=100000)
+
+
 class CheckoutForm(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     fullName: str = Field(min_length=2, max_length=100)
     phone: str = Field(min_length=8, max_length=20)
     email: str = Field(default="", max_length=254)
-    province: str = Field(min_length=1, max_length=100)
-    ward: str = Field(min_length=1, max_length=100)
-    addressLine: str = Field(min_length=5, max_length=250)
+    province: str = Field(default="", max_length=100)
+    ward: str = Field(default="", max_length=100)
+    addressLine: str = Field(default="", max_length=250)
+    deliveryLocation: DeliveryLocation | None = None
     deliveryDate: str = Field(default="", max_length=10)
-    deliverySlot: Literal["", "morning", "afternoon", "evening"] = ""
+    deliverySlot: Literal["", "morning", "afternoon"] = ""
     cakeMessage: str = Field(default="", max_length=100)
     note: str = Field(default="", max_length=500)
     consent: bool
@@ -65,6 +73,8 @@ class CheckoutForm(BaseModel):
         self.phone = normalize_contact_value("phone", self.phone)
         if not re.fullmatch(r"(?:0[35789]\d{8}|\+84[35789]\d{8})", self.phone):
             raise ValueError("Số di động Việt Nam cần 10 số hoặc mã +84.")
+        if self.deliveryLocation is None and (not self.province or not self.ward or len(self.addressLine)<5):
+            raise ValueError("Bạn nhập địa chỉ đầy đủ hoặc chọn ghim vị trí trên bản đồ.")
         if self.email and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", self.email):
             raise ValueError("Email chưa hợp lệ.")
         if not self.consent:
@@ -109,11 +119,14 @@ class CheckoutView(BaseModel):
     summary: dict | None
     confirmation_token: str | None
     record_id: str | None
+    order_id: str | None = None
+    delivery_tracking: dict | None = None
 
 
 def form_defaults(conversation):
     draft = conversation["order"]
     values = {key: "" for key in (*CONTACT_FIELDS, "deliveryDate", "deliverySlot", "cakeMessage", "note")}
+    values["deliveryLocation"] = None
     values.update(conversation.get("checkout_contact", {}))
     values.update(draft.get("checkout_form", {}))
     values["fullName"] = draft["slots"].get("name") or values["fullName"]
@@ -148,7 +161,9 @@ def checkout_view(conversation):
     return {"stage": stage, "draft_id": draft["id"], "revision": draft["revision"],
             "form": values, "items": items, "summary": summary,
             "confirmation_token": draft.get("checkout_token") if stage in {"review", "completed"} else None,
-            "record_id": submission["id"] if submission else None}
+            "record_id": submission["id"] if submission else None,
+            "order_id": submission["id"] if submission and submission["kind"] == "website_order" else None,
+            "delivery_tracking": submission.get("delivery_tracking") if submission else None}
 
 
 def price_items(repository, items):
@@ -234,7 +249,8 @@ def apply_checkout(conversation, body, repository, tools):
         raise ValueError("Bản nháp đã thay đổi. Hãy tải lại thông tin hiện tại.")
     if draft.get("submission"):
         if body.action == "confirm" and body.confirmation_token == draft.get("checkout_token"):
-            return current, "Yêu cầu này đã được lưu. Không tạo bản trùng."
+            return current, ("Đơn " + draft["submission"]["id"] + " đã được tạo trước đó; không tạo thêm đơn."
+                             if draft["submission"]["kind"] == "website_order" else "Yêu cầu này đã được lưu. Không tạo bản trùng.")
         raise ValueError("Yêu cầu đã gửi; hãy bắt đầu yêu cầu mới để đặt thêm.")
     if draft["state"] not in {"COLLECTING", "REVIEW"} and not (
             draft["state"] == "BROWSING" and current.get("pending_order_request")):

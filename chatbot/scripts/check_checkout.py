@@ -675,7 +675,7 @@ class CheckoutChecks(unittest.TestCase):
         self.assertEqual(current["needs"], waiting["needs"])
         self.assertEqual(result["checkout"], self.view)
 
-    def test_generic_menu_wrong_model_scope_is_repaired_once(self):
+    def test_generic_menu_new_scope_does_not_need_model(self):
         import json
         waiting = self.select_small_matcha()
         for previous_type in ("mini", None):
@@ -697,7 +697,7 @@ class CheckoutChecks(unittest.TestCase):
                         wire("refine", previous_type), wire("new", None)]) as calls:
                     result = self.client.post("/api/chat", headers=self.headers,
                         json={"conversation_id": self.cid, "message": "gợi ý món dưới 100k nhé"}).json()
-                self.assertEqual(calls.call_count, 2)
+                self.assertEqual(calls.call_count, 0)
                 self.assertEqual(result["errors"], [])
                 self.assertGreater(len(result["products"]), 1)
                 with closing(self.connect(None)) as c:
@@ -852,7 +852,7 @@ class CheckoutChecks(unittest.TestCase):
         wire["updates"] = []
         with patch.object(llm_client, "chat", return_value={"ok":True,"content":json.dumps(wire),
                           "error":None,"model":"qwen3.5:4b","http_status":200}) as call:
-            result = llm_client.extract_turn("không quá 400000 gợi ý bánh kem ngọt, trà ít ngọt",
+            result = llm_client.extract_turn_legacy("không quá 400000 gợi ý bánh kem ngọt, trà ít ngọt",
                 new_conversation(), "http://127.0.0.1:11434", "qwen3.5:4b", repository=self.repository)
         self.assertIsNone(result["error"])
         self.assertEqual(result["attempts"], 1)
@@ -1306,7 +1306,7 @@ class CheckoutChecks(unittest.TestCase):
                      for output in (bad, good)]
         current = load_conversation(self.keeper, self.cid)
         with patch.object(llm_client, "chat", side_effect=responses) as chat:
-            result = llm_client.extract_turn("không quá 500000 gợi ý 1 bánh kem và 2 trà", current,
+            result = llm_client.extract_turn_legacy("không quá 500000 gợi ý 1 bánh kem và 2 trà", current,
                                              "http://127.0.0.1:11434", "qwen3.5:4b", repository=self.repository)
         self.assertIsNone(result["error"])
         self.assertEqual(result["data"].requests[1].quantity, 2)
@@ -1456,7 +1456,7 @@ class CheckoutChecks(unittest.TestCase):
                    for item in (bad, good)]
         current = load_conversation(self.keeper, self.cid)
         with patch.object(llm_client, "chat", side_effect=replies) as chat:
-            result = llm_client.extract_turn("tôi có 450k hãy đề xuất cho tôi bánh kem với cà phê", current,
+            result = llm_client.extract_turn_legacy("tôi có 450k hãy đề xuất cho tôi bánh kem với cà phê", current,
                 "http://127.0.0.1:11434", "qwen3.5:4b", repository=self.repository)
         self.assertIsNone(result["error"])
         self.assertEqual(chat.call_count, 2)
@@ -1486,7 +1486,7 @@ class CheckoutChecks(unittest.TestCase):
         reply = {"ok": True, "content": json.dumps(llm_client.example_for_schema(wire, llm_client.turn_output_schema())),
                  "error": None, "model": "qwen3.5:4b"}
         with patch.object(llm_client, "chat", return_value=reply) as chat:
-            result = llm_client.extract_turn(message, current, "http://127.0.0.1:11434",
+            result = llm_client.extract_turn_legacy(message, current, "http://127.0.0.1:11434",
                                             "qwen3.5:4b", repository=self.repository)
         self.assertIsNone(result["error"])
         self.assertEqual(chat.call_count, 1)
@@ -1652,7 +1652,7 @@ class CheckoutChecks(unittest.TestCase):
                 "bundle_budget":wire["bundle_budget"]}
         current = load_conversation(self.keeper,self.cid)
         with patch.object(llm_client,"chat",return_value={"ok":True,"content":json.dumps(wire),"error":None,"model":"qwen3.5:4b"}) as chat:
-            parsed = llm_client.extract_turn(
+            parsed = llm_client.extract_turn_legacy(
                 "gợi ý bánh kem ít ngọt và cà phê đắng, khoảng giá 450 nghìn",current,
                 "http://127.0.0.1:11434","qwen3.5:4b",repository=self.repository)
         self.assertIsNone(parsed["error"])
@@ -1679,7 +1679,7 @@ class CheckoutChecks(unittest.TestCase):
         self.assertIsNotNone(check_turn_grounding(text,bad,self.repository))
         wire=value.model_dump();wire["updates"]=[]
         with patch.object(llm_client,"chat",return_value={"ok":True,"content":json.dumps(wire),"error":None,"model":"qwen3.5:4b"}) as chat:
-            parsed=llm_client.extract_turn(text,load_conversation(self.keeper,self.cid),
+            parsed=llm_client.extract_turn_legacy(text,load_conversation(self.keeper,self.cid),
                 "http://127.0.0.1:11434","qwen3.5:4b",repository=self.repository)
         self.assertIsNone(parsed["error"]);self.assertEqual(chat.call_count,1)
 
@@ -1747,7 +1747,7 @@ class CheckoutChecks(unittest.TestCase):
         text="giới thiệu bánh kem sô cô la ngọt nhiều với cà phê béo mặn nhẹ trong khoảng giá 500k"
         replies=[{"ok":True,"content":json.dumps(v),"error":None,"model":"qwen3.5:4b"} for v in (bad,good)]
         with patch.object(llm_client,"chat",side_effect=replies) as chat:
-            parsed=llm_client.extract_turn(text,load_conversation(self.keeper,self.cid),
+            parsed=llm_client.extract_turn_legacy(text,load_conversation(self.keeper,self.cid),
                 "http://127.0.0.1:11434","qwen3.5:4b",repository=self.repository)
         self.assertIsNone(parsed["error"])
         self.assertEqual(chat.call_count,2)
@@ -1778,7 +1778,7 @@ class CheckoutChecks(unittest.TestCase):
         replies=[{"ok":True,"content":json.dumps(v),"error":None,"model":"qwen3.5:4b"}
                  for v in (bad,good)]
         with patch.object(llm_client,"chat",side_effect=replies) as chat:
-            parsed=llm_client.extract_turn("gợi ý bánh kem dưới 400k và cà phê trên 40k",
+            parsed=llm_client.extract_turn_legacy("gợi ý bánh kem dưới 400k và cà phê trên 40k",
                 load_conversation(self.keeper,self.cid),"http://127.0.0.1:11434",
                 "qwen3.5:4b",repository=self.repository)
         self.assertIsNone(parsed["error"])
@@ -1809,7 +1809,7 @@ class CheckoutChecks(unittest.TestCase):
         value.bundle_budget.question="trong giá 70k"
         wire=value.model_dump();wire["updates"]=[]
         with patch.object(llm_client,"chat",return_value={"ok":True,"content":json.dumps(wire),"error":None,"model":"qwen3.5:4b"}) as call:
-            parsed=llm_client.extract_turn(text,current,"http://127.0.0.1:11434","qwen3.5:4b",repository=self.repository)
+            parsed=llm_client.extract_turn_legacy(text,current,"http://127.0.0.1:11434","qwen3.5:4b",repository=self.repository)
         self.assertIsNone(parsed["error"]);self.assertEqual(call.call_count,1)
         result=self.chat(text,parsed["data"])
         self.assertEqual(result["errors"],[])
@@ -1894,7 +1894,7 @@ class CheckoutChecks(unittest.TestCase):
             result=self.client.post("/api/chat",headers=self.headers,json={
                 "conversation_id":self.cid,"message":"đề xuất cho tôi bánh nhỏ và cà phê đắng trong giá 80k nhé"}).json()
         self.assertEqual(result["errors"],[])
-        self.assertEqual(call.call_count,1)
+        self.assertEqual(call.call_count,0)
         self.assertTrue(result["recommendation_groups"])
         for group in result["recommendation_groups"]:
             self.assertEqual(group["total_vnd"],80000)

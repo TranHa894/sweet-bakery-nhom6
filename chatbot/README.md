@@ -1,5 +1,101 @@
 # Chatbot Sweet Bakery
 
+## Hiệu ứng lời nhắn và thẻ món — 03/11/2026
+
+Các thẻ sản phẩm/combo xuất hiện **cùng lúc**, nguyên nội dung bên trong (ảnh, tên, mô tả, giá, tổng tiền và nút), với hiệu ứng mờ hiện/trượt nhẹ 220ms. Không gõ chữ hoặc mở từng dòng trong thẻ nữa.
+
+Chỉ lời nhắn của bot **bên ngoài thẻ** hiện chữ dần: ít nhất 4 cụm ký tự mỗi 18ms, tin dài tự tăng số ký tự mỗi nhịp; giới hạn khoảng 1,1 giây. Dùng một timer nối tiếp, tách cụm Unicode để giữ dấu/emoji, không gọi model thêm. Tab ẩn hoặc giảm chuyển động hiện đầy đủ ngay; lịch sử khi mở lại không chạy hiệu ứng.
+
+Giữ nhãn chờ theo câu khách: tìm sản phẩm, chuẩn bị gợi ý, tra cứu giá/thông tin/chính sách, kiểm tra yêu cầu đặt món. Đây chỉ là nhãn chờ UI, không phải quyết định NLU hoặc báo cáo tiến độ backend.
+
+Kiểm tra **19/19 điều kiện bằng Chrome headless và API giả**: các combo cùng hiệu ứng/không delay riêng, chữ trong thẻ đầy đủ và không đổi, thẻ sản phẩm lẻ, lời nhắn ngoài thẻ chạy nhanh, giá cuối đúng, nút đặt, một request chat, lịch sử, tab ẩn, giảm chuyển động và nhãn chờ. Không gọi model/DB thật; chưa thử thủ công trên điện thoại/tunnel. Tải lại trang bằng **Ctrl+F5** để nạp JS/CSS mới.
+
+## Kiến trúc hybrid NLU — 02/11/2026
+
+Đã thực hiện Giai đoạn 0–6 theo xác nhận của chủ dự án. Bản trước nằm ở commit `fbeb32d`; thay đổi hiện ở nhánh `refactor/hybrid-nlu-20261102`, chưa commit/push tự động. Các mục V67 trở xuống là **lịch sử phiên bản cũ**; trạng thái hiện tại ưu tiên mục này và phần bổ sung trong `README___.MD`.
+
+**NLU** (Natural Language Understanding) là bước hiểu ý định và thông tin trong câu. Đường chính mới là **hybrid**: Python lấy bằng chứng rõ ràng, Qwen xử lý câu chưa rõ bằng output nhỏ. Không cần gọi Qwen cho mọi lời chào hoặc ngân sách đã đọc chắc chắn. Đây là thay đổi kiến trúc được cho phép, không phải âm thầm chuyển sang rule sau lỗi model.
+
+```text
+Tin nhắn → normalize.py → deterministic.py → SemanticFrame
+                               ↓ chưa rõ
+                         model.py → Qwen (enum/ứng viên)
+                               ↓
+                       validation.py theo trường
+                               ↓
+         conversation.py → repository / advice / RAG / FSM / checkout
+                               ↓
+                  API và giao diện hiện có
+```
+
+- Tên/alias đến từ repository; giá và tổng tiền vẫn lấy/tính bằng code. Tầng NLU không đọc trực tiếp JSON menu, không tạo sản phẩm hoặc đơn thật.
+- Tối đa bốn yêu cầu; tiền chung khác cận giá từng món. Vị/ngọt/kiểu cà phê gắn với cụm món tương ứng.
+- Hỏi món khác chỉ đổi phạm vi thông tin đang hỏi; không sửa bản nháp. Tham chiếu dùng bộ nhớ, không gom toàn bộ sản phẩm từng xuất hiện.
+- Một điều kiện không hợp lệ sẽ được hỏi rõ; query khác hợp lệ vẫn được trả lời. Query có điều kiện bắt buộc sai chưa được chạy với điều kiện bị bỏ qua.
+- Model không được sinh giá, ID sản phẩm tùy ý hoặc xác nhận đơn. Chỉ chọn enum/index trong tập ứng viên nguồn; muốn thay bản nháp phải có bằng chứng đặt/sửa rõ ràng. Lỗi model giữ bản nháp và không fallback sang parser cũ.
+- Payload hội thoại v2 gom `focus/options/pending/budget`, giữ `order` riêng. Controller nhận tên trường cũ qua adapter để không sửa lại checkout/FSM. Không quét/chuyển toàn bộ database; chỉ lần lưu bình thường sau này mới ghi payload v2.
+- Giữ `think=False`, `temperature=0`, `num_ctx=4096`, model/keep-alive/dependency cũ. Qwen NLU mới tối đa 128 token, sửa JSON một lần trong cùng deadline; RAG vẫn có giới hạn riêng hiện có.
+
+### File nên đọc
+
+1. `app/understanding/normalize.py` và `deterministic.py`: chuẩn hóa, tiền, nhóm, vị, số lượng, đối tượng riêng mỗi cụm.
+2. `app/understanding/frames.py` và `validation.py`: khung ngữ nghĩa Pydantic và lỗi theo trường.
+3. `app/understanding/model.py`, `pipeline.py`: gọi Qwen khi cần rồi hợp nhất kết quả.
+4. `app/understanding/context.py` và `app/storage.py`: tương thích bộ nhớ v1/v2, lưu SQLite.
+5. `app/conversation.py`: điều phối vào advice, repository, RAG, checkout đang có.
+6. `scripts/check_hybrid.py`: kiểm thử parser mới; `README___.MD`: giải thích và báo cáo từng giai đoạn.
+
+Phần prompt/schema/parser cũ chuyển từ `llm_client.py` sang `understanding/legacy.py`; `llm_client.py` giữ HTTP/RAG và entry point tương thích. Code cũ chỉ giữ một bản để baseline, kiểm tra wire cũ và chủ động hoàn tác bằng cấu hình. Không xóa `app/nlu.py`/`chatbot.py` vì `CHAT_MODE=rule` vẫn gọi chúng. Không có file adapter tương lai giả hoạt động.
+
+### Chạy trên Windows
+
+```powershell
+Set-Location 'D:\sweet-bakery-nhom6\chatbot'
+.\.venv\Scripts\python.exe -B -X utf8 run_web.py
+```
+
+Mở **http://127.0.0.1:8000/website/**; dừng web cũ bằng Ctrl+C trước khi chạy lại để nạp code. Không cần cài lại dependency hoặc reset/seed DB. Model local cần sẵn sàng cho câu mơ hồ và RAG.
+
+Cấu hình mới có mặc định; không cần ghi đè `.env`:
+
+```dotenv
+NLU_ENGINE=hybrid
+NLU_TRACE=false
+```
+
+Để xem trace kỹ thuật trong PowerShell: `$env:NLU_TRACE='true'` rồi chạy web lại; tắt bằng `Remove-Item Env:NLU_TRACE`. Trace chỉ in hash/độ dài, enum quyết định, tên trường/mã lỗi, thời gian, số call và số kết quả; không in câu khách, liên hệ, session token hoặc raw JSON tự do.
+
+**Quay về thuật toán cũ**: `$env:NLU_ENGINE='legacy'` rồi khởi động lại web. Chạy hybrid lại: `Remove-Item Env:NLU_ENGINE` (nếu .env có khai báo legacy thì sửa giá trị đó có chủ đích). Cả hai engine hiện tại đọc payload v1/v2. Không checkout code cũ rồi dùng trực tiếp DB v2; cần bản sao DB phù hợp hoặc chuyển payload trên bản sao qua `restore_context` trước. Không dùng reset để hoàn tác.
+
+### Kết quả thực tế và giới hạn
+
+- `unittest`: **139/139** (96 checkout/API/legacy + 43 hybrid). Hybrid kiểm tra parser thật với chat giả khi cần, DB RAM; không phải 139 câu Qwen thật.
+- Evaluator fake: **536/536 dev, 60/60 test**, giữ nguyên dữ liệu/nhãn. Phần lớn tiêm khung có nhãn để kiểm tra controller; fixture wire cũ đi qua parser legacy. Điểm này không đo độ hiểu Qwen hay độ bao phủ parser hybrid.
+- `check_context_scope`: **11/11**, SQLite RAM; 10 lượt xác định không gọi model, một lượt Qwen/RAG thật mất khoảng 2,64s.
+- `check_group_data`: đọc được 24 sản phẩm qua adapter chỉ đọc, chưa hỗ trợ tạo đơn kinh doanh thật.
+- Baseline NLU cũ: năm câu thật đều đạt các trường được đo; chào lúc nguội **18,309s** (load **14,096s**), bốn combo ấm **11,914–12,794s**. Ollama báo model chia **50% CPU/50% GPU** lúc kiểm tra.
+- Cùng năm câu với hybrid: **0,010–0,052s NLU**, không gọi model; cùng các trường được kiểm tra đều đạt. Bộ đo: intent 1/1; nhóm/ngân sách/hướng tiền/số lượng 4/4; kiểu cà phê 3/3; vị 1/1; độ ngọt 1/1. Đây là mẫu nhỏ, không phải số liệu toàn chatbot.
+- Hai câu mơ hồ thật sau sửa: `cuon vanii` → Bánh cuộn vani, description (**3,195s**, 212 prompt token); `chao nha ban` → greeting (**2,096s**, 200 token). Mỗi câu một call; các lần thử trước sửa prompt từng sai intent, không được tính là đạt.
+- API hybrid bốn combo 80k/86k/70k/90k: HTTP 200, khoảng **30–44ms**, mở form đặt hai món đúng số lượng 3/2. Kiểm tra bằng TestClient trong RAM; đây không phải tốc độ qua tunnel hoặc phép đo đồng thời nhiều khách.
+
+Chưa kiểm tra trực quan Cốc Cốc/điện thoại/tunnel lần này; chưa chạy toàn bộ 596 lượt bằng model thật hoặc benchmark tải nhiều khách. Cách diễn đạt chưa có bằng chứng rõ có thể cần hỏi lại/Qwen. Dị ứng không được suy đoán an toàn. Giai đoạn 7 sinh dữ liệu/fine-tune **chưa thực hiện**. Còn cảnh báo Starlette về httpx khi test và Pydantic cài 2.14.0 khác pin 2.11.9; không đổi dependency.
+
+### Lệnh kiểm tra
+
+```powershell
+.\.venv\Scripts\python.exe -B -X utf8 -m unittest -q scripts.check_checkout scripts.check_hybrid
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.check_context_scope
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.check_group_data
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine fake --split dev
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.evaluate_intent_context --engine fake --split test
+.\.venv\Scripts\python.exe -B -X utf8 -m scripts.benchmark_nlu --engine hybrid
+```
+
+Benchmark `--engine legacy` gọi Qwen thật trên tối đa năm câu tổng hợp; chỉ chạy khi cần đối chiếu. Report local trước/sau hiện ở `runtime/hybrid_baseline.json` và `runtime/hybrid_after.json`, được Git bỏ qua, không chứa khách thật.
+
+Tự kiểm tra trình duyệt sau restart: tư vấn bánh kem → Ngọt vừa → Kem/vani/trang trí; combo bánh nhỏ + cà phê đắng trong giá 80k; đặt 3 bánh cuộn vani + 2 cà phê muối → nhập form → REVIEW → sửa → xác nhận lại; hỏi giá món khác xen ngang rồi trở lại form; chuyển trang/thu nhỏ widget và mở lại. Kiểm tra giá, số lượng, ảnh, lịch sử và không có đơn thật.
+
+
 Python **3.12.10**, Qwen **qwen3.5:4b** qua Ollama local, FastAPI và SQLite. Giao diện web gọi service chatbot; không cần API key, không thanh toán/giao hàng thật.
 
 Mặc định đọc **24 sản phẩm mẫu** của nhóm từ `../static/products.json` bằng adapter chỉ đọc. Đây chưa phải menu kinh doanh chính thức. Chatbot chỉ lưu **yêu cầu chờ tư vấn**, chưa xác nhận đơn từ nguồn này.
@@ -1175,3 +1271,12 @@ Evaluator kiểm tra cả bộ lọc và ID biến thể, không chỉ ID sản 
 7. `app/storage.py`, `app/api.py`, `run_web.py`: lưu trữ, quyền phiên và khởi động web.
 
 Khi backend sẵn sàng, thay adapter tại factory; giữ interface search_products/get_product/get_capabilities và tools kiểm tra/báo giá/gửi/tra cứu. Cần mapping ID SP/variant, nguồn giá/tồn kho chuẩn, quyền tạo đơn và idempotency xuyên hệ thống. Không ghi cùng đơn vào SQLite demo và backend thật; không tự chuyển dữ liệu mô phỏng thành đơn thật. Chạy lại hồi quy logic, session và giao dịch sau khi nối.
+
+
+## Khi chạy cùng website nhóm — 04/11/2026
+
+Chạy main.py ở thư mục gốc sweet-bakery-nhom6. Website truyền order_tools_factory vào API, dùng service website_orders.py để form chatbot tạo cùng loại đơn với giỏ hàng. Sau Xem lại đơn hàng → Xác nhận đặt hàng, nhận mã SB-...; quản trị xử lý tại mục Đơn hàng. Trước xác nhận chưa tạo đơn; xác nhận lặp không trừ tồn thêm.
+
+ORDER_SUBMITTED nghĩa đã gửi đơn, còn cửa hàng xác nhận trong admin. Tiền hàng lấy từ SQLite; phí giao/lịch nhận và thanh toán chưa được tự động xác nhận. OrderRequestView kind website_order phục vụ tra cứu có quyền phiên. Mô hình Qwen/NLU và tốc độ hiển thị không thay đổi.
+
+run_web.py chạy riêng giữ provider mặc định và hành vi chờ tư vấn. Các yêu cầu cũ vẫn giữ nguyên; không tự chuyển thành đơn.

@@ -279,6 +279,8 @@ def confirm_review(draft: dict, tools: OrderTools, needs: dict) -> tuple[dict, s
     updated = deepcopy(draft)
     if updated["submission"]:
         submission = updated["submission"]
+        if submission["kind"] == "website_order":
+            return updated, "Đơn " + submission["id"] + " đã được tạo trước đó; không tạo thêm đơn."
         if submission["kind"] == "waiting_consultation":
             return updated, waiting_request_message(submission)
         return updated, "Đơn mô phỏng này đã được lưu trước đó; không tạo thêm đơn."
@@ -295,9 +297,14 @@ def confirm_review(draft: dict, tools: OrderTools, needs: dict) -> tuple[dict, s
         updated.pop("submission_pending", None)
         if result["error"] in {"source_changed_review_again", "stale_review", "invalid_slots"}:
             updated.update(state="COLLECTING", review=None)
+        if result.get("message"):
+            return updated, "Chưa tạo đơn. " + result["message"]
         return updated, "Chưa gửi/xác nhận đơn: " + str(result["error"] or result["status"]) + ". Hãy sửa thông tin hoặc xem lại."
     updated.pop("submission_pending", None)
     updated["submission"] = result["data"]
+    if result["data"]["kind"] == "website_order":
+        updated.update(state="ORDER_SUBMITTED", review=None)
+        return updated, "Mình đã tạo đơn " + result["data"]["id"] + " cho bạn. Thông tin đã gửi tới cửa hàng; đơn chờ xác nhận, chưa thanh toán. Mình sẽ cập nhật thời gian dự kiến và trạng thái giao hàng ngay trong khung chat này." + ("\n" + result["data"].get("delivery_tracking", {}).get("message", "") if result["data"].get("delivery_tracking") else "")
     if result["data"]["kind"] == "demo_order":
         if result["data"]["data_mode"] == "local_demo":
             updated["state"] = "DEMO_CONFIRMED"

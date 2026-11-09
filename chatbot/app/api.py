@@ -29,7 +29,7 @@ from app.storage import load_conversation, load_order_request, open_storage, sav
 STATIC_DIR = Path(__file__).resolve().parents[1] / "static"
 MESSAGE_MAX_LENGTH = 2000  # Giới hạn kỹ thuật của API, không là chính sách cửa hàng.
 SESSION_SECONDS = 8 * 60 * 60
-State = Literal["BROWSING", "COLLECTING", "REVIEW", "DEMO_CONFIRMED", "CANCELLED", "HANDOFF"]
+State = Literal["BROWSING", "COLLECTING", "REVIEW", "DEMO_CONFIRMED", "ORDER_SUBMITTED", "CANCELLED", "HANDOFF"]
 
 
 class APIModel(BaseModel):
@@ -188,6 +188,8 @@ class ReviewView(APIModel):
 
 
 class ChatView(APIModel):
+    checkout_mode: Literal["request", "order"] = "request"
+    order_id: str | None = None
     show_checkout: bool = False
     checkout: CheckoutView | None = None
     conversation_id: str
@@ -211,6 +213,7 @@ class ChatView(APIModel):
 
 
 class ConversationView(APIModel):
+    checkout_mode: Literal["request", "order"] = "request"
     conversation_id: str
     catalog_source: str
     session_token: str
@@ -235,6 +238,29 @@ class ConversationResumeView(APIModel):
     truncated: bool
 
 
+class CancelOrderRequest(APIModel):
+    confirmed: bool
+
+    @model_validator(mode="after")
+    def explicit_confirmation(self):
+        if not self.confirmed:
+            raise ValueError("Cần đồng ý rõ ràng trước khi hủy đơn.")
+        return self
+
+
+class OrderUpdateView(APIModel):
+    order_id: str
+    status: Literal["pending_confirmation","confirmed","delivering","completed","cancelled"]
+    message: str
+    updated_at: str
+    estimate: dict | None = None
+    can_cancel: bool = False
+
+
+class OrderUpdatesView(APIModel):
+    orders: list[OrderUpdateView]
+
+
 class OrderRequestView(APIModel):
     checkout_form: dict | None = None
     checkout_summary: dict | None = None
@@ -243,24 +269,27 @@ class OrderRequestView(APIModel):
     conversation_id: str
     draft_id: str
     revision: int
-    kind: Literal["waiting_consultation", "demo_order"]
+    kind: Literal["waiting_consultation", "demo_order", "website_order"]
     slots: SlotsView
     verification: dict[str, Literal["verified", "unverified", "not_applicable"]]
     issues: list[str]
     quote: QuoteView | None
     data_mode: str
     is_mock: Literal[True]
+    # Đã ghi đơn sau xác nhận của khách; trạng thái cửa hàng nằm ở order_status.
     confirmed: bool
     is_demo: bool | None = None
     source: str | None = None
     payment_status: Literal["unpaid"] | None = None
     snapshot: dict | None = None
     order_code: str | None = None
+    delivery_tracking: dict | None = None
+    order_status: Literal["pending_confirmation", "confirmed", "delivering", "completed", "cancelled"] | None = None
     created_at: str | None = None
 
     @model_validator(mode="after")
     def check_confirmation(self):
-        if self.confirmed != (self.kind == "demo_order"):
+        if self.confirmed != (self.kind in {"demo_order", "website_order"}):
             raise ValueError("Trạng thái xác nhận không khớp loại bản ghi.")
         if self.kind == "waiting_consultation" and self.quote is not None:
             raise ValueError("Yêu cầu chờ tư vấn không có báo giá xác nhận.")
@@ -299,7 +328,7 @@ def get_catalog_source(repository) -> str:
         return "unknown"
 
 
-def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
+def make_chat_view(turn: dict, knowledge_mode: str, checkout_mode: str = "request") -> dict:
     """Chuyển kết quả controller sang contract web; không trả history/model prompt."""
     conversation, response = turn["conversation"], turn["response"]
     draft, policy = conversation["order"], response.get("policy")
@@ -321,6 +350,8 @@ def make_chat_view(turn: dict, knowledge_mode: str) -> dict:
         errors.extend([policy["error"], policy["llm_error"]])
     return {
         "conversation_id": conversation["id"], "message": response["text"],
+        "checkout_mode": checkout_mode,
+        "order_id": submission["id"] if submission and submission["kind"] == "website_order" else None,
         "catalog_source": response.get("catalog_source", response["data_mode"]),
         "state": draft["state"], "products": response["products"], "sources": sources,
         "recommendation_groups": response.get("recommendation_groups", []),
@@ -344,7 +375,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                db_path=config.CHATBOT_DB_PATH, chat_mode=config.CHAT_MODE,
                knowledge_mode=config.KNOWLEDGE_MODE, base_url=None,
                model=None, timeout=None,
-               session_seconds=SESSION_SECONDS) -> FastAPI:
+               session_seconds=SESSION_SECONDS, order_tools_factory=None, order_updates_reader=None) -> FastAPI:
     """Factory cho chạy thật/test: nguồn được truyền vào, không đổi logic chatbot."""
     endpoint, configured_model, configured_timeout = config.get_llm_settings(chat_mode)
     base_url = endpoint if base_url is None else base_url
@@ -354,6 +385,8 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
     knowledge = knowledge_repository if knowledge_repository is not None else create_knowledge_repository(
         knowledge_mode, db_path if knowledge_mode == "local_demo" else config.KNOWLEDGE_PATH)
     application = FastAPI(title="Chatbot bánh — thử nghiệm local", version="0.6.0")
+    order_factory = order_tools_factory or create_order_tools
+    checkout_mode = "order" if order_tools_factory is not None else "request"
     sessions: dict[str, dict] = {}  # Chỉ hash token; không lưu token vào SQLite/log.
     registry_lock = Lock()
 
@@ -430,7 +463,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             with closing(open_storage(db_path)) as connection, connection:
                 save_conversation(connection, conversation)
             sessions[digest] = {"conversation_id": conversation["id"], "expires_at": now + session_seconds, "lock": Lock()}
-        return {"conversation_id": conversation["id"], "session_token": token,
+        return {"conversation_id": conversation["id"], "session_token": token, "checkout_mode": checkout_mode,
                 "catalog_source": get_catalog_source(catalog),
                 "expires_in_seconds": session_seconds, "data_mode": get_data_mode(catalog),
                 "knowledge_mode": knowledge_mode, "chat_mode": chat_mode, "state": "BROWSING"}
@@ -456,7 +489,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                                     if history and product["id"] in latest_ids]
             response["recommendation_groups"] = conversation.get("recommendation_groups", [])
             snapshot = make_chat_view({"conversation": conversation, "response": response,
-                "engine": chat_mode, "llm_error": None}, knowledge_mode)
+                "engine": chat_mode, "llm_error": None}, knowledge_mode, checkout_mode)
             return {"conversation_id": id, "messages": history[-100:],
                     "snapshot": snapshot, "truncated": len(history) > 100}
 
@@ -472,12 +505,12 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             if conversation is None:
                 raise HTTPException(404, "conversation_not_found")
             conversation["web_checkout"] = get_catalog_source(catalog) == "group_files"
-            tools = create_order_tools(catalog, connection, conversation["id"])
+            tools = order_factory(catalog, connection, conversation["id"])
             turn = handle_message(body.message, catalog, conversation, chat_mode=chat_mode,
                                   base_url=base_url, model=model, timeout=timeout,
                                   knowledge_repository=knowledge, order_tools=tools,
                                   storage_connection=connection)
-            return make_chat_view(turn, knowledge_mode)
+            return make_chat_view(turn, knowledge_mode, checkout_mode)
 
     @application.post("/api/checkout/start", response_model=ChatView)
     def select_checkout(body: CheckoutStart, authorization: str | None = Header(default=None)):
@@ -497,7 +530,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             response["show_checkout"] = True
             finish_turn(current, "Chọn món từ thẻ sản phẩm hoặc combo.", response, connection)
             return make_chat_view({"conversation": current, "response": response,
-                                   "engine": "form", "llm_error": None}, knowledge_mode)
+                                   "engine": "form", "llm_error": None}, knowledge_mode, checkout_mode)
 
     @application.post("/api/checkout", response_model=ChatView)
     def checkout(body: CheckoutAction, authorization: str | None = Header(default=None)):
@@ -508,7 +541,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
             conversation = load_conversation(connection, body.conversation_id)
             if conversation is None:
                 raise HTTPException(404, "conversation_not_found")
-            tools = create_order_tools(catalog, connection, conversation["id"])
+            tools = order_factory(catalog, connection, conversation["id"])
             try:
                 current, message = apply_checkout(conversation, body, catalog, tools)
             except ValueError as error:
@@ -520,7 +553,35 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
                                  "edit": "Sửa thông tin yêu cầu.", "cancel": "Hủy bản nháp.",
                                  "confirm": "Xác nhận gửi yêu cầu."}[body.action], response, connection)
             return make_chat_view({"conversation": current, "response": response,
-                                   "engine": "form", "llm_error": None}, knowledge_mode)
+                                   "engine": "form", "llm_error": None}, knowledge_mode, checkout_mode)
+
+    @application.get("/api/order-updates", response_model=OrderUpdatesView)
+    def read_delivery_updates(authorization: str | None = Header(default=None)):
+        session=authorize(authorization)
+        if order_updates_reader is None:
+            return {"orders":[]}
+        with session["lock"],closing(open_storage(db_path)) as connection:
+            return {"orders":order_updates_reader(connection,session["conversation_id"])}
+
+    @application.post("/api/order-requests/{id}/cancel", response_model=OrderUpdateView)
+    def cancel_submitted_order(id: str, body: CancelOrderRequest,
+                               authorization: str | None = Header(default=None)):
+        session = authorize(authorization)
+        if len(id) > 100:
+            raise HTTPException(404, "order_request_not_found")
+        with session["lock"], closing(open_storage(db_path)) as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            cancel = order_factory(catalog, connection, session["conversation_id"]).get("cancel_order")
+            if cancel is None:
+                raise HTTPException(409, {"code": "cancellation_unsupported",
+                                         "message": "Nguồn đơn hiện tại chưa hỗ trợ tự hủy. Bạn nhờ nhân viên kiểm tra nhé."})
+            result = cancel(id)
+            if result["error"] == "order_not_found":
+                raise HTTPException(404, "order_request_not_found")
+            if result["status"] != "available" or result["data"] is None:
+                raise HTTPException(409, {"code": result["error"],
+                                         "message": result.get("message") or "Chưa hủy được đơn. Bạn có thể thử lại."})
+            return result["data"]
 
     @application.get("/api/order-requests/{id}", response_model=OrderRequestView)
     def get_order_request(id: str, authorization: str | None = Header(default=None)):
@@ -528,7 +589,7 @@ def create_app(*, catalog_repository=None, knowledge_repository=None,
         if len(id) > 100:
             raise HTTPException(404, "order_request_not_found")
         with session["lock"], closing(open_storage(db_path)) as connection:
-            result = create_order_tools(catalog, connection, session["conversation_id"])["get_order"](id)
+            result = order_factory(catalog, connection, session["conversation_id"])["get_order"](id)
             if result["status"] in {"error", "unsupported", "unknown"}:
                 raise HTTPException(503, "order_tool_unavailable")
             if result["status"] == "unavailable" or result["data"] is None:

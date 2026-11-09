@@ -1,5 +1,15 @@
 # Evaluation — dữ liệu kiểm tra chatbot
 
+## Hybrid NLU — 02/11/2026
+
+Dữ liệu dev536/test60 và 314 few-shot được giữ nguyên. Mặc định mới NLU_ENGINE=hybrid; Python xử lý bằng chứng rõ, Qwen chỉ xử lý phần chưa rõ. Không thêm few-shot hoặc đưa nhãn test vào prompt mới. Các mục v67 trở xuống là lịch sử.
+
+- `scripts/check_hybrid.py`: 43 kiểm tra parser/service/memory thực, SQLite RAM; mock HTTP model khi kiểm tra lỗi/schema. Chạy cùng 96 checkout: `python -B -X utf8 -m unittest -q scripts.check_checkout scripts.check_hybrid`.
+- Fake dev536/536 và test60/60: phần lớn tiêm LLMTurn có nhãn để kiểm tra controller; wire_output cũ qua extract_turn_legacy. Report parser_scope phân biệt hai loại. Không gọi đây là độ chính xác Qwen hoặc điểm tổng thể parser mới.
+- `scripts/benchmark_nlu.py --engine legacy` gọi model thật; `--engine hybrid` đo pipeline mới trên cùng năm câu. Báo field score riêng (intent/group/budget/direction/quantity/flavor/sweetness/coffee_style), call count, thời gian; chỉ ghi report runtime/*.json khi chỉ định --output.
+- Baseline năm câu đạt các trường đo, NLU 11,914–18,309s; hybrid cùng năm câu đạt, 0 call, khoảng10–52ms. Hai câu mơ hồ Qwen thật sau sửa: description đúng cho cuon vanii và greeting đúng cho chao nha ban, một call/câu, 2,096–3,195s. Không suy ra điểm toàn bộ596mẫu.
+- Context scope11/11 có một call RAG thật; mười lượt xác định không gọi Qwen. API bốn combo gốc và form hai món đã kiểm tra trong RAM; chưa kiểm tra trực quan browser hoặc tải nhiều khách. Chi tiết từng giai đoạn/giới hạn/hoàn tác ở README.md và README___.MD.
+
 ## V67 — bánh nhỏ/cà phê và vị riêng theo món
 
 Dialogue dev_combo_coffee_preferences_v67 thêm bốn lượt dev-533…536: hai câu gốc 80k/86k, vani + cà phê béo mặn, bánh kem trái cây ít ngọt + trà ngọt vừa. Kiểm tra sản phẩm theo từng thành phần, số lượng, ngân sách, tổng tiền và draft.

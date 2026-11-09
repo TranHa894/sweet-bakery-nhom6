@@ -9,11 +9,14 @@
       content="Sweet Bakery — bánh kem, bánh ngọt nhỏ và thức uống cho những khoảnh khắc ngọt ngào."
     />
     <link rel="stylesheet" href="style.css" />
-    <script defer src="products.js"></script>
-    <script defer src="config.js?v=20261024-3"></script>
-    <script defer src="script.js?v=20261024-3"></script>
-    <script defer src="chatbot-widget.js?v=20261024-3"></script>
-  </head>
+
+    <script defer src="config.js?v=site-20261103"></script>
+    <script defer src="/website/delivery-map.js?v=20261105"></script>
+    <script defer src="script.js?v=site-20261103"></script>
+    <script defer src="chatbot-widget.js?v=site-20261103"></script>
+  <link rel="stylesheet" href="font-fix.css" />
+    <link rel="stylesheet" href="/website/delivery-map.css?v=20261105">
+</head>
   <body>
     <a class="skip-link" href="#main">Đến nội dung</a>
     <header class="header">
@@ -138,8 +141,7 @@
                 >Khung giờ mong muốn<select name="deliverySlot">
                   <option value="">Cửa hàng liên hệ xác nhận</option>
                   <option value="morning">08:00 – 12:00</option>
-                  <option value="afternoon">12:00 – 17:00</option>
-                  <option value="evening">17:00 – 20:00</option>
+                  <option value="afternoon">12:00 – 18:00</option>
                 </select></label
               ><label class="full"
                 >Lời chúc viết trên bánh<input
@@ -156,7 +158,7 @@
               </label>
             </div>
             <p class="muted">
-              Ngày và giờ giao thực tế cần được cửa hàng xác nhận.
+              Chỉ giao từ 08:00 đến 18:00 giờ Việt Nam. Đơn ngoài giờ sẽ được sắp xếp vào giờ giao tiếp theo; cửa hàng xác nhận lịch thực tế.
             </p>
           </section>
           <section class="form-panel">
@@ -221,7 +223,8 @@
         </div>
       </div>
       <div class="container copyright">
-        © 2026 Sweet Bakery · Xây dựng bởi Nhóm 6
+        © 2026 Sweet Bakery · Xây dựng bởi Nhóm 6 ·
+        <a href="admin.html">Quản lý đơn hàng</a>
       </div>
     </footer>
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>

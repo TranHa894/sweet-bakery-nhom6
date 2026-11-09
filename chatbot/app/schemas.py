@@ -507,7 +507,7 @@ ConversationTurn = TypedDict("ConversationTurn", {
 })
 
 ToolStatus = Literal["available", "unavailable", "unknown", "unsupported", "error"]
-ToolResult = TypedDict("ToolResult", {"status": ToolStatus, "data": dict | None, "error": str | None})
+ToolResult = TypedDict("ToolResult", {"status": ToolStatus, "data": dict | None, "error": str | None, "message": NotRequired[str]})
 OrderTools = TypedDict("OrderTools", {
     "check_availability": Callable[[dict], ToolResult],
     "calculate_quote": Callable[[dict], ToolResult],

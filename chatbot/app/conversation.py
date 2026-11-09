@@ -202,6 +202,8 @@ def response_shell(message, repository, current, intents=None) -> dict:
 
 def turn_result(current, response, *, engine=None, error=None, attempts=0, current_turn=None) -> dict:
     engine = engine or current.get("llm_provider", "ollama")
+    from app.understanding.trace import emit_result
+    emit_result(response, engine, error, attempts)
     return {"conversation": current, "response": response, "engine": engine, "model": current.get("model"),
             "llm_error": error, "nlu_attempts": attempts, "phrasing_status": "not_used",
             "current_turn": current_turn}
@@ -1163,7 +1165,7 @@ def advance_order(current, proposal, resolution, message, tools, repository=None
             resolution = {**resolution, "ids": []}
         if not resolution.get("item_selections") and (len(resolution["ids"]) > 1 or len(proposal.product_mentions) > 1):
             return "Bạn hãy thêm từng loại bánh và số lượng để mình ghi nhận đúng từng món."
-        if draft["state"] in {"CANCELLED", "HANDOFF", "DEMO_CONFIRMED"}:
+        if draft["state"] in {"CANCELLED", "HANDOFF", "DEMO_CONFIRMED", "ORDER_SUBMITTED"}:
             if proposal.action != "start_order":
                 return "Bản nháp đã kết thúc/chuyển tư vấn. Hãy bắt đầu yêu cầu đặt bánh mới."
             draft = new_draft(current["id"], draft.get("optional_fields", []), draft.get("disabled_fields", []))
@@ -1327,7 +1329,10 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
         return failed_turn(message, repository, conversation, "source_error", source=True)
     if chat_mode == "rule":
         return rule_turn(message, repository, current, knowledge_repository, order_tools, storage_connection)
-    if current.get("llm_provider") != "ollama" or not current["model"] or (model and current["model"] != model):
+    from app import config as runtime_config
+    if runtime_config.NLU_ENGINE == "hybrid":
+        current["model"] = model or current.get("model")
+    if runtime_config.NLU_ENGINE == "legacy" and (current.get("llm_provider") != "ollama" or not current["model"] or (model and current["model"] != model)):
         selected = llm_client.select_model(base_url, model, timeout)
         if selected["error"]:
             return failed_turn(message, repository, conversation, selected["error"])
@@ -1341,10 +1346,18 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
     attempts = extraction["attempts"]
     if extraction["error"] or extraction["data"] is None:
         return failed_turn(message, repository, conversation, extraction["error"] or "invalid_turn_json", attempts,
-                           http_status=extraction.get("http_status"))
+                           source=extraction["error"] == "source_error", http_status=extraction.get("http_status"))
     # Kiểm chứng delta của model TRƯỚC khi bổ sung các điều kiện đã xác minh
     # từ lượt trước. Điều kiện cũ không phải thông tin model tự bịa trong câu mới.
     proposal = without_disabled_order_fields(extraction["data"], current["order"])
+    clarification = extraction.get("clarification", "")
+    if clarification and not proposal.requests and proposal.action == "none":
+        response = response_shell(message, repository, current, list(proposal.intents))
+        response.update(requires_clarification=True, show_checkout=False)
+        response["text"] += clarification
+        with storage_connection if storage_connection is not None else nullcontext():
+            finish_turn(current, original_message, response, storage_connection)
+        return turn_result(current, response, attempts=attempts)
     if proposal.requests_overflow:
         response = response_shell(message, repository, current, ["fallback"])
         response["show_checkout"] = False
@@ -1355,7 +1368,7 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
         return turn_result(current, response, attempts=attempts)
     from app.order_nlu import normalize_bundle_preferences
     proposal = normalize_bundle_preferences(message, proposal, current)
-    grounding = check_turn_grounding(message, proposal, repository, current)
+    grounding = None if extraction.get("validated") else check_turn_grounding(message, proposal, repository, current)
     if grounding:
         return failed_turn(message, repository, conversation, grounding, attempts)
     if (advice_selection is None and len(proposal.requests) == 1
@@ -1705,6 +1718,9 @@ def handle_message(message, repository, conversation, *, chat_mode=CHAT_MODE, ba
                 opening_used = True
                 label, separator, body = response["text"].partition("\n")
                 response["text"] = label + separator + opening + "\n" + body
+            if clarification:
+                response["text"] += "\n" + clarification
+                response["requires_clarification"] = True
             response["show_checkout"] = bool(not proposal.order_negated and (
                 "order_request" in proposal.intents or proposal.action in {"review", "confirm", "cancel"}))
             remember_request(current, proposal, current_turn, response["requires_clarification"])

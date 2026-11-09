@@ -117,3 +117,9 @@ if not 1 <= RETRIEVAL_TOP_K <= 3:
     raise ValueError("RETRIEVAL_TOP_K phải từ 1 đến 3.")
 if not 0 < RETRIEVAL_MIN_SCORE <= 1:
     raise ValueError("RETRIEVAL_MIN_SCORE phải lớn hơn 0 và không quá 1.")
+
+# NLU lai là đường chính; legacy chỉ để đối chiếu/hoàn tác có chủ đích.
+NLU_ENGINE = os.getenv("NLU_ENGINE", "hybrid").strip().lower()
+NLU_TRACE = os.getenv("NLU_TRACE", "false").strip().lower() == "true"
+if NLU_ENGINE not in {"hybrid", "legacy"}:
+    raise ValueError("NLU_ENGINE phải là hybrid hoặc legacy.")

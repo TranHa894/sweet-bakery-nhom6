@@ -106,6 +106,7 @@
       notice.textContent = "Đang kết nối trợ lý…";
       frame = node("iframe", "sweet-chat-frame");
       frame.title = "Trò chuyện với trợ lý Sweet Bakery";
+      frame.allow = "geolocation";
       frame.referrerPolicy = "strict-origin-when-cross-origin";
       frame.src = chatURL.href;
       panel.append(frame);

@@ -139,6 +139,7 @@ def load_messages(connection: sqlite3.Connection, conversation_id: str, limit: i
 
 
 def save_conversation(connection: sqlite3.Connection, conversation: dict) -> None:
+    from app.understanding.context import pack_context
     stored = deepcopy(conversation)
     draft = stored.get("order")
     if draft:
@@ -148,6 +149,7 @@ def save_conversation(connection: sqlite3.Connection, conversation: dict) -> Non
     contacts = [(draft or {}).get("slots", {}).get(key) for key in ("name", "phone", "address")]
     for message in stored["history"]:
         message["content"] = safe_history_text(message["content"], contacts)
+    stored = pack_context(stored)
     connection.execute(
         "INSERT INTO conversations VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload, updated_at=excluded.updated_at",
         (stored["id"], json.dumps(stored, ensure_ascii=False), datetime.now(timezone.utc).isoformat()),
@@ -162,7 +164,8 @@ def save_conversation(connection: sqlite3.Connection, conversation: dict) -> Non
 
 def load_conversation(connection: sqlite3.Connection, conversation_id: str) -> dict | None:
     row = connection.execute("SELECT payload FROM conversations WHERE id=?", (conversation_id,)).fetchone()
-    return json.loads(row["payload"]) if row else None
+    from app.understanding.context import restore_context
+    return restore_context(json.loads(row["payload"])) if row else None
 
 
 def load_order_request(connection: sqlite3.Connection, record_id: str, conversation_id: str) -> dict | None:

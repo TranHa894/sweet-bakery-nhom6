@@ -1,0 +1,12 @@
+/* Font hệ thống có đầy đủ dấu tiếng Việt; không phụ thuộc font tải ngoài. */
+body, input, select, textarea, button {
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif;
+}
+h1, h2, h3, .logo h2, .hero-caption h1, .section-title,
+.sidebar-note, .collection-header h1, .cart-title, .checkout-page > h1,
+.category-symbol, .footer-brand, .product-detail h1, .order-success h2 {
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif !important;
+  letter-spacing: normal;
+  line-height: 1.4;
+}
+.sidebar-note { word-break: normal; overflow-wrap: normal; }

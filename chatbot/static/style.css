@@ -46,6 +46,17 @@ a:focus-visible, button:focus-visible, textarea:focus-visible { outline: 3px sol
 .message { margin-bottom: 20px; }
 .sender { margin-bottom: 5px; color: var(--muted); font-size: 11px; }
 .bubble { width: fit-content; max-width: 90%; padding: 12px 15px; background: #f3f6ef; border-radius: 4px 12px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Thẻ hiện đồng thời, giữ nguyên toàn bộ chữ/ảnh/giá bên trong. */
+.reply-cards-enter .product-card, .reply-cards-enter .bundle-card {
+  animation: reply-card-in 220ms ease-out;
+}
+@keyframes reply-card-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reply-cards-enter .product-card, .reply-cards-enter .bundle-card { animation: none; }
+}
 .pending .bubble { color: var(--muted); background: #f8faf5; }
 .waiting-elapsed { display: block; font-size: 11px; }
 .waiting-elapsed:empty { display: none; }
@@ -193,3 +204,5 @@ html.embedded, html.embedded body { height: 100%; overflow: hidden; }
 .bundle-savings { margin: 8px 0 0; color: var(--primary); font-size: 13px; }
 
 .card-order { display: block; width: 100%; margin-top: 12px; white-space: normal; }
+
+.delivery-tracking{padding:12px 14px;border:1px solid #648879;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.6}.delivery-tracking p{margin:7px 0}.delivery-refresh-error{display:block;opacity:.8}.delivery-notification .bubble{border-left:3px solid #5f9c7c}

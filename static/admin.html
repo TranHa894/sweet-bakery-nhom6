@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
+  <title>Quản trị · Sweet Bakery</title>
+  <link rel="stylesheet" href="/admin.css?v=20261104">
+  <script defer src="/admin.js?v=20261104"></script>
+</head>
+<body>
+  <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-order" viewBox="0 0 24 24"><path d="M7 3h10l3 4v14l-4-2-4 2-4-2-4 2V7zM8 8h8M8 12h8M8 16h4"/></symbol>
+    <symbol id="i-cake" viewBox="0 0 24 24"><path d="M3 12h18v9H3zM3 16q3 4 6 0 3 4 6 0 3 4 6 0M7 12V7h10v5M12 7V3"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v13H9l-5 4zM8 9h8M8 13h5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8A8 8 0 1 0 20 17M20 3v5h-5"/></symbol>
+  </svg>
+  <section id="login-screen" class="login-screen">
+    <div class="login-story">
+      <a class="brand" href="/"><span class="brand-mark">S<span>·</span>B</span><span>Sweet Bakery<small>BAKED WITH LOVE</small></span></a>
+      <div><p class="eyebrow">MỖI NGÀY, MỘT CHÚT NGỌT NGÀO</p><h1>Chăm chút cửa hàng.<br>Trọn vẹn từng đơn.</h1><p>Một góc làm việc để bạn theo dõi đơn hàng,<br>chăm sóc danh mục và ghi nhận lời nhắn từ khách.</p></div>
+      <div class="login-images"><img src="/images/SP0001.webp" alt="Mousse Hawaii"><img src="/images/SP0014.webp" alt="Bánh cuộn trà xanh"><img src="/images/SP0023.webp" alt="Cà phê muối"></div>
+      <a class="story-back" href="/">← Ghé thăm cửa hàng</a>
+    </div>
+    <div class="login-form-wrap">
+      <form id="login" class="login-form">
+        <span class="eyebrow">KHÔNG GIAN QUẢN TRỊ</span><h2>Chào bạn trở lại.</h2><p>Đăng nhập để bắt đầu quản lý Sweet Bakery.</p>
+        <label for="password">Mật khẩu quản trị</label>
+        <div class="password-field"><input id="password" type="password" autocomplete="current-password" required maxlength="200" placeholder="Nhập mật khẩu của bạn"><button id="toggle-password" type="button" aria-label="Hiện mật khẩu" aria-pressed="false">Hiện</button></div>
+        <p id="login-error" class="error-text" role="alert"></p>
+        <button class="button primary login-submit" type="submit">Đăng nhập <span>→</span></button>
+        <p class="login-help">Mật khẩu nằm trong <code>runtime/admin-password.txt</code> trên máy chủ, hoặc biến <code>SWEET_ADMIN_PASSWORD</code>.</p>
+      </form>
+      <small>Sweet Bakery · Bảng điều khiển cửa hàng</small>
+    </div>
+  </section>
+
+  <div id="workspace" class="workspace" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="/"><span class="brand-mark">S<span>·</span>B</span><span>Sweet Bakery<small>QUẢN TRỊ CỬA HÀNG</small></span></a>
+      <p class="nav-caption">KHÔNG GIAN LÀM VIỆC</p>
+      <nav aria-label="Quản trị">
+        <button class="nav-item active" data-page="overview" aria-current="page"><svg><use href="#i-grid"/></svg>Tổng quan</button>
+        <button class="nav-item" data-page="orders"><svg><use href="#i-order"/></svg>Đơn hàng<span id="nav-pending" class="nav-count" hidden></span></button>
+        <button class="nav-item" data-page="products"><svg><use href="#i-cake"/></svg>Sản phẩm</button>
+        <button class="nav-item" data-page="requests"><svg><use href="#i-chat"/></svg>Tư vấn & hỗ trợ</button>
+      </nav>
+      <div class="sidebar-bottom"><a href="/" target="_blank" rel="noopener">Mở cửa hàng <span>↗</span></a><button id="logout" type="button">Đăng xuất <span>→</span></button><div class="sidebar-note"><span class="status-dot"></span> Phiên quản trị riêng tư</div></div>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar"><div><span class="breadcrumb">Sweet Bakery <span>/</span> <b id="breadcrumb-page">Tổng quan</b></span></div><div class="topbar-right"><span id="today-label"></span><span class="avatar" aria-label="Quản trị viên">QT</span><button id="mobile-logout" class="text-link mobile-logout" type="button">Đăng xuất</button></div></header>
+      <main id="main-content">
+        <div class="page-heading"><div><p class="eyebrow" id="page-kicker">MỘT NGÀY LÀM VIỆC THẬT NGỌT</p><h1 id="page-title">Tổng quan cửa hàng</h1><p id="page-description">Những con số và công việc cần bạn quan tâm hôm nay.</p></div><button id="refresh" class="button secondary" type="button"><svg><use href="#i-refresh"/></svg>Làm mới</button></div>
+        <div id="page-error" class="error-banner" role="alert" hidden></div>
+        <p id="loading" class="loading" role="status" hidden>Đang tải dữ liệu…</p>
+
+        <section id="page-overview" class="page-section" aria-label="Tổng quan">
+          <div class="stat-grid">
+            <article class="stat-card"><div><span>Đơn hôm nay</span><svg><use href="#i-order"/></svg></div><strong id="stat-today">—</strong><small>Theo giờ Việt Nam</small></article>
+            <article class="stat-card"><div><span>Chờ xác nhận</span><span class="stat-symbol amber">◷</span></div><strong id="stat-pending">—</strong><button class="text-link" data-show-status="pending_confirmation">Xử lý đơn hàng →</button></article>
+            <article class="stat-card"><div><span>Giá trị đơn hoàn tất</span><span class="stat-symbol green">₫</span></div><strong id="stat-value" class="money-stat">—</strong><small>Tiền hàng · chưa đối soát thanh toán</small></article>
+            <article class="stat-card"><div><span>Sản phẩm đang bán</span><svg><use href="#i-cake"/></svg></div><strong id="stat-products">—</strong><small id="stat-product-total">Trong danh mục cửa hàng</small></article>
+          </div>
+          <div class="overview-grid">
+            <article class="panel"><div class="panel-heading"><div><h2>Nhịp đơn hàng</h2><p>Số đơn được tạo trong 7 ngày gần nhất</p></div><span class="tag neutral">7 ngày</span></div><div id="order-chart" class="order-chart" role="img"></div></article>
+            <article class="panel"><div class="panel-heading"><div><h2>Cần bạn chú ý</h2><p>Một chút sắp xếp cho cửa hàng</p></div><span class="attention-dot"></span></div><div id="attention-list" class="attention-list"></div></article>
+          </div>
+          <article class="panel"><div class="panel-heading"><div><h2>Đơn hàng gần đây</h2><p>Đơn mới nhất từ website và chatbot</p></div><button class="text-link" data-go="orders">Xem tất cả →</button></div><div id="recent-orders" class="table-wrap"></div></article>
+          <div class="overview-footer"><span id="last-updated">—</span><span>Đơn từ website và chatbot được xử lý trong cùng một danh sách.</span></div>
+        </section>
+
+        <section id="page-orders" class="page-section" aria-label="Đơn hàng" hidden>
+          <div id="order-status-tabs" class="filter-tabs" aria-label="Lọc trạng thái">
+            <button class="active" data-status="">Tất cả</button><button data-status="pending_confirmation">Chờ xác nhận</button><button data-status="confirmed">Đã xác nhận</button><button data-status="delivering">Đang giao</button><button data-status="completed">Hoàn tất</button><button data-status="cancelled">Đã hủy</button>
+          </div>
+          <article class="panel">
+            <form id="order-filters" class="toolbar"><label class="search-field"><svg><use href="#i-search"/></svg><input id="order-search" type="search" maxlength="100" placeholder="Tìm mã đơn, tên hoặc số điện thoại" aria-label="Tìm đơn hàng"></label><label class="date-filter">Từ ngày<input id="date-from" type="date"></label><label class="date-filter">Đến ngày<input id="date-to" type="date"></label><button class="button secondary" type="submit">Áp dụng</button><button class="text-link" type="button" id="clear-filters">Xóa lọc</button></form>
+            <div class="list-meta"><span id="order-count" aria-live="polite"></span><button id="export-orders" class="text-link" type="button">↓ Xuất trang CSV</button></div>
+            <div id="orders-table" class="table-wrap"></div>
+            <div class="pagination"><span id="page-info"></span><div><button id="previous-page" class="button secondary compact" type="button">← Trước</button><button id="next-page" class="button secondary compact" type="button">Sau →</button></div></div>
+          </article>
+        </section>
+
+        <section id="page-products" class="page-section" aria-label="Sản phẩm" hidden>
+          <article class="panel">
+            <div class="toolbar"><label class="search-field"><svg><use href="#i-search"/></svg><input id="product-search" type="search" placeholder="Tìm tên hoặc mã sản phẩm" aria-label="Tìm sản phẩm"></label><select id="product-category" aria-label="Nhóm sản phẩm"><option value="">Tất cả nhóm</option><option value="cake">Bánh kem</option><option value="mini">Bánh ngọt nhỏ</option><option value="drink">Trà & Cà phê</option></select><select id="product-state" aria-label="Tình trạng sản phẩm"><option value="">Tất cả tình trạng</option><option value="active">Đang bán</option><option value="inactive">Tạm ẩn</option><option value="low">Tồn thấp (≤ 10)</option></select></div>
+            <div class="list-meta"><span id="product-count" aria-live="polite"></span><span>Giá và tồn kho dùng chung với website, chatbot.</span></div>
+            <div id="products-table" class="table-wrap"></div>
+          </article>
+          <p class="section-footnote">Sửa thông tin áp dụng cho lần đặt tiếp theo. Đơn cũ giữ nguyên tên và giá đã lưu; tạm ẩn sản phẩm không xóa lịch sử.</p>
+        </section>
+
+        <section id="page-requests" class="page-section" aria-label="Yêu cầu chatbot" hidden>
+          <div class="info-banner"><svg><use href="#i-chat"/></svg><p>Đơn mới từ chatbot nằm trong mục Đơn hàng. Tại đây là phiếu hỗ trợ và yêu cầu tư vấn cũ; không tự chuyển lịch sử thành đơn mới.</p></div>
+          <article class="panel"><div class="toolbar"><label class="search-field"><svg><use href="#i-search"/></svg><input id="request-search" type="search" placeholder="Tìm tên, số điện thoại, mã hoặc nội dung" aria-label="Tìm yêu cầu"></label><select id="request-type" aria-label="Loại yêu cầu"><option value="">Tất cả loại</option><option value="consultation">Yêu cầu tư vấn</option><option value="ticket">Phiếu hỗ trợ</option></select></div><div class="list-meta"><span id="request-count" aria-live="polite"></span><span>Tối đa 100 bản ghi mới nhất mỗi loại</span></div><div id="requests-table" class="table-wrap"></div></article>
+        </section>
+      </main>
+      <footer class="main-footer"><span>Sweet Bakery · Nhóm 6</span><span>Chưa tích hợp thanh toán, email hoặc giao hàng thật.</span></footer>
+    </div>
+  </div>
+
+  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"><div class="dialog-heading"><div><p class="eyebrow" id="detail-kicker">ĐƠN HÀNG</p><h2 id="detail-title">Chi tiết đơn hàng</h2></div><button class="icon-button" data-close="detail-dialog" aria-label="Đóng chi tiết">×</button></div><div id="detail-body"></div><div id="detail-actions" class="dialog-actions"></div></dialog>
+  <dialog id="product-dialog" class="product-dialog" aria-labelledby="product-title"><form id="product-form"><div class="dialog-heading"><div><p class="eyebrow">CẬP NHẬT DANH MỤC</p><h2 id="product-title">Chỉnh sửa sản phẩm</h2></div><button class="icon-button" type="button" data-close="product-dialog" aria-label="Đóng chỉnh sửa">×</button></div><div class="dialog-content"><div id="product-preview"></div><div class="form-grid"><label>Giá bán (VNĐ) <span class="required">*</span><input id="edit-price" type="number" min="0" max="1000000000" step="1" required></label><label>Số lượng tồn <span class="required">*</span><input id="edit-stock" type="number" min="0" max="1000000" step="1" required></label></div><label class="check-label"><input id="edit-active" type="checkbox">Hiển thị sản phẩm để bán</label><p class="muted">Tạm ẩn sẽ ngừng hiển thị trong danh mục. Đơn đã đặt vẫn được giữ nguyên.</p><p id="product-error" class="error-text" role="alert"></p></div><div class="dialog-actions"><button type="button" class="button secondary" data-close="product-dialog">Quay lại</button><button id="save-product" type="submit" class="button primary">Lưu thay đổi</button></div></form></dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title"><form id="confirm-form"><div class="dialog-content"><span class="confirm-symbol">✓</span><h2 id="confirm-title">Cập nhật đơn hàng?</h2><p id="confirm-description"></p><p id="confirm-error" class="error-text" role="alert"></p></div><div class="dialog-actions"><button class="button secondary" type="button" data-close="confirm-dialog">Quay lại</button><button id="confirm-action" type="submit" class="button primary">Xác nhận</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

@@ -1,5 +1,129 @@
 # README TẠM — BÀN GIAO CHATBOT SWEET BAKERY CHO AI KHÁC
 
+## Bổ sung bàn giao sau tái cấu trúc Giai đoạn 0–6
+
+Ưu tiên phần này và mục hybrid đầu README.md khi gặp mô tả luồng NLU cũ bên dưới. Không triển khai Giai đoạn 7, không tự thêm few-shot theo câu lỗi. Mặc định mới `NLU_ENGINE=hybrid`; `CHAT_MODE=rule` và `NLU_ENGINE=legacy` là hai lựa chọn tường minh khác nhau.
+
+### Giai đoạn 0 — khảo sát
+
+Đọc README, code config/client/NLU/order/context/RAG/storage/API và kiểm tra caller. Không có AGENTS.md ở các thư mục tổ tiên đã kiểm tra. README cũ mô tả đúng menu group_files, 24 món, knowledge empty, web lưu yêu cầu; nhưng số kiểm thử trong các mục lịch sử không đồng nhất và thông tin “lần lập tài liệu chỉ đọc” không còn là trạng thái kiểm tra mới. Python 3.12.10; Pydantic cài 2.14.0 khác pin 2.11.9; chưa xác minh cài sạch từ pin.
+
+Luồng cũ: message + context → build_turn_messages → Qwen → validate/grounding toàn proposal → truy vấn/advice/FSM → response. NLU bình thường một call, JSON sai thêm một; mỗi tác vụ policy có nguồn còn có call RAG và tối đa một lần sửa riêng trong deadline. LLMWireTurn có 20 field gốc, QueryConstraints 13, InformationRequest 12, TurnUpdates 23; HTTP schema khoảng 16.072 ký tự. Prompt chào khoảng 13.088 ký tự/3.059 token; combo khoảng 13.703 ký tự/3.262 token lúc đo. Không phải mọi lượt đều gọi đủ số call tối đa.
+
+Trường có thể lấy chắc bằng Python: tiền/hướng tiền, số lượng sát tên, nhóm món, mức ngọt, kiểu cà phê, tên/alias có nguồn. Tên gần giống và ý chưa rõ dùng Qwen. API/JS phụ thuộc response/checkout; controller/order_nlu/evaluator phụ thuộc LLMTurn. Chọn adapter chuyển SemanticFrame → LLMTurn để giữ các caller này.
+
+Ánh xạ thay đổi:
+- Cũ `llm_client.py` HTTP + parser lớn → mới giữ HTTP/RAG/entry point ở file đó; chuyển parser lớn một lần sang `understanding/legacy.py`.
+- Cũ `build_turn_messages` + LLMWireTurn trong đường chính → mới `normalize/analyze/resolve/validate_frame/SemanticFrame.as_turn`. Schema lớn chỉ cho legacy.
+- Cũ payload bộ nhớ rải ở root → mới `understanding/context.py` gom payload v2; storage gọi adapter. Controller vẫn nhận tên trường cũ để giữ checkout.
+- Cũ scripts gọi parser/client trực tiếp → giữ tên public, thêm `extract_turn_legacy` rõ ràng cho baseline/wire fixture. Bộ kiểm tra mới ở `scripts/check_hybrid.py`.
+- Không đụng `advice.py`, repository, checkout, order_service/order_flow, API response/static. `nlu.py/chatbot.py` vẫn có caller rule; `legacy.py` còn caller baseline/tests/rollback nên chưa được xóa.
+
+Nói với giảng viên:
+> Em kiểm tra đường đi thật thay vì mặc định model sai.
+> Lượt cũ buộc Qwen sinh nhiều field dù khách chỉ hỏi ngắn.
+> Em giữ phần tính tiền và xác nhận, chỉ thay tầng hiểu câu.
+> Tên hàm cũ được thích ứng để giao diện không phải viết lại.
+
+### Giai đoạn 1 — sao lưu và baseline
+
+Git sạch ở commit `fbeb32d` trước khi làm; tạo nhánh `refactor/hybrid-nlu-20261102` thay bản sao thư mục. Không sao chép .env, .venv, DB hoặc runtime vào Git. `scripts/benchmark_nlu.py` gọi extractor cũ/mới có chủ đích, chặn output report ngoài runtime. Trace mới mặc định tắt.
+
+Năm câu Qwen cũ thực tế: hello 18,309s (load 14,096s); combo cà phê 80k 12,142s, 86k 12,341s, trà 70k 11,914s, vani/cà phê béo 90k 12,794s. Các trường được đo đều đạt. `ollama ps` báo chia CPU/GPU 50/50, khoảng 3,7GB, context4096; vì thế không hứa model luôn chạy hoàn toàn trên GPU. Không unload model để tạo thêm benchmark nguội giả.
+
+Nói với giảng viên:
+> Baseline là mốc đo trước khi thay đổi.
+> Em tách thời gian nạp model và thời gian xử lý câu.
+> Năm mẫu chỉ chứng minh năm tình huống, chưa đo mọi câu.
+> Em có commit gốc và engine cũ để đối chiếu an toàn.
+
+### Giai đoạn 2 — chuẩn hóa và phân tích xác định
+
+`normalize_message(message) → str` giữ đầu vào gốc ở controller, chuẩn hóa bản phân tích bằng Unicode/NFC, không dấu, viết tắt mua hàng, ko/kh/dt. `clause_quantity(prefix) → int | None` đọc lượng ngay trước món; 80k là tiền, không là 80 món.
+
+`analyze(message,current,repository) → (SemanticFrame,evidence)` tìm tên/alias qua `safe_search_products`, chia các cụm món và gắn vị/giá/số lượng riêng. `catalog_anchors` lấy tên dài hơn để không tách “bánh cuộn trà xanh” thành bánh + trà; `fuzzy_candidates` chỉ đưa tối đa bốn ứng viên từ nguồn, chưa tự xác nhận tên gần giống. Độ tương tự là phép so chuỗi, không phải bằng chứng sản phẩm đúng.
+
+Giá dùng lại `budget_evidence`: trên/dưới nghiêm ngặt, trong giá là trần bao gồm biên, đúng giá là hai cận bằng nhau; tiền chung lưu riêng BundleBudget. Trường hợp 300 không rõ đơn vị được hỏi rõ, không đoán thành 300k. Tìm mới bỏ điều kiện chủ đề cũ qua hợp đồng controller; rẻ hơn dùng price_preference riêng và mốc giá nguồn.
+
+Giới hạn: từ vựng vẫn hữu hạn, phủ định phức tạp có thể cần làm rõ. Không bỏ điều kiện dị ứng để đủ kết quả. Form web tiếp tục là nơi nhập các thông tin liên hệ/lịch/ghi chú đầy đủ.
+
+Nói với giảng viên:
+> Python xử lý các bằng chứng có thể kiểm tra trực tiếp như 80k và hai ly.
+> Các điều kiện thuộc từng món được tách trước khi ghép combo.
+> Giá và tên thật vẫn do repository cung cấp.
+> Fuzzy chỉ tạo ứng viên, không tự tạo ID mới.
+
+### Giai đoạn 3 — khung ngữ nghĩa và kiểm tra theo trường
+
+`SemanticFrame` là hợp đồng nội bộ: intents, queries, budget, items, action/operation, reference, updates/clear, issues và provenance. Pydantic là thư viện kiểm tra dữ liệu có đúng kiểu/giới hạn hay không. `as_turn()` chuyển khung đã kiểm tra sang LLMTurn mà planner/FSM cũ hiểu; không phải hai proposal cạnh tranh trong controller.
+
+Ưu tiên: bằng chứng rõ từ Python → giữ nguyên; Qwen chỉ điền nhánh chưa rõ → index hợp lệ đối chiếu nguồn; thiếu bằng chứng đặt hàng → hỏi rõ, không cho model tự mở/sửa nháp. Không lấy null chưa đề cập làm lệnh xóa. `clear` chỉ từ câu xóa điều kiện rõ. `build_query` kiểm tra từng filter và quan hệ cận tiền; nếu một query sai điều kiện bắt buộc thì giữ các query hợp lệ khác, hỏi đúng phần sai. Không chạy query đó với ràng buộc sai bị âm thầm bỏ.
+
+`validate_frame` chặn hành động đặt có lỗi, chặn combo thiếu thành phần sau validation. `pipeline.extract` trả data/error/attempts/clarification/field_issues/validated; controller chỉ bỏ validator monolithic cũ khi nhận khung do pipeline mới đã kiểm tra. Parser legacy và output fake chưa có cờ này vẫn đi validator cũ.
+
+Trace `NLU_TRACE=true`: message hash/độ dài → enum Qwen + nguồn field → issue code → số sản phẩm/combo/confirmation. Không log raw input, tên/phone/address, token hoặc giá trị tự do. Không thể tái hiện nguyên văn câu lỗi từ trace an toàn; khi cần chỉ dùng câu thử tổng hợp được cung cấp có chủ đích.
+
+Nói với giảng viên:
+> Intent là việc khách muốn làm; slot là thông tin đi kèm.
+> Khung ngữ nghĩa giúp các module hiểu cùng một hợp đồng.
+> Một query sai không làm mất câu hỏi khác đã hợp lệ.
+> Điều kiện bắt buộc sai thì phải hỏi, không được tự nới để tìm ra món.
+
+### Giai đoạn 4 — Qwen chỉ xử lý phần chưa rõ
+
+`model.resolve(message,current,evidence,base_url,model,timeout)` trả decision/error/call count. Bốn nhánh schema đóng:
+- information: enum intent, candidate_indexes, continuation.
+- recommendation: enum product_type.
+- order: candidate_indexes, enum operation.
+- other: greeting/fallback/out_of_scope.
+
+Mỗi nhánh 2–4 trường, additionalProperties=false, strict validation; không có field tự do để model đặt giá, ID hoặc sửa liên hệ. Trường lạ bị loại riêng, có issue code; index ngoài tập/schema sai được sửa tối đa một lần. HTTP/timeout lỗi không có retry vô hạn hoặc tự đổi engine. Qwen dùng think=False/temperature0, 128 token cho NLU mới; không tăng num_ctx4096. Không thêm vài trăm ví dụ vào prompt mới. HTTP client và giới hạn RAG giữ riêng.
+
+Hai câu khó sau chỉnh prompt: `cuon vanii` chọn Bánh cuộn vani/description một call 3,195s, prompt212 token; `chao nha ban` greeting một call 2,096s, prompt200 token. Trước sửa prompt, hai câu này từng bị gán flavor/fallback; không tính các lần sai thành đạt. Đây là kiểm tra model thật có chọn lọc, không phải tỷ lệ chính xác toàn dữ liệu.
+
+Năm mẫu so baseline ở trên: NLU hybrid 0,052/0,010/0,013/0,012/0,013s, số call0. Các trường ngân sách/hướng tiền/nhóm/số lượng 4/4, coffee_style3/3, flavor1/1, sweetness1/1, intent1/1 đều đúng. Tăng tốc chủ yếu do không gọi model cho phần xác định, không phải Qwen tự nhanh hơn. CPU/GPU và thời gian nạp vẫn ảnh hưởng câu cần Qwen.
+
+Nói với giảng viên:
+> Model trả quyết định nhỏ trong một tập đóng thay vì sinh cả trạng thái đơn.
+> Nhiệm vụ rõ không tốn một lần inference.
+> Em giữ cùng model để so kiến trúc, không đổi model để che lỗi.
+> Kết quả smoke và điểm fake phải được báo riêng.
+
+### Giai đoạn 5 — bộ nhớ v2 và tương thích
+
+`pack_context(current) → payload` gom focus/options/pending/budget, `order` tách riêng; `restore_context(payload) → current` khôi phục aliases phục vụ controller. Không giữ thêm bản memory trùng trong object runtime sau load. Pack lặp cho cùng payload không mất field; version tương lai >2 bị từ chối rõ ràng.
+
+Đọc v1 không ghi lại DB. Lần lưu bình thường dùng payload v2; giữ conversation ID, owner, order ID, revision, review và lịch sử. Schema SQL không đổi, không seed/reset và không quét DB thật. Kiểm thử dùng RAM: round-trip, pack lặp, load/save v1→v2, hai conversation độc lập. Đây là migration JSON theo lần ghi, không là migration bảng.
+
+Rủi ro/hoàn tác: engine legacy hiện tại đọc được v2 vì cùng storage adapter. Muốn quay hẳn commit cũ thì bảo toàn DB, dùng bản sao v1 tương ứng hoặc chuyển payload trên **bản sao** bằng restore_context; không bỏ adapter v2 rồi mở DB mới với code cũ. Runtime controller vẫn còn tên trường cũ theo thiết kế tương thích; việc xóa toàn bộ aliases chỉ nên làm ở một lần refactor controller riêng.
+
+Nói với giảng viên:
+> Em tách đối tượng hỏi hiện tại, bộ nhớ tham chiếu và bản nháp đơn.
+> Dữ liệu lưu có version để biết cách đọc.
+> Em nâng JSON khi ghi bình thường, không sửa hàng loạt dữ liệu khách.
+> Giữ adapter giúp thay bộ nhớ mà không phá token xác nhận và revision.
+
+### Giai đoạn 6 — tích hợp, dọn và kiểm tra
+
+`llm_client.extract_turn` chọn engine có chủ đích; `conversation.handle_message` gọi cùng entry point, dùng clarification của pipeline, không gọi /api/tags cho mỗi câu Python đã hiểu. Model được kiểm tra khi cần gọi, run_web vẫn có prewarm cũ. API response/UI/static và thuật toán combo không đổi. `engine=ollama` trên API vẫn là chế độ được chọn; muốn biết thực sự gọi Qwen hay không xem attempts/trace, không suy từ tên engine.
+
+Dọn các import không còn dùng sau di chuyển; giữ helper schema một implementation ở validation. Tên hàm cũ còn re-export cho caller. Sửa đường dẫn few-shot của parser cũ theo vị trí module mới; không thay file ví dụ. `check_context_scope` chuyển DB tạm sang RAM và đếm call thật. Evaluator fake ghi parser_scope để phân biệt tiêm nhãn và fixture wire legacy; hash code gồm package mới.
+
+Đã chạy 139 unittest (96 cũ +43 mới), fake536dev/60test, context11/11 (một call RAG thật), group24món. Bộ fake chứng minh controller với nhãn, không chứng minh parser mới hiểu596câu. API hybrid bốn combo gốc HTTP200 khoảng30–44ms và câu “Hãy đặt…3 bánh cuộn vani và2cà phê muối” mở form đúng sản phẩm/lượng. TestClient health/UI200; không mở cổng/tunnel hoặc ghi DB khách. Trong quá trình dọn từng phát hiện lệch path và cache schema import; đã sửa và chạy lại, không tính các lần lỗi là đạt.
+
+Còn giới hạn: chưa kiểm tra trực quan browser/widget, chưa tải đồng thời nhiều khách, chưa chạy toàn bộ Qwen/dev/test. Một số cách nói/điều kiện phủ định phức tạp vẫn có thể cần hỏi lại. Không có chính sách thật/menu/adapter nhận đơn thật mới. Không tải model, fine-tune, gửi email hoặc triển khai Internet. Môi trường còn cảnh báo httpx/Starlette và lệch pin Pydantic đã nêu.
+
+Nói với giảng viên:
+> Luồng web cũ dùng parser mới qua entry point chung.
+> Combo, giá, session và xác nhận vẫn do code kiểm soát.
+> Em kiểm tra riêng parser, controller fake và Qwen thật.
+> Chưa có đủ bằng chứng để tuyên bố hiểu mọi cách diễn đạt hoặc chạy production.
+
+### Cách tiếp tục an toàn
+
+Đọc README.md mục hybrid → understanding/frames → deterministic → model/pipeline → context → conversation/checkout/API. Chạy lệnh kiểm tra ở README, không dùng database thật làm fixture. Kiểm tra trình duyệt sau restart theo checklist README. Nếu bổ sung từ đồng nghĩa, thử cả chuyển chủ đề, giữ/sửa draft, budget tổng/từng món, lỗi model và phiên riêng. Không lấy nhãn test cuối làm prompt; chưa tự triển khai Giai đoạn7.
+
+
 Cập nhật nội dung: **02/11/2026**. Đây là bản mô tả để AI mới hiểu dự án và tiếp tục công việc; không phải yêu cầu tự triển khai tất cả ý tưởng trong tài liệu.
 
 ## 1. Đọc nhanh trước khi làm bất cứ việc gì
@@ -32,7 +156,7 @@ Cập nhật nội dung: **02/11/2026**. Đây là bản mô tả để AI mới
 7. Không sửa/seed/reset database đang dùng để chạy thử. Dùng SQLite `:memory:` hoặc database thử riêng đã xác định rõ.
 8. Không log hoặc chép token, nội dung `.env`, tên/điện thoại/địa chỉ khách thật vào báo cáo.
 9. Dùng `pathlib` và UTF-8; đường dẫn Windows có khoảng trắng hoặc dấu phải hoạt động.
-10. Giữ Qwen làm bộ hiểu câu chính ở chế độ Ollama. Regex/alias được dùng để chuẩn hóa, chọn ví dụ và kiểm chứng; không âm thầm thay bằng rule khi model lỗi.
+10. Theo thay đổi đã duyệt, NLU mặc định là hybrid: Python lấy bằng chứng rõ, Qwen xử lý phần chưa rõ. Không fallback khi model lỗi; legacy/rule chỉ được chọn tường minh.
 11. Chỉ dùng class khi cần: schema Pydantic và repository là các chỗ hợp lý; logic nghiệp vụ chủ yếu là hàm.
 12. Chạy kiểm tra phù hợp với thay đổi; phân biệt kiểm thử giả, model thật, kiểm tra code và thao tác trình duyệt.
 13. Báo chính xác file đã sửa và phần chưa kiểm tra. Không khẳng định “hiểu mọi câu” chỉ từ vài câu smoke.
@@ -245,7 +369,7 @@ Phụ thuộc bên ngoài chatbot:
 - Widget của website có phần tích hợp ngoài chatbot; không sửa chúng nếu nhiệm vụ không cho phép.
 - Khi chuyển chỉ folder chatbot sang máy khác, cần chia sẻ kèm nguồn menu/website phụ thuộc hoặc cấu hình adapter khác rõ ràng. Không có file ngoài không được giả báo group_files thành công.
 
-## 8. Đường đi của một tin nhắn
+## 8. Luồng NLU cũ (chỉ NLU_ENGINE=legacy)
 
 ```text
 static/chat.js
@@ -270,7 +394,7 @@ Hiện giới hạn tối đa **4 request thông tin và 4 loại information in
 Giới hạn tin API **2000 ký tự** là giới hạn kỹ thuật, không phải chính sách cửa hàng.
 Câu trả lời giá/combo phần lớn được Python dựng từ dữ liệu; không gọi thêm LLM tự do để viết lại mọi câu trả lời.
 
-## 9. Qwen, prompt và schema: những gì cần giữ
+## 9. Prompt/schema legacy (hybrid xem phần đầu)
 
 - Model hiện cấu hình `qwen3.5:4b`; chọn theo tên đã cài, không tự pull model/cloud.
 - Chat HTTP dùng Python urllib, kiểm tra endpoint local/status/timeout/model/response.
@@ -315,7 +439,7 @@ Phải phân biệt:
 3. `order`: bản nháp muốn đặt, không phải danh sách sản phẩm luôn đưa vào truy vấn.
 
 Các vùng khác: `needs`, `product_choices`, `pending_information_request`, `pending_order_request`, `advice_pending`, `bundle_context`, `checkout_contact`.
-`request_memory` lưu thứ tự yêu cầu, tối đa 8 mục; prompt lấy tóm tắt 4 mục gần đây. History ngắn mặc định 6 lượt, lưu riêng với slot có cấu trúc.
+`request_memory` lưu thứ tự yêu cầu, tối đa 8 mục; chỉ prompt legacy lấy tóm tắt 4 mục gần đây. Hybrid chỉ gửi summary nhỏ, không gửi lịch sử/PII. History ngắn mặc định 6 lượt, lưu riêng với slot có cấu trúc.
 
 Quy tắc:
 - “Đặt socola → bánh dâu giá bao nhiêu?” chỉ hỏi giá dâu; giữ nháp socola.

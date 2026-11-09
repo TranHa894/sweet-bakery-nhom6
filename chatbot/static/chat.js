@@ -38,6 +38,7 @@ const stateLabels = {
   COLLECTING: "Đang ghi nhận yêu cầu của bạn",
   REVIEW: "Xem lại yêu cầu trước khi gửi",
   DEMO_CONFIRMED: "Đã lưu đơn mô phỏng",
+  ORDER_SUBMITTED: "Đơn đang chờ cửa hàng xác nhận",
   CANCELLED: "Đã hủy bản nháp",
   HANDOFF: "Đã ghi nhận yêu cầu hỗ trợ"
 };
@@ -58,7 +59,7 @@ function updateInput() {
   input.style.height = Math.min(120, Math.max(44, input.scrollHeight)) + "px";
 }
 
-function setBusy(value) {
+function setBusy(value, status = "Đang trả lời…") {
   busy = value;
   document.querySelectorAll("button").forEach((button) => {
     button.disabled = value || !session;
@@ -67,8 +68,9 @@ function setBusy(value) {
   input.disabled = value || !session;
   messages.setAttribute("aria-busy", String(value));
   document.querySelector(".chat-panel").classList.toggle("is-busy", value);
-  byId("connection-status").textContent = value ? "Đang trả lời…"
-    : session ? (stateLabels[session.state] || "Sẵn sàng trò chuyện") : "Chưa kết nối";
+  byId("connection-status").textContent = value ? status
+    : session ? (session.state === "ORDER_SUBMITTED" && activeCheckout?.delivery_tracking?.status
+      ? deliveryLabels[activeCheckout.delivery_tracking.status] : stateLabels[session.state] || "Sẵn sàng trò chuyện") : "Chưa kết nối";
   updateInput();
 }
 
@@ -106,6 +108,11 @@ async function api(path, body) {
       if (response.status === 409 && typeof result.detail === "string") detail = result.detail;
       if (response.status === 422) detail = "Bạn kiểm tra các trường bắt buộc, số điện thoại, email, ngày nhận và số lượng nhé.";
     }
+    if (/^\/api\/order-requests\/[^/]+\/cancel$/.test(path)) {
+      if (response.status === 404) detail = "Không tìm thấy đơn thuộc phiên hiện tại.";
+      if (response.status === 409 && typeof result.detail?.message === "string") detail = result.detail.message;
+      if (response.status === 422) detail = "Bạn cần xác nhận rõ ràng trước khi hủy đơn.";
+    }
     const error = new Error(detail);
     error.status = response.status;
     throw error;
@@ -124,7 +131,9 @@ function showModes(data) {
     notice = "Có thể ghi nhận nhu cầu; chưa đủ dữ liệu để chọn bánh hoặc xác nhận đơn.";
   } else if (source === "group_files") {
     label = "Danh mục tham khảo";
-    notice = "Chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn.";
+    notice = (data.checkout_mode || session?.checkout_mode) === "order"
+      ? "Đặt hàng trực tiếp · Cửa hàng xác nhận sau khi bạn gửi đơn."
+      : "Chỉ lưu yêu cầu chờ tư vấn, chưa xác nhận đơn.";
   } else if (["mock", "local_demo"].includes(data.data_mode)) {
     label = "Dữ liệu mô phỏng";
     notice = "Bánh và đơn chỉ dùng để thử, không thanh toán hoặc giao hàng thật.";
@@ -136,6 +145,7 @@ function showModes(data) {
   byId("mode-label").textContent = label;
   byId("data-notice").textContent = notice;
   session.state = data.state;
+  if (data.checkout_mode) session.checkout_mode = data.checkout_mode;
   if (data.catalog_source) session.catalog_source = data.catalog_source;
 }
 
@@ -160,9 +170,62 @@ function addMessage(role, text) {
 }
 
 
-function addPendingReply() {
+// Nhãn chờ chỉ gợi ý trên UI, không dùng để quyết định nghiệp vụ.
+function waitingLabel(text) {
+  const value = String(text).toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+  if (/\b(?:chinh sach|bao quan|doi tra|phi giao|gio mo cua)\b/.test(value))
+    return "Đang tra cứu thông tin cửa hàng…";
+  if (/\b(?:nhan vien|khieu nai|ho tro)\b/.test(value))
+    return "Đang kiểm tra yêu cầu hỗ trợ…";
+  const advice = /\b(?:goi y|de xuat|tu van|combo|nen chon)\b/.test(value);
+  const information = /\b(?:gia|bao nhieu|con hang|huong vi|size)\b/.test(value);
+  const order = /\b(?:dat|tao don|xac nhan|gui yeu cau|chot don)\b/.test(value)
+    && !/\b(?:khong|chua|dung)(?:\s+muon)?\s+dat\b/.test(value);
+  if (order && (advice || information)) return "Đang tra cứu món và kiểm tra yêu cầu của bạn…";
+  if (advice) return "Đang chuẩn bị gợi ý món phù hợp…";
+  if (information) return "Đang tra cứu thông tin sản phẩm…";
+  if (order) return "Đang kiểm tra yêu cầu đặt món…";
+  if (/\b(?:tim|banh|tra|ca phe|san pham|mon|tren|duoi)\b|\d+\s*k\b/.test(value))
+    return "Đang tìm sản phẩm phù hợp…";
+  return "Đang chuẩn bị câu trả lời…";
+}
+
+const textSegmenter = typeof Intl.Segmenter === "function"
+  ? new Intl.Segmenter("vi", {granularity: "grapheme"}) : null;
+
+async function revealReply(section) {
+  byId("connection-status").textContent = "Đang trả lời…";
+  if (document.hidden || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return section;
+  // Mọi thẻ và toàn bộ nội dung trong thẻ xuất hiện cùng lúc.
+  section.classList.add("reply-cards-enter");
+  const bubble = section.querySelector(".bubble");
+  const text = bubble.textContent;
+  const characters = textSegmenter
+    ? Array.from(textSegmenter.segment(text), (part) => part.segment) : Array.from(text);
+  // Chỉ chạy chữ ở lời nhắn bên ngoài thẻ, nhanh hơn và tối đa khoảng 1,1 giây.
+  const batch = Math.max(4, Math.ceil(characters.length / 60));
+  const deadline = performance.now() + 1100;
+  const node = document.createTextNode("");
+  bubble.replaceChildren(node);
+  try {
+    for (let position = 0; position < characters.length; position += batch) {
+      if (position) await new Promise((resolve) => setTimeout(resolve, 18));
+      if (document.hidden || performance.now() >= deadline || !section.isConnected) break;
+      const follow = messages.scrollHeight - messages.scrollTop - messages.clientHeight < 60;
+      node.appendData(characters.slice(position, position + batch).join(""));
+      if (follow) messages.scrollTop = messages.scrollHeight;
+    }
+  } finally {
+    // Luôn giữ trọn lời nhắn khi tab bị ẩn hoặc hiệu ứng kết thúc.
+    node.nodeValue = text;
+  }
+  return section;
+}
+
+function addPendingReply(status) {
   // Hiện trạng thái ngay khi gửi; thời gian này là đã chờ, không dự đoán model.
-  const section = addMessage("bot", "Đang xử lý yêu cầu…");
+  const section = addMessage("bot", status);
   section.classList.add("pending");
   const bubble = section.querySelector(".bubble");
   const elapsed = element("span", "", "waiting-elapsed");
@@ -347,11 +410,12 @@ const checkoutLabels = {
   cakeMessage: "Lời chúc viết trên bánh", note: "Ghi chú"
 };
 const slotLabels = {"": "Cửa hàng liên hệ xác nhận", morning: "08:00 – 12:00",
-  afternoon: "12:00 – 17:00", evening: "17:00 – 20:00"};
+  afternoon: "12:00 – 18:00"};
 
 function checkoutButton(label, callback, primary = false) {
   const button = element("button", label, "button " + (primary ? "primary" : "secondary"));
   button.type = "button";
+  button.disabled = busy || !session;
   button.addEventListener("click", callback);
   return button;
 }
@@ -359,12 +423,12 @@ function checkoutButton(label, callback, primary = false) {
 function orderCardButton(items, label) {
   const button = checkoutButton(label, async () => {
     if (busy || !session) return;
-    setBusy(true);
+    setBusy(true, "Đang chuẩn bị thông tin đặt món…");
     showError("");
     try {
       const data = await api("/api/checkout/start", {conversation_id: session.conversation_id, items});
       welcome.hidden = true;
-      addMessage("bot", data.message);
+      await revealReply(addMessage("bot", data.message));
       showModes(data);
       rememberSession();
       showReview(data);
@@ -386,12 +450,14 @@ async function checkoutAction(action, form) {
     revision: snapshot.revision, action};
   if (form) body.form = form;
   if (action === "confirm") body.confirmation_token = snapshot.confirmation_token;
-  setBusy(true);
+  const status = {confirm: "Đang lưu yêu cầu…", cancel: "Đang xử lý hủy yêu cầu…",
+    review: "Đang kiểm tra thông tin…", edit: "Đang mở lại thông tin…"}[action];
+  setBusy(true, status || "Đang kiểm tra yêu cầu…");
   showError("");
   try {
     const data = await api("/api/checkout", body);
     welcome.hidden = true;
-    addMessage("bot", data.message);
+    await revealReply(addMessage("bot", data.message));
     showModes(data);
     rememberSession();
     showReview(data);
@@ -436,12 +502,13 @@ function checkoutSummary(view) {
   for (const [key, label] of Object.entries(checkoutLabels)) {
     const value = view.form[key];
     if (!value) continue;
-    details.append(element("dt", label), element("dd", key === "deliverySlot" ? slotLabels[value] : value));
+    details.append(element("dt", label), element("dd", key === "deliverySlot" ? (slotLabels[value] || "Khung giờ cũ, cần chọn lại trong 08:00–18:00") : value));
   }
   reviewPanel.append(details);
+  window.SweetDelivery?.summary(reviewPanel, view.form.deliveryLocation);
 }
 
-function renderCheckoutForm(view) {
+function renderCheckoutForm(view, ordering = false) {
   const form = element("form", undefined, "checkout-form");
   form.id = "order-information-form";
   const productsBox = element("div", undefined, "checkout-items");
@@ -519,9 +586,9 @@ function renderCheckoutForm(view) {
   consent.required = true; consent.checked = Boolean(view.form.consent);
   consentLabel.append(consent, element("span", "Tôi đồng ý cung cấp thông tin để xử lý yêu cầu đặt hàng. *"));
   const actions = element("div", undefined, "review-actions");
-  const submit = element("button", "Xem lại yêu cầu", "button primary"); submit.type = "submit";
+  const submit = element("button", ordering ? "Xem lại đơn hàng" : "Xem lại yêu cầu", "button primary"); submit.type = "submit";
   actions.append(submit, checkoutButton("Hủy", () => checkoutAction("cancel")));
-  form.append(grid, element("p", "Ngày/giờ nhận và lời chúc là mong muốn cần cửa hàng xác nhận; chưa tính phí giao hàng."),
+  form.append(grid, element("p", "Chỉ giao từ 08:00 đến 18:00. Ngày/giờ nhận và lời chúc cần cửa hàng xác nhận; chưa tính phí giao hàng."),
     consentLabel, actions);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -533,14 +600,20 @@ function renderCheckoutForm(view) {
     if (!rows.length) { showError("Bạn cần chọn ít nhất một sản phẩm."); return; }
     const values = Object.fromEntries(new FormData(form));
     values.consent = consent.checked;
+    values.deliveryLocation = window.SweetDelivery?.value(form) || null;
     values.items = rows.map(row => ({product_id: row.select.value, quantity: Number(row.qty.value)}));
     checkoutAction("review", values);
   });
+  if (ordering) {
+    const mapBox=element("div");form.insertBefore(mapBox,grid);
+    window.SweetDelivery?.mount(mapBox, form, view.form.deliveryLocation);
+  }
   reviewPanel.append(form);
 }
 
 function showReview(data, skipCatalog = false) {
   const view = data.checkout;
+  const ordering = (data.checkout_mode || session?.checkout_mode) === "order";
   if ((view && data.show_checkout === false) || data.errors?.length) {
     // Ẩn phần đơn khi đang tư vấn/lượt lỗi, giữ DOM để không mất form chưa gửi.
     checkoutPresented = false;
@@ -554,10 +627,12 @@ function showReview(data, skipCatalog = false) {
       && view.draft_id === activeCheckout.draft_id && view.revision === activeCheckout.revision) {
     view.form = Object.fromEntries(new FormData(existing));
     view.form.consent = existing.elements.namedItem("consent").checked;
+    view.form.deliveryLocation = window.SweetDelivery?.value(existing) || null;
     view.items = [...existing.querySelectorAll(".checkout-item")].map(row => ({
       product_id: row.querySelector("select").value, quantity: Number(row.querySelector("input").value)
     }));
   }
+  if(existing)window.SweetDelivery?.dispose(existing);
   activeCheckout = view || null;
   reviewPanel.replaceChildren();
   reviewPanel.hidden = !view || view.stage === "cancelled";
@@ -572,7 +647,8 @@ function showReview(data, skipCatalog = false) {
   if (reviewPanel.hidden) return;
   messages.append(reviewPanel); // Cùng vùng cuộn: form không chiếm hết widget.
   reviewPanel.append(element("h2", view.stage === "form" ? "Thông tin đặt hàng"
-    : view.stage === "review" ? "Xem lại yêu cầu" : "Yêu cầu đã lưu"));
+    : view.stage === "review" ? (ordering ? "Xem lại đơn hàng" : "Xem lại yêu cầu")
+    : view.order_id ? "Đơn hàng đã gửi" : "Yêu cầu đã lưu"));
   if (!checkoutCatalog && !skipCatalog) {
     reviewPanel.append(element("p", "Đang tải danh mục…"));
     api("/api/catalog").then(result => {
@@ -591,19 +667,23 @@ function showReview(data, skipCatalog = false) {
     return;
   }
   if (view.stage === "form") {
-    renderCheckoutForm(view);
+    renderCheckoutForm(view, ordering);
   } else {
     checkoutSummary(view);
     if (view.stage === "review") {
-      reviewPanel.append(element("p", "Xác nhận sẽ lưu yêu cầu chờ cửa hàng tư vấn, chưa thanh toán."));
+      reviewPanel.append(element("p", ordering
+        ? "Xác nhận sẽ tạo đơn hàng và giữ số lượng trong kho. Đơn chờ cửa hàng xác nhận, chưa thanh toán."
+        : "Xác nhận sẽ lưu yêu cầu chờ cửa hàng tư vấn, chưa thanh toán."));
       const actions = element("div", undefined, "review-actions");
-      actions.append(checkoutButton("Xác nhận gửi yêu cầu", () => checkoutAction("confirm"), true),
+      actions.append(checkoutButton(ordering ? "Xác nhận đặt hàng" : "Xác nhận gửi yêu cầu", () => checkoutAction("confirm"), true),
         checkoutButton("Quay lại chỉnh sửa", () => checkoutAction("edit")),
         checkoutButton("Hủy", () => checkoutAction("cancel")));
       reviewPanel.append(actions);
     } else {
-      reviewPanel.append(element("p", "Mã yêu cầu: " + view.record_id),
+      reviewPanel.append(element("p", (view.order_id ? "Mã đơn hàng: " : "Mã yêu cầu: ") + view.record_id),
+        ...(view.order_id ? [element("p", (deliveryLabels[view.delivery_tracking?.status] || "Đang chờ cửa hàng xác nhận") + " · Chưa thanh toán.", "order-status-caption")] : []),
         element("p", "Bạn có thể đặt thêm món trong cuộc trò chuyện này."));
+      if(view.order_id){renderDeliveryTracking(view);syncDeliveryUpdates(true);}
     }
   }
 }
@@ -618,12 +698,15 @@ async function startConversation() {
     rememberSession();
     welcome.hidden = false;
     messages.replaceChildren(welcome);
+    const previousForm=document.getElementById("order-information-form");
+    if(previousForm)window.SweetDelivery?.dispose(previousForm);
     reviewPanel.replaceChildren();
     reviewPanel.hidden = true;
     activeCheckout = null;
     checkoutPresented = false;
     input.value = "";
     showModes(created);
+    startDeliveryUpdates(false);
   } catch (error) {
     if (!session) {
       byId("mode-label").textContent = "Chưa kết nối";
@@ -663,6 +746,7 @@ async function restoreConversation() {
     }
     showModes(data.snapshot);
     showReview(data.snapshot);
+    startDeliveryUpdates(false);
     rememberSession();
     messages.scrollTop = messages.scrollHeight;
   } catch (error) {
@@ -678,19 +762,21 @@ async function restoreConversation() {
 
 async function send(text) {
   if (busy || !session || !text.trim()) return;
-  setBusy(true);
+  const waiting = waitingLabel(text);
+  setBusy(true, waiting);
   showError("");
   welcome.hidden = true;
   reviewPanel.hidden = true;
   document.querySelectorAll(".reply-actions").forEach((node) => node.remove());
   addMessage("user", text);
-  const pending = addPendingReply();
+  const pending = addPendingReply(waiting);
   try {
     const data = await api("/api/chat", {conversation_id: session.conversation_id, message: text});
     const parent = pending.complete(data.message);
     showModes(data);
     rememberSession();
     showRecommendations(parent, data);
+    await revealReply(parent);
     showSources(parent, data.sources);
     showQuickReplies(parent, data.quick_replies);
     showReview(data);
@@ -722,5 +808,109 @@ document.querySelectorAll("[data-message]").forEach((button) => {
 if (embedded) document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") notifyParent("minimize");
 });
+
+// Đọc trạng thái đơn bằng API quyền phiên, không gọi Qwen hoặc gửi lại đơn.
+let deliveryPollTimer=null,deliveryPolling=false,deliveryVersion=0;
+const deliveryLabels={pending_confirmation:"Chờ cửa hàng xác nhận",confirmed:"Đã xác nhận",
+  delivering:"Đang giao",completed:"Đã giao đến địa chỉ",cancelled:"Đã hủy"};
+function appendCancellationActions(container, order) {
+  if (!order.can_cancel) return;
+  const actions=element("div",undefined,"review-actions cancel-order-actions");
+  actions.dataset.cancelOrder=order.order_id;
+  function choose() {
+    actions.replaceChildren(checkoutButton("Hủy đơn",()=>{
+      if(busy)return;
+      actions.replaceChildren(element("p","Bạn chắc chắn muốn hủy đơn "+order.order_id+"?"),
+        checkoutButton("Xác nhận hủy đơn",()=>cancelSubmittedOrder(order.order_id),true),
+        checkoutButton("Giữ đơn",choose));
+    }));
+  }
+  choose();container.append(actions);
+}
+function applyDeliveryUpdate(order) {
+  if(!order.can_cancel){
+    document.querySelectorAll("[data-cancel-order]").forEach(node=>{
+      if(node.dataset.cancelOrder===order.order_id)node.remove();
+    });
+  }
+  if(activeCheckout?.order_id===order.order_id){
+    const previous=activeCheckout.delivery_tracking||{};
+    const changed=previous.status!==order.status||previous.message!==order.message||previous.can_cancel!==order.can_cancel;
+    activeCheckout.delivery_tracking={status:order.status,estimate:order.estimate,message:order.message,can_cancel:order.can_cancel};
+    if(changed)renderDeliveryTracking(activeCheckout);
+  }
+}
+async function cancelSubmittedOrder(identifier) {
+  if(busy||!session)return;
+  const current=session;deliveryVersion++;
+  setBusy(true,"Đang hủy đơn…");showError("");
+  try{
+    const order=await api("/api/order-requests/"+encodeURIComponent(identifier)+"/cancel",{confirmed:true});
+    if(current!==session)return;
+    deliveryVersion++;
+    applyDeliveryUpdate(order);
+    session.delivery_seen={...session.delivery_seen,[order.order_id]:order.status+"|"+order.updated_at};
+    rememberSession();
+    await revealReply(addMessage("bot",order.message));
+    messages.scrollTop=messages.scrollHeight;
+  }catch(error){
+    showError(error.message);
+  }finally{
+    setBusy(false);
+    syncDeliveryUpdates(false);
+  }
+}
+function renderDeliveryTracking(view) {
+  if(!view?.order_id)return;
+  let box=reviewPanel.querySelector(".delivery-tracking");
+  if(!box){box=element("section",undefined,"delivery-tracking");reviewPanel.append(box);}
+  const tracking=view.delivery_tracking||{},estimate=tracking.estimate;
+  box.replaceChildren(element("strong",deliveryLabels[tracking.status]||"Theo dõi giao hàng"));
+  const caption=reviewPanel.querySelector(".order-status-caption");
+  if(caption)caption.textContent=(deliveryLabels[tracking.status]||"Đang kiểm tra trạng thái")+" · Chưa thanh toán.";
+  const heading=reviewPanel.querySelector("h2");
+  if(heading&&tracking.status==="cancelled")heading.textContent="Đơn hàng đã hủy";
+  if(tracking.message)box.append(element("p",tracking.message));
+  else box.append(element("p","Đang kiểm tra thời gian dự kiến và trạng thái giao hàng…"));
+  if(estimate?.available&&tracking.status!=="completed"&&tracking.status!=="cancelled"&&!tracking.message){
+    box.append(element("p",estimate.notice));
+  }
+  appendCancellationActions(box,{...tracking,order_id:view.order_id});
+}
+async function syncDeliveryUpdates(announce=true) {
+  if(deliveryPolling||busy||document.hidden||!session||session.checkout_mode!=="order")return;
+  const current=session,version=deliveryVersion;deliveryPolling=true;
+  try{
+    const data=await api("/api/order-updates");
+    if(current!==session||version!==deliveryVersion)return;
+    const seen=session.delivery_seen||{};
+    for(const order of data.orders){
+      const stamp=order.status+"|"+order.updated_at;
+      applyDeliveryUpdate(order);
+      const hasActions=[...document.querySelectorAll("[data-cancel-order]")].some(node=>
+        node.dataset.cancelOrder===order.order_id&&!node.closest("[hidden]"));
+      if(announce&&((seen[order.order_id]&&seen[order.order_id]!==stamp)||(order.can_cancel&&!hasActions))){
+        const section=addMessage("bot",order.message);
+        section.classList.add("delivery-notification");
+        appendCancellationActions(section,order);
+        // Giữ nguyên phần khách đang đọc/điền, không kéo form đi đột ngột.
+      }
+      seen[order.order_id]=stamp;
+    }
+    session.delivery_seen=Object.fromEntries(Object.entries(seen).slice(-30));rememberSession();
+  }catch(error){
+    if(activeCheckout?.order_id){
+      const box=reviewPanel.querySelector(".delivery-tracking");
+      if(box&&!box.querySelector(".delivery-refresh-error"))box.append(element("small","Chưa cập nhật được giao hàng. Hệ thống sẽ thử lại khi có kết nối.","delivery-refresh-error"));
+    }
+  }finally{deliveryPolling=false;}
+}
+function startDeliveryUpdates(announce=false){
+  if(deliveryPollTimer)clearInterval(deliveryPollTimer);
+  syncDeliveryUpdates(announce);
+  if(session?.checkout_mode==="order")deliveryPollTimer=setInterval(()=>syncDeliveryUpdates(true),15000);
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncDeliveryUpdates(true);});
+
 notifyParent("ready");
 restoreConversation();

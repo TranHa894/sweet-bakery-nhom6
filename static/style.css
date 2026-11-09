@@ -704,7 +704,7 @@ textarea:focus-visible {
   gap: 22px;
 }
 .logo h2 {
-  font-family: Georgia, serif;
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif;
   font-size: 27px;
   letter-spacing: -1px;
   line-height: 1.1;
@@ -782,7 +782,7 @@ textarea:focus-visible {
   margin-bottom: 12px;
 }
 .hero-caption h1 {
-  font-family: Georgia, serif;
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif;
   font-size: 42px;
   line-height: 1.15;
   margin-bottom: 24px;
@@ -804,7 +804,7 @@ textarea:focus-visible {
   border-left: 1px solid #dce4d7;
 }
 .category-symbol {
-  font-family: Georgia, serif;
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif;
   font-size: 30px;
   color: #8a9c7e;
 }
@@ -815,7 +815,7 @@ textarea:focus-visible {
   color: #6c776f;
 }
 .section-title {
-  font-family: Georgia, serif;
+  font-family: Arial, "Helvetica Neue", "DejaVu Sans", sans-serif;
   font-weight: 400;
   font-size: 32px;
   margin-bottom: 25px;
@@ -868,16 +868,16 @@ textarea:focus-visible {
   border-radius: 8px;
   padding: 24px;
   font:
-    24px/1.45 Georgia,
-    serif;
+    24px/1.45 Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
 }
 .collection-header {
   gap: 20px;
 }
 .collection-header h1 {
   font:
-    34px/1.2 Georgia,
-    serif;
+    34px/1.2 Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
 }
 .sort-by {
   flex-shrink: 0;
@@ -910,8 +910,8 @@ textarea:focus-visible {
 }
 .footer-brand {
   font:
-    30px Georgia,
-    serif;
+    30px Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
   color: var(--primary-color);
 }
 .footer h3 {
@@ -962,8 +962,8 @@ textarea:focus-visible {
 }
 .detail-title {
   font:
-    38px/1.2 Georgia,
-    serif;
+    38px/1.2 Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
 }
 .detail-price-box {
   background: #eff3e9;
@@ -1072,8 +1072,8 @@ textarea:focus-visible {
 }
 .checkout-page > h1 {
   font:
-    34px Georgia,
-    serif;
+    34px Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
   margin-bottom: 20px;
 }
 .notice {
@@ -1211,8 +1211,8 @@ textarea:focus-visible {
 }
 .order-result h2 {
   font:
-    30px Georgia,
-    serif;
+    30px Arial, "Helvetica Neue", "DejaVu Sans",
+    sans-serif;
 }
 .order-result p {
   margin-bottom: 20px;
@@ -1490,3 +1490,6 @@ textarea:focus-visible {
 .form-grid select {
   scroll-margin-top: 24px;
 }
+
+/* Widget riêng dùng chatbot-widget.css; tránh hai khung chat chồng nhau. */
+.toast { bottom: 90px; }

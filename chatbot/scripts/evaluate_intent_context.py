@@ -265,12 +265,12 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
     selected = ({"model": "fake-evaluation", "error": None} if engine == "fake"
                 else llm_client.select_model(base_url, model, timeout))
     report = {"run_type": "fake_logic" if engine == "fake" else f"real_{engine}_nlu_controller",
-        "label": label, "split": split, "created_at": utc_now(), "model": selected["model"],
+        "label": label, "split": split, "nlu_engine": config.NLU_ENGINE, "created_at": utc_now(), "model": selected["model"],
         "dataset_sha256": dataset_hash, "dataset_samples": dataset["sample_count"],
         "limit": limit, "scope": "Intent/context/order behavior; knowledge empty, no RAG generation score",
         "database": ":memory:", "completed": False, "steps": [],
         "code_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
-            ["app/schemas.py", "app/llm_client.py", "app/conversation.py", "app/order_nlu.py", "data/nlu_few_shots.json", "scripts/evaluate_intent_context.py"]}}
+            ["app/schemas.py", "app/llm_client.py", "app/conversation.py", "app/order_nlu.py", "data/nlu_few_shots.json", "scripts/evaluate_intent_context.py", *[str(p.relative_to(ROOT)).replace(chr(92),"/") for p in sorted((ROOT/"app/understanding").glob("*.py"))]]}}
     target = None
     if output is not None:
         target = Path(output)
@@ -337,7 +337,9 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
                                 with patch.object(llm_client, "chat", return_value={
                                     "ok": True, "content": json.dumps(item["wire_output"], ensure_ascii=False),
                                     "error": None, "model": selected["model"], "http_status": 200}):
-                                    return traced_extract(*args, **kwargs)
+                                    result = llm_client.extract_turn_legacy(*args, **kwargs)
+                                    trace["proposal"] = result["data"].model_dump(exclude_none=True) if result["data"] else None
+                                    return result
                             trace["proposal"] = gold.model_dump(exclude_none=True)
                             return {"data": gold, "error": None, "attempts": 0}
                         llm_client.extract_turn = fake_extract
@@ -354,6 +356,7 @@ def evaluate(split, label="manual", limit=None, output=None, engine="ollama", di
                     score = score_turn(item, result, trace.get("proposal"), previous, count, previous_products)
                     row = {"id": item["id"], "dialogue_id": dialogue["id"], "mode": mode,
                         "label": item["label"], "proposal": trace.get("proposal"), "score": score,
+                        "parser_scope": ("legacy_wire_fixture" if "wire_output" in item else "semantic_contract") if engine == "fake" else config.NLU_ENGINE+"_runtime",
                         "engine": result["engine"], "error": result["llm_error"],
                         "seconds": round(perf_counter() - started, 2), "nlu_attempts": result["nlu_attempts"]}
                     report["steps"].append(row)
