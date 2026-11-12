@@ -152,3 +152,21 @@ POST /api/order-requests/{id}/cancel (alias /chatbot/api/order-requests/{id}/can
 - Đây là giới hạn của luồng tự phục vụ hiện tại: khách chỉ tự hủy pending_confirmation. Admin giữ quyền hủy pending/confirmed/delivering như trước. completed không hủy qua thao tác này. Gửi lại khi đã cancelled trả cùng kết quả, không hoàn tồn/ghi tin lần nữa.
 - Chỉ cập nhật snapshot conversation/draft nếu nó còn trỏ đúng đơn hủy. Bản nháp mới/contact không bị ghi đè. Đơn đã hủy vẫn giữ mã, dòng hàng, lịch giao cũ và lịch sử để tra cứu; không xóa dữ liệu.
 - Frontend cần hai thao tác Hủy đơn → Xác nhận hủy đơn; Giữ đơn chỉ đóng bước xác nhận. Poll không đổi không làm mất bước xác nhận đang mở. Nếu admin xử lý trước lúc POST hủy, server trả409, UI hướng nhờ nhân viên. Không gửi email, không gọi Qwen hoặc API vận chuyển.
+
+
+## Tích hợp Tự động Thông báo Đa kênh & Cảnh báo SLA (Event-Driven Auto-Alert & SLA Escalation) — 12/11/2026
+
+Mô-đun `automation_alerts.py` được kết nối trực tiếp vào `database.py`, `website_orders.py`, `main.py` và giao diện quản trị SPA (`static/admin.html`, `static/admin.js`, `static/admin.css`):
+
+- **Bảng dữ liệu mới** (tự động khởi tạo an toàn cùng `database.initialize`):
+  - `automation_settings(id PRIMARY KEY, payload, updated_at)`: lưu ngưỡng `sla_minutes` (mặc định 15 phút), `low_stock_threshold` (mặc định 20), cấu hình kênh Telegram Bot / Webhook / Email SMTP và các cờ bật/tắt thông báo.
+  - `automation_events(id PRIMARY KEY AUTOINCREMENT, dedupe_key UNIQUE, event_type, severity, reference_id, channel, recipient, title, message, delivery_status, created_at)`: lưu nhật ký thông báo tự động chống trùng lặp (`INSERT OR IGNORE`).
+- **Luồng phát sự kiện tự động (Event-Driven)**:
+  - Khi tạo đơn hàng mới (từ Giỏ hàng Website hoặc Chatbot qua `website_orders.place_order`): tự động phát sự kiện `order_created` cho Quản lý và Khách hàng, đồng thời kiểm tra tồn kho thực tế và phát `low_stock_alert` nếu chạm ngưỡng.
+  - Khi đổi trạng thái đơn (`confirmed`, `delivering`, `completed`) hoặc hủy đơn (`cancelled` từ Khách hàng hoặc Quản trị viên): tự động phát sự kiện `order_status_changed`.
+- **Luồng giám sát & leo thang SLA (Time-Driven SLA Escalation)**:
+  - Luồng nền `background_sla_worker` và các API quản trị tự động quét các đơn `pending_confirmation` vượt quá `sla_minutes` để gắn cờ quá hạn và phát cảnh báo `sla_breach_warning`, đồng thời đồng bộ các phiếu tư vấn (`submissions`) và phiếu hỗ trợ (`tickets`) từ Chatbot.
+- **API Quản trị Auto-Alert & SLA**:
+  - `GET /api/admin/automation`: trả về `settings`, `slaSummary` và danh sách `events` mới nhất.
+  - `PUT /api/admin/automation/settings`: cập nhật ngưỡng SLA, ngưỡng tồn kho và cấu hình kênh thông báo.
+  - `POST /api/admin/automation/scan`: quét SLA tức thì và tùy chọn phát thông báo kiểm thử (`test_alert: true`).

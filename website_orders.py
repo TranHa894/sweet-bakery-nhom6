@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.storage import utc_now, fingerprint, save_record
 from app.order_service import create_order_tools
 from website_delivery import DeliveryLocation, estimate_delivery, delivery_message, in_delivery_hours, customer_delivery_window
+from automation_alerts import dispatch_new_order_alerts, dispatch_status_change_alert
 
 
 class Model(BaseModel):
@@ -117,7 +118,7 @@ def delivery_info(db,row):
         result["estimate"]=estimate
     result["message"]=delivery_message(row["id"],status,estimate,result.get("provisional",False),result.get("previousEstimate"))
     return {**result,"status":status,"can_cancel":status=="pending_confirmation","dispatchedAt":saved["dispatched_at"] if saved else None,
-            "deliveredAt":saved["delivered_at"] if saved else None}
+            "deliveredAt":saved["deliveredAt"] if saved and "deliveredAt" in saved.keys() else (saved["delivered_at"] if saved else None)}
 
 
 def order_view(db, row, details=False):
@@ -173,6 +174,7 @@ def place_order(db, body, key, *, conversation_id=None, expected_summary=None):
     db.execute("INSERT INTO web_orders VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
                (identifier, key, digest, body.customer.fullName, body.customer.phone, body.customer.email,
                 json.dumps(payload, ensure_ascii=False), subtotal, None, "pending_confirmation", "cod", now, now))
+    alert_items = []
     for product, quantity in rows:
         db.execute("INSERT INTO web_order_items(order_id,product_id,variant_id,product_name,quantity,unit_price) VALUES(?,?,?,?,?,?)",
                    (identifier, product["id"], product["variant_id"], product["name"], quantity, product["price_vnd"]))
@@ -180,12 +182,39 @@ def place_order(db, body, key, *, conversation_id=None, expected_summary=None):
                              (quantity, product["variant_id"], quantity))
         if changed.rowcount != 1:
             raise OrderError("stock_unavailable", "Tồn kho vừa thay đổi; chưa tạo được đơn.")
+        alert_items.append({
+            "product_id": product["id"],
+            "variant_id": product["variant_id"],
+            "product_name": product["name"],
+            "quantity": quantity,
+            "unit_price": product["price_vnd"],
+        })
     estimate=estimate_delivery(body.shippingAddress.location.model_dump() if body.shippingAddress.location else None)
     tracking={"estimate":estimate,"provisional":True,"message":delivery_message(identifier,"pending_confirmation",estimate,True)}
     db.execute("INSERT INTO web_delivery_updates VALUES(?,?,NULL,NULL,?)",(identifier,json.dumps(tracking,ensure_ascii=False),now))
+    addr_parts = [body.shippingAddress.addressLine, body.shippingAddress.ward, body.shippingAddress.province]
+    if any(addr_parts):
+        address_text = ", ".join(p for p in addr_parts if p)
+    elif body.shippingAddress.location:
+        address_text = f"Ghim bản đồ ({body.shippingAddress.location.latitude:.5f}, {body.shippingAddress.location.longitude:.5f})"
+    else:
+        address_text = "Theo thông tin đơn hàng"
+    dispatch_new_order_alerts(
+        db,
+        order_id=identifier,
+        customer_name=body.customer.fullName,
+        phone=body.customer.phone,
+        email=body.customer.email,
+        address_text=address_text,
+        delivery_date=str(body.delivery.requestedDate) if body.delivery.requestedDate else None,
+        delivery_slot=body.delivery.requestedSlot,
+        cake_message=body.cakeMessage,
+        note=body.note,
+        subtotal=subtotal,
+        items=alert_items,
+    )
     row = db.execute("SELECT * FROM web_orders WHERE id=?", (identifier,)).fetchone()
     return order_view(db, row), True
-
 
 
 def order_update(db, row):
@@ -225,6 +254,16 @@ def cancel_order(db, identifier, *, conversation_id=None):
         ON CONFLICT(order_id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at""",
         (identifier, json.dumps(tracking, ensure_ascii=False), tracking.get("dispatchedAt"), tracking.get("deliveredAt"), now))
     db.execute("UPDATE web_orders SET status='cancelled',updated_at=? WHERE id=?", (now, identifier))
+    dispatch_status_change_alert(
+        db,
+        order_id=identifier,
+        old_status=status,
+        new_status="cancelled",
+        customer_name=row["customer_name"],
+        phone=row["phone"],
+        email=row["email"],
+        subtotal=row["subtotal"],
+    )
     if owner:
         db.execute("INSERT INTO messages(conversation_id,role,content,created_at) VALUES(?,'assistant',?,?)",
                    (owner["conversation_id"], notice, now))

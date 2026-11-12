@@ -1,4 +1,4 @@
-"""SQLite dùng chung cho catalog, đơn website và lịch sử chatbot."""
+"""SQLite dùng chung cho catalog, đơn website, lịch sử chatbot và sự kiện Auto-Alert & SLA."""
 import json
 import os
 import sys
@@ -9,6 +9,8 @@ sys.path.insert(1, str(ROOT / 'chatbot'))
 from app.storage import open_storage, utc_now
 from scripts.database import seed_database
 from app.config import parse_env_text
+from automation_alerts import ensure_automation_schema
+
 env_path=ROOT/'.env'
 if env_path.is_file() and not env_path.is_symlink():
     for key,value in parse_env_text(env_path.read_text(encoding='utf-8-sig')).items():
@@ -78,6 +80,7 @@ def initialize(path=DB_PATH):
           );
           CREATE INDEX IF NOT EXISTS web_orders_date ON web_orders(created_at);
         ''')
+        ensure_automation_schema(db)
         db.commit()
     db.close()
 

@@ -1,9 +1,10 @@
-"""Một server FastAPI: cửa hàng + database SQLite + chatbot của nhóm."""
+"""Một server FastAPI: cửa hàng + database SQLite + chatbot của nhóm + Auto-Alert & SLA."""
 import hmac
 import json
 import os
 import secrets
 import sqlite3
+import threading
 import time
 import unicodedata
 from contextlib import asynccontextmanager
@@ -28,6 +29,14 @@ from website_orders import Customer, Address, Delivery, Item, Order, OrderError,
 from website_delivery import DeliveryLocation, store_settings, estimate_delivery, delivery_message, delivery_now, in_delivery_hours, customer_delivery_window, delivery_dates_changed
 from app import config as chat_config
 from app.knowledge_loader import EmptyKnowledgeRepository
+from automation_alerts import (
+    dispatch_status_change_alert,
+    get_settings,
+    list_events,
+    record_event,
+    save_settings,
+    scan_and_escalate_sla,
+)
 
 class Model(BaseModel):
     model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)
@@ -56,8 +65,48 @@ class Status(Model):
         return value
 
 
+class AutomationSettingsInput(Model):
+    sla_minutes: int = Field(default=15, ge=1, le=1440)
+    low_stock_threshold: int = Field(default=20, ge=1, le=500)
+    enable_telegram: bool = False
+    telegram_bot_token: str = Field(default='', max_length=200)
+    telegram_chat_id: str = Field(default='', max_length=100)
+    enable_webhook: bool = False
+    webhook_url: str = Field(default='', max_length=500)
+    enable_email: bool = False
+    smtp_host: str = Field(default='smtp.gmail.com', max_length=200)
+    smtp_port: int = Field(default=587, ge=1, le=65535)
+    smtp_user: str = Field(default='', max_length=200)
+    smtp_password: str = Field(default='', max_length=200)
+    notify_on_new_order: bool = True
+    notify_on_status_change: bool = True
+    notify_on_sla_breach: bool = True
+    notify_on_low_stock: bool = True
+    notify_on_chatbot_lead: bool = True
+
+
+class AutomationScanInput(Model):
+    test_alert: bool = False
+
+
 def create_app(db_path=DB_PATH, admin_password=None):
     sessions={}; attempts={}; lock=Lock(); password=admin_password
+    stop_watcher = threading.Event()
+
+    def background_sla_worker():
+        while not stop_watcher.wait(30.0):
+            try:
+                db = connect(db_path)
+                try:
+                    db.execute('BEGIN IMMEDIATE')
+                    scan_and_escalate_sla(db)
+                    db.commit()
+                finally:
+                    if db.in_transaction:
+                        db.rollback()
+                    db.close()
+            except Exception:
+                pass
 
     @asynccontextmanager
     async def lifespan(app):
@@ -71,8 +120,12 @@ def create_app(db_path=DB_PATH, admin_password=None):
                 if not password_path.exists():password_path.write_text(secrets.token_urlsafe(12),encoding='utf-8')
                 password=password_path.read_text(encoding='utf-8').strip()
         if not password:raise RuntimeError('Admin password must not be empty')
+        stop_watcher.clear()
+        watcher_thread = threading.Thread(target=background_sla_worker, daemon=True)
+        watcher_thread.start()
         print('\nSWEET BAKERY: http://127.0.0.1:8000\nQUAN LY: http://127.0.0.1:8000/admin.html\nMat khau: xem runtime/admin-password.txt (hoac SWEET_ADMIN_PASSWORD).\n')
         yield
+        stop_watcher.set()
         sessions.clear()
 
     app=FastAPI(title='Sweet Bakery — Nhóm 6',lifespan=lifespan)
@@ -188,11 +241,19 @@ def create_app(db_path=DB_PATH, admin_password=None):
             return ''.join(c for c in unicodedata.normalize('NFD',str(value)).casefold().replace('đ','d') if not unicodedata.combining(c))
         db.create_function('fold_text',1,fold_text,deterministic=True)
         try:
+            db.execute('BEGIN IMMEDIATE')
+            sla_summary = scan_and_escalate_sla(db)
+            settings = get_settings(db)
+            events = list_events(db, limit=60)
+            db.commit()
             total=db.execute('SELECT COUNT(*) FROM web_orders'+where,params).fetchone()[0]
             rows=db.execute('SELECT * FROM web_orders'+where+' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?',params+[limit,offset])
             return {'orders':[order_view(db,row,True) for row in rows],'total':total,'limit':limit,'offset':offset,
-                    'chatbotRequests':[json.loads(row['payload']) for row in db.execute('SELECT payload FROM submissions ORDER BY created_at DESC LIMIT 100')] if include_requests else []}
-        finally:db.close()
+                    'chatbotRequests':[json.loads(row['payload']) for row in db.execute('SELECT payload FROM submissions ORDER BY created_at DESC LIMIT 100')] if include_requests else [],
+                    'automation': {'settings': settings, 'slaSummary': sla_summary, 'events': events}}
+        finally:
+            if db.in_transaction:db.rollback()
+            db.close()
 
     @app.patch('/api/admin/orders/{order_id}')
     def status(order_id:str,body:Status,request:Request):
@@ -251,6 +312,17 @@ def create_app(db_path=DB_PATH, admin_password=None):
             # Mốc giao lưu riêng, giữ CHECK status và khóa ngoại của DB cũ.
             stored_status='confirmed' if body.status=='delivering' else body.status
             db.execute('UPDATE web_orders SET status=?,updated_at=? WHERE id=?',(stored_status,now,order_id))
+            if body.status != current:
+                dispatch_status_change_alert(
+                    db,
+                    order_id=order_id,
+                    old_status=current,
+                    new_status=body.status,
+                    customer_name=row['customer_name'],
+                    phone=row['phone'],
+                    email=row['email'],
+                    subtotal=row['subtotal'],
+                )
             owner=db.execute('SELECT conversation_id FROM web_order_links WHERE order_id=?',(order_id,)).fetchone()
             if owner:
                 db.execute("INSERT INTO messages(conversation_id,role,content,created_at) VALUES(?,'assistant',?,?)",
@@ -312,6 +384,11 @@ def create_app(db_path=DB_PATH, admin_password=None):
         days=[today-timedelta(days=i) for i in range(6,-1,-1)]
         start=datetime.combine(days[0],datetime.min.time(),tzinfo=ZoneInfo('Asia/Ho_Chi_Minh')).astimezone(timezone.utc).isoformat()
         try:
+            db.execute('BEGIN IMMEDIATE')
+            sla_summary = scan_and_escalate_sla(db)
+            settings = get_settings(db)
+            events = list_events(db, limit=30)
+            db.commit()
             counts={key:0 for key in ('pending_confirmation','confirmed','delivering','completed','cancelled')}
             for row in db.execute("SELECT CASE WHEN status='confirmed' AND EXISTS(SELECT 1 FROM web_delivery_updates d WHERE d.order_id=web_orders.id AND d.dispatched_at IS NOT NULL) THEN 'delivering' ELSE status END status,COUNT(*) n FROM web_orders GROUP BY 1"):
                 counts[row['status']]=row['n']
@@ -330,9 +407,12 @@ def create_app(db_path=DB_PATH, admin_password=None):
                 'consultationCount':db.execute('SELECT COUNT(*) FROM submissions').fetchone()[0],
                 'ticketCount':db.execute('SELECT COUNT(*) FROM tickets').fetchone()[0],
                 'recentOrders':[order_view(db,row,True) for row in db.execute('SELECT * FROM web_orders ORDER BY created_at DESC,id DESC LIMIT 5')],
+                'automation': {'settings': settings, 'slaSummary': sla_summary, 'events': events},
                 'updatedAt':utc_now()
             }
-        finally:db.close()
+        finally:
+            if db.in_transaction:db.rollback()
+            db.close()
 
     @app.get('/api/admin/requests')
     def admin_requests(request:Request):
@@ -347,6 +427,64 @@ def create_app(db_path=DB_PATH, admin_password=None):
             return {'records':records,'limitPerType':100,
                     'total':db.execute('SELECT (SELECT COUNT(*) FROM submissions)+(SELECT COUNT(*) FROM tickets)').fetchone()[0]}
         finally:db.close()
+
+    @app.get('/api/admin/automation')
+    def get_automation(request:Request):
+        authorize(request);db=connect(db_path)
+        try:
+            db.execute('BEGIN IMMEDIATE')
+            sla_summary = scan_and_escalate_sla(db)
+            settings = get_settings(db)
+            events = list_events(db, limit=100)
+            db.commit()
+            return {'settings': settings, 'slaSummary': sla_summary, 'events': events}
+        finally:
+            if db.in_transaction:db.rollback()
+            db.close()
+
+    @app.put('/api/admin/automation/settings')
+    def update_automation_settings(body:AutomationSettingsInput, request:Request):
+        authorize(request);db=connect(db_path)
+        try:
+            db.execute('BEGIN IMMEDIATE')
+            updated = save_settings(db, body.model_dump(mode='json'))
+            sla_summary = scan_and_escalate_sla(db)
+            db.commit()
+            return {'ok': True, 'settings': updated, 'slaSummary': sla_summary}
+        finally:
+            if db.in_transaction:db.rollback()
+            db.close()
+
+    @app.post('/api/admin/automation/scan')
+    def trigger_automation_scan(body:AutomationScanInput, request:Request):
+        authorize(request);db=connect(db_path)
+        try:
+            db.execute('BEGIN IMMEDIATE')
+            sla_summary = scan_and_escalate_sla(db)
+            if body.test_alert:
+                settings = get_settings(db)
+                record_event(
+                    db,
+                    event_type='system_test',
+                    severity='info',
+                    reference_id='TEST-' + datetime.now().strftime('%H%M%S'),
+                    channel='telegram' if settings.get('enable_telegram') else 'admin_alert',
+                    recipient=settings.get('telegram_chat_id') or 'Trung tâm Điều hành Sweet Bakery',
+                    title='[KIỂM THỬ HỆ THỐNG] Thông báo Đa kênh & Giám sát SLA hoạt động tốt',
+                    message=(
+                        f"Hệ thống Event-Driven Alert đã quét thành công.\n"
+                        f"• Ngưỡng cảnh báo SLA hiện tại: {settings['sla_minutes']} phút.\n"
+                        f"• Số đơn đang quá hạn SLA: {sla_summary['overdueCount']} đơn.\n"
+                        f"• Ngưỡng cảnh báo tồn kho thấp: ≤ {settings['low_stock_threshold']} sản phẩm."
+                    ),
+                    delivery_status='simulated',
+                )
+            events = list_events(db, limit=60)
+            db.commit()
+            return {'ok': True, 'slaSummary': sla_summary, 'events': events}
+        finally:
+            if db.in_transaction:db.rollback()
+            db.close()
 
     chatbot=create_chatbot(catalog_repository=WebsiteCatalogRepository(db_path),knowledge_repository=EmptyKnowledgeRepository(),db_path=db_path,chat_mode=chat_config.CHAT_MODE,knowledge_mode='empty',order_tools_factory=create_website_order_tools,order_updates_reader=read_order_updates)
     # Giữ nguyên chatbot: chỉ thích ứng HTML ở lớp website.
@@ -375,7 +513,7 @@ if __name__=='__main__':
     port=int(os.getenv('PORT','8000'))
     import sys
     if '--open' in sys.argv:
-        import threading, urllib.request, webbrowser
+        import urllib.request, webbrowser
         def open_browser():
             for _ in range(60):
                 try:
