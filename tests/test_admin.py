@@ -46,7 +46,7 @@ class AdminTests(unittest.TestCase):
         return self.client.patch("/api/admin/products/"+product["id"],json=payload)
 
     def test_admin_endpoints_require_session(self):
-        for endpoint in ("session","overview","products","requests","orders"):
+        for endpoint in ("session","overview","products","requests","orders","automation"):
             with self.subTest(endpoint=endpoint):
                 self.assertEqual(self.client.get("/api/admin/"+endpoint).status_code,401)
         self.assertEqual(self.client.post("/api/admin/login",json={"password":"mật khẩu không đúng"}).status_code,401)
@@ -180,6 +180,32 @@ class AdminTests(unittest.TestCase):
         self.assertNotIn("chatbot-widget.js",html)
         self.assertEqual(self.client.get("/runtime/admin-password.txt").status_code,404)
         self.assertEqual(self.client.post("/api/admin/login",json={"password":"local-test-only"},headers={"Origin":"https://other.example"}).status_code,403)
+
+    def test_automation_alerts_and_sla_escalation(self):
+        self.login()
+        order_id = self.order(2)
+        auto = self.client.get("/api/admin/automation").json()
+        self.assertTrue(any(e["reference_id"] == order_id and e["event_type"] == "order_created" for e in auto["events"]))
+
+        # Giảm SLA xuống 5 phút và giả lập đơn đã đặt quá 20 phút
+        res = self.client.put("/api/admin/automation/settings", json={"sla_minutes": 5, "low_stock_threshold": 20})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["settings"]["sla_minutes"], 5)
+
+        with closing(connect(self.db)) as db, db:
+            db.execute("UPDATE web_orders SET created_at='2026-11-01T00:00:00Z' WHERE id=?", (order_id,))
+
+        scan = self.client.post("/api/admin/automation/scan", json={"test_alert": True}).json()
+        self.assertEqual(scan["slaSummary"]["overdueCount"], 1)
+        self.assertEqual(scan["slaSummary"]["overdueOrders"][0]["orderId"], order_id)
+        self.assertTrue(any(e["reference_id"] == order_id and e["event_type"] == "sla_breach_warning" for e in scan["events"]))
+        self.assertTrue(any(e["event_type"] == "system_test" for e in scan["events"]))
+
+        # Xác nhận đơn hàng -> tạo sự kiện order_status_changed và hết quá hạn SLA
+        self.assertEqual(self.client.patch("/api/admin/orders/" + order_id, json={"status": "confirmed"}).status_code, 200)
+        auto_after = self.client.get("/api/admin/automation").json()
+        self.assertEqual(auto_after["slaSummary"]["overdueCount"], 0)
+        self.assertTrue(any(e["reference_id"] == order_id and e["event_type"] == "order_status_changed" for e in auto_after["events"]))
 
 if __name__ == "__main__":
     unittest.main()
