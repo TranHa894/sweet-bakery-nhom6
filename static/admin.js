@@ -4,16 +4,53 @@
   const $ = (selector) => document.querySelector(selector);
   const money = (value) => Number.isFinite(value) ? new Intl.NumberFormat("vi-VN", {style:"currency",currency:"VND"}).format(value) : "Chưa xác định";
   const dateTime = (value) => value ? new Intl.DateTimeFormat("vi-VN",{dateStyle:"short",timeStyle:"short",timeZone:"Asia/Ho_Chi_Minh"}).format(new Date(value)) : "—";
+  const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const labels = {pending_confirmation:"Chờ xác nhận",confirmed:"Đã xác nhận",delivering:"Đang giao",completed:"Hoàn tất",cancelled:"Đã hủy"};
   const categories = {cake:"Bánh kem",mini:"Bánh ngọt nhỏ",drink:"Trà & Cà phê"};
   const reasons = {customer_requested:"Khách cần nhân viên",two_unknown_turns:"Cần làm rõ nhu cầu",severe_allergy:"Dị ứng nghiêm trọng",allergen_requires_staff:"Cần xác minh dị ứng",complaint:"Khiếu nại",change_confirmed_order:"Sửa / hủy đơn đã xác nhận"};
+  const eventTypeLabels = {
+    order_created: "🎂 Đơn hàng mới",
+    order_status_changed: "🔄 Cập nhật trạng thái",
+    sla_breach_warning: "⚠️ Cảnh báo quá hạn SLA",
+    low_stock_alert: "📦 Cảnh báo tồn kho",
+    chatbot_lead_created: "💬 Phiếu tư vấn / Hỗ trợ",
+    system_test: "🧪 Kiểm thử thông báo",
+  };
+  const channelLabels = {
+    telegram: "Telegram Bot",
+    webhook: "Webhook",
+    email: "Email Khách hàng",
+    email_and_log: "Email & Nhật ký",
+    admin_alert: "Trung tâm Admin",
+    sla_monitor: "Giám sát SLA",
+    inventory_monitor: "Giám sát Tồn kho",
+    chatbot_webhook: "Chatbot Lead",
+  };
   const pageInfo = {
     overview:["Tổng quan","Tổng quan cửa hàng","Những con số và công việc cần bạn quan tâm hôm nay."],
     orders:["Đơn hàng","Quản lý đơn hàng","Theo dõi và xử lý đơn từ website và chatbot trong cùng một danh sách."],
     products:["Sản phẩm","Danh mục sản phẩm","Chăm chút giá bán, số lượng tồn và tình trạng hiển thị."],
-    requests:["Tư vấn & hỗ trợ","Lời nhắn từ khách","Xem phiếu hỗ trợ và các yêu cầu tư vấn đã lưu trước đây."]
+    requests:["Tư vấn & hỗ trợ","Lời nhắn từ khách","Xem phiếu hỗ trợ và các yêu cầu tư vấn đã lưu trước đây."],
+    automation:["Thông báo & SLA","Thông báo Đa kênh & Cảnh báo SLA","Cấu hình thời gian cam kết phản hồi (SLA), kênh Telegram/Webhook và xem nhật ký thông báo tự động."]
   };
-  const state = {page:"overview",orders:[],products:[],requests:[],status:"",offset:0,total:0,limit:20,editing:null,detail:null};
+  const state = {
+    page:"overview",
+    orders:[],
+    recent:[],
+    products:[],
+    requests:[],
+    status:"",
+    offset:0,
+    total:0,
+    limit:20,
+    editing:null,
+    detail:null,
+    automation:{
+      settings:{sla_minutes:15,low_stock_threshold:20},
+      slaSummary:{slaMinutes:15,overdueCount:0,overdueOrders:[]},
+      events:[]
+    }
+  };
   let orderSequence=0, pageSequence=0, searchTimer, toastTimer, pendingAction;
 
   function el(tag, props={}, ...children) {
@@ -27,6 +64,25 @@
     return node;
   }
   const badge=(text,kind="neutral")=>el("span",{class:"tag "+kind,text});
+  function slaBadgeNode(order) {
+    if (!order || order.status !== "pending_confirmation") return null;
+    const slaLimit = Number(state.automation.settings?.sla_minutes || 15);
+    const createdMs = Date.parse(order.createdAt);
+    if (!Number.isFinite(createdMs)) return null;
+    const elapsedMin = Math.max(0, Math.floor((Date.now() - createdMs) / 60000));
+    if (elapsedMin >= slaLimit) {
+      return el("span", {
+        class: "sla-badge sla-overdue",
+        title: `Đơn chờ xác nhận đã vượt ngưỡng cam kết SLA ${slaLimit} phút`,
+        text: `⚠ QUÁ HẠN SLA (${elapsedMin}p / hạn ${slaLimit}p)`
+      });
+    }
+    return el("span", {
+      class: "sla-badge sla-ok",
+      title: "Thời gian chờ xác nhận trong ngưỡng cam kết SLA",
+      text: `⏱ SLA: ${elapsedMin}/${slaLimit} phút`
+    });
+  }
   function image(raw,name) {
     if (!raw) return null;
     const url=new URL(raw,location.origin+"/");
@@ -53,7 +109,9 @@
     ++pageSequence;++orderSequence;
     for (const dialog of document.querySelectorAll("dialog[open]")) dialog.close();
     state.orders=[];state.recent=[];state.products=[];state.requests=[];state.editing=null;state.detail=null;
-    for (const selector of ["#recent-orders","#orders-table","#products-table","#requests-table","#detail-body","#product-preview","#attention-list"]) $(selector).replaceChildren();
+    for (const selector of ["#recent-orders","#orders-table","#products-table","#requests-table","#detail-body","#product-preview","#attention-list","#auto-insights","#automation-events"]) {
+      if ($(selector)) $(selector).replaceChildren();
+    }
     $("#workspace").hidden=true;$("#login-screen").hidden=false;$("#password").value="";
     $("#toast").hidden=true;$("#loading").hidden=true;
   }
@@ -86,16 +144,145 @@
   async function withButton(button,task) {
     button.disabled=true;try {return await task();} finally {button.disabled=false;}
   }
+  function updateAutomationState(auto) {
+    if (!auto) return;
+    if (auto.settings) state.automation.settings = auto.settings;
+    if (auto.slaSummary) state.automation.slaSummary = auto.slaSummary;
+    if (auto.events) state.automation.events = auto.events;
+    const overdue = Number(state.automation.slaSummary?.overdueCount || 0);
+    if ($("#nav-sla")) {
+      $("#nav-sla").textContent = overdue;
+      $("#nav-sla").hidden = !overdue;
+    }
+  }
   function orderRows(orders) {
     return orders.map(order=>el("tr",{},
       el("td",{class:"code"},el("strong",{class:"order-code",text:order.orderId}),el("small",{text:(order.orderSource==="chatbot"?"Chatbot · ":"Website · ")+dateTime(order.createdAt)})),
       el("td",{},el("strong",{text:order.customer?.fullName||"Chưa có tên"}),el("small",{text:order.customer?.phone||"—"})),
-      el("td",{},badge(labels[order.status]||order.status,order.status)),
+      el("td",{},el("div",{class:"status-cell-wrap"},badge(labels[order.status]||order.status,order.status),slaBadgeNode(order))),
       el("td",{class:"money",text:money(order.subtotal)}),
       el("td",{},el("button",{class:"text-link","data-order":order.orderId,text:"Xem đơn →"}))
     ));
   }
+  function renderAutoInsights(overviewData) {
+    const box = $("#auto-insights");
+    if (!box) return;
+    const slaLimit = Number(state.automation.settings?.sla_minutes || 15);
+    const overdueCount = Number(state.automation.slaSummary?.overdueCount || 0);
+    const overdueOrders = state.automation.slaSummary?.overdueOrders || [];
+    const pendingCount = Number(overviewData?.orders?.pending_confirmation ?? state.orders.filter(o=>o.status==="pending_confirmation").length);
+    const lowStockList = overviewData?.products?.lowStock || [];
+    const consultCount = Number(overviewData?.consultationCount || 0) + Number(overviewData?.ticketCount || 0);
+    const eventsCount = (state.automation.events || []).length;
+
+    const cards = [];
+    if (overdueCount > 0) {
+      const sampleIds = overdueOrders.map(o => escapeHtml(o.orderId)).slice(0, 2).join(", ");
+      cards.push(`<div class="insight-item critical">
+        <strong>🚨 Cảnh báo SLA: ${overdueCount} đơn quá hạn ${slaLimit} phút!</strong>
+        <span>Đơn ${sampleIds} chưa xác nhận. Hệ thống đã tự động phát cảnh báo leo thang!</span>
+      </div>`);
+    } else if (pendingCount > 0) {
+      cards.push(`<div class="insight-item warn">
+        <strong>🔔 Cần xác nhận: ${pendingCount} đơn hàng mới (Trong hạn SLA ≤ ${slaLimit}p)</strong>
+        <span>Hãy liên hệ khách để chốt giờ giao bánh trước khi vượt ngưỡng SLA.</span>
+      </div>`);
+    } else {
+      cards.push(`<div class="insight-item good">
+        <strong>✓ 100% đơn hàng đạt cam kết SLA (≤ ${slaLimit} phút)</strong>
+        <span>Hiện không có đơn hàng nào bị tồn đọng quá hạn ở trạng thái Chờ xác nhận.</span>
+      </div>`);
+    }
+
+    if (lowStockList.length > 0) {
+      const names = lowStockList.slice(0, 3).map(p => `${escapeHtml(p.name)} (còn ${p.stock})`).join(", ");
+      cards.push(`<div class="insight-item warn">
+        <strong>📦 Cảnh báo tồn kho thấp: ${lowStockList.length} mặt hàng</strong>
+        <span>Cần bổ sung: ${names}${lowStockList.length > 3 ? "…" : ""}</span>
+      </div>`);
+    } else {
+      cards.push(`<div class="insight-item">
+        <strong>📦 Tồn kho ổn định</strong>
+        <span>Tất cả mặt hàng đang bán đều đủ số lượng phục vụ.</span>
+      </div>`);
+    }
+
+    cards.push(`<div class="insight-item">
+      <strong>📬 Nhật ký Thông báo Đa kênh: ${eventsCount} sự kiện</strong>
+      <span>Tự động gửi qua Telegram / Webhook / Email & lưu đối soát cho ${consultCount} phiếu Chatbot.</span>
+    </div>`);
+
+    box.innerHTML = cards.join("");
+  }
+  function renderAutomationCenter() {
+    const settings = state.automation.settings || {};
+    const slaSummary = state.automation.slaSummary || {};
+    const events = state.automation.events || [];
+
+    const slaPill = $("#sla-summary-pill");
+    if (slaPill) {
+      const overdue = Number(slaSummary.overdueCount || 0);
+      const mins = Number(settings.sla_minutes || 15);
+      slaPill.className = "sla-live-pill" + (overdue > 0 ? " breach" : "");
+      slaPill.textContent = overdue > 0
+        ? `⚠ ${overdue} đơn vi phạm SLA (> ${mins} phút)`
+        : `✓ Cam kết SLA: ${mins} phút (0 vi phạm)`;
+    }
+    const totalPill = $("#event-total-pill");
+    if (totalPill) totalPill.textContent = `${events.length} thông báo tự động`;
+
+    const form = $("#automation-settings-form");
+    if (form && !form.dataset.editing) {
+      if ($("#cfg-sla-minutes")) $("#cfg-sla-minutes").value = settings.sla_minutes ?? 15;
+      if ($("#cfg-low-stock")) $("#cfg-low-stock").value = settings.low_stock_threshold ?? 20;
+      if ($("#cfg-tg-token")) $("#cfg-tg-token").value = settings.telegram_bot_token ?? "";
+      if ($("#cfg-tg-chat")) $("#cfg-tg-chat").value = settings.telegram_chat_id ?? "";
+      if ($("#cfg-webhook-url")) $("#cfg-webhook-url").value = settings.webhook_url ?? "";
+      if ($("#cfg-enable-tg")) $("#cfg-enable-tg").checked = Boolean(settings.enable_telegram);
+      if ($("#cfg-enable-webhook")) $("#cfg-enable-webhook").checked = Boolean(settings.enable_webhook);
+      if ($("#cfg-notify-order")) $("#cfg-notify-order").checked = settings.notify_on_new_order !== false;
+      if ($("#cfg-notify-status")) $("#cfg-notify-status").checked = settings.notify_on_status_change !== false;
+      if ($("#cfg-notify-sla")) $("#cfg-notify-sla").checked = settings.notify_on_sla_breach !== false;
+      if ($("#cfg-notify-stock")) $("#cfg-notify-stock").checked = settings.notify_on_low_stock !== false;
+      if ($("#cfg-notify-lead")) $("#cfg-notify-lead").checked = settings.notify_on_chatbot_lead !== false;
+    }
+
+    const logBox = $("#automation-events");
+    if (!logBox) return;
+    if (!events.length) {
+      logBox.replaceChildren(empty("Chưa có sự kiện thông báo tự động nào", "Hãy đặt thử 1 đơn hàng hoặc bấm nút ⚡ Quét SLA & Gửi thử thông báo."));
+      return;
+    }
+    logBox.innerHTML = events.map((ev) => {
+      const typeLabel = eventTypeLabels[ev.event_type] || ev.event_type;
+      const chanLabel = channelLabels[ev.channel] || ev.channel;
+      const statusText = ev.delivery_status === "sent"
+        ? "✓ Đã gửi qua mạng"
+        : ev.delivery_status === "failed"
+          ? "✕ Lỗi gửi mạng"
+          : "✓ Đã phát (Chế độ Mô phỏng Local)";
+      const timeStr = dateTime(ev.created_at);
+      return `<div class="event-log-item" data-sev="${escapeHtml(ev.severity)}">
+        <div class="event-log-head">
+          <div>
+            <span class="event-tag">${escapeHtml(typeLabel)}</span>
+            <span class="event-tag">${escapeHtml(chanLabel)}</span>
+            <strong style="display:inline;margin-left:6px">${escapeHtml(ev.title)}</strong>
+          </div>
+          <span class="muted">${escapeHtml(timeStr)} · <b>${escapeHtml(statusText)}</b></span>
+        </div>
+        <div class="muted" style="margin-top:4px">
+          Tham chiếu: <code>${escapeHtml(ev.reference_id)}</code> · Người nhận: <strong>${escapeHtml(ev.recipient)}</strong>
+        </div>
+        <details>
+          <summary>Xem nội dung thông báo / email tự động</summary>
+          <pre>${escapeHtml(ev.message)}</pre>
+        </details>
+      </div>`;
+    }).join("");
+  }
   function renderOverview(data) {
+    if (data.automation) updateAutomationState(data.automation);
     $("#stat-today").textContent=data.todayOrders;
     $("#stat-pending").textContent=data.orders.pending_confirmation;
     $("#stat-value").textContent=money(data.completedMerchandiseValue);
@@ -108,15 +295,19 @@
       return el("div",{class:"chart-column"},el("strong",{text:day.count}),bar,el("span",{text:day.day.slice(8)+"/"+day.day.slice(5,7)}));
     }));
     $("#order-chart").setAttribute("aria-label","Đơn trong 7 ngày: "+data.trend.map(d=>d.day+": "+d.count).join("; "));
+    const overdueCount = Number(state.automation.slaSummary?.overdueCount || 0);
+    const slaMins = Number(state.automation.settings?.sla_minutes || 15);
     const attention=[
       ["Đơn chờ xác nhận","Sẵn sàng để bạn kiểm tra",data.orders.pending_confirmation,"orders"],
+      ["Cảnh báo quá hạn SLA",`Đơn chờ quá ${slaMins} phút`,overdueCount,"automation"],
       ["Sản phẩm tồn thấp","Còn tối đa 10 đơn vị",data.products.lowStock.length,"products"],
       ["Yêu cầu tư vấn","Tổng yêu cầu đã được lưu",data.consultationCount,"requests"],
       ["Phiếu hỗ trợ","Xem nội dung cần nhân viên",data.ticketCount,"requests"]
     ];
-    $("#attention-list").replaceChildren(...attention.map(([title,sub,count,page])=>el("div",{class:"attention-row"},el("div",{},el("button",{class:"text-link","data-go":page,text:title}),el("small",{text:sub})),el("span",{class:"attention-number",text:count}))));
+    $("#attention-list").replaceChildren(...attention.map(([title,sub,count,page])=>el("div",{class:"attention-row"},el("div",{},el("button",{class:"text-link","data-go":page,text:title}),el("small",{text:sub})),el("span",{class:"attention-number"+(page==="automation"&&count>0?" sla-breach-num":""),text:count}))));
+    renderAutoInsights(data);
     state.recent=data.recentOrders;
-    $("#recent-orders").replaceChildren(data.recentOrders.length ? table(["MÃ ĐƠN / THỜI GIAN","KHÁCH HÀNG","TRẠNG THÁI","TIỀN HÀNG",""],orderRows(data.recentOrders)) : empty("Chưa có đơn hàng nào","Đơn được gửi từ giỏ hàng sẽ xuất hiện ở đây."));
+    $("#recent-orders").replaceChildren(data.recentOrders.length ? table(["MÃ ĐƠN / THỜI GIAN","KHÁCH HÀNG","TRẠNG THÁI & SLA","TIỀN HÀNG",""],orderRows(data.recentOrders)) : empty("Chưa có đơn hàng nào","Đơn được gửi từ giỏ hàng sẽ xuất hiện ở đây."));
     $("#last-updated").textContent="Cập nhật lúc "+dateTime(data.updatedAt);
   }
   function orderParams() {
@@ -129,9 +320,10 @@
     const sequence=++orderSequence;
     const data=await api("/orders?"+orderParams());
     if(sequence!==orderSequence) return;
+    if (data.automation) updateAutomationState(data.automation);
     state.orders=data.orders;state.total=data.total;
     if(state.offset>=data.total && state.offset>0) {state.offset=0;return loadOrders();}
-    $("#orders-table").replaceChildren(data.orders.length ? table(["MÃ ĐƠN / THỜI GIAN","KHÁCH HÀNG","TRẠNG THÁI","TIỀN HÀNG",""],orderRows(data.orders)) : empty("Không tìm thấy đơn phù hợp","Bạn thử thay đổi từ khóa hoặc bỏ bớt bộ lọc nhé."));
+    $("#orders-table").replaceChildren(data.orders.length ? table(["MÃ ĐƠN / THỜI GIAN","KHÁCH HÀNG","TRẠNG THÁI & SLA","TIỀN HÀNG",""],orderRows(data.orders)) : empty("Không tìm thấy đơn phù hợp","Bạn thử thay đổi từ khóa hoặc bỏ bớt bộ lọc nhé."));
     $("#order-count").textContent=data.total+" đơn phù hợp";
     $("#page-info").textContent=data.total ? (state.offset+1)+"–"+Math.min(state.offset+state.limit,data.total)+" / "+data.total+" đơn" : "0 đơn";
     $("#previous-page").disabled=state.offset===0;$("#next-page").disabled=state.offset+state.limit>=data.total;
@@ -181,6 +373,7 @@
       if(page==="orders") await loadOrders();
       if(page==="products") {const data=await api("/products");if(sequence===pageSequence){state.products=data.products;renderProducts();}}
       if(page==="requests") {const data=await api("/requests");if(sequence===pageSequence){state.requests=data.records;renderRequests();}}
+      if(page==="automation") {const data=await api("/automation");if(sequence===pageSequence){updateAutomationState(data);renderAutomationCenter();}}
     } finally {if(sequence===pageSequence) $("#loading").hidden=true;}
   }
   function detailSection(title,lines) {
@@ -198,7 +391,7 @@
     state.detail=order;$("#detail-kicker").textContent=order.orderSource==="chatbot"?"ĐƠN HÀNG TỪ CHATBOT":"ĐƠN HÀNG TỪ WEBSITE";$("#detail-title").textContent=order.orderId;
     const address=order.shippingAddress||{},delivery=order.delivery||{},slots={morning:"Buổi sáng · 08–12h",afternoon:"Buổi chiều · 12–18h",evening:"Khung giờ cũ ngoài giờ giao · cần xác nhận lại"};
     const content=el("div",{class:"dialog-content"},
-      el("div",{class:"detail-meta"},badge(labels[order.status],order.status),el("span",{class:"muted",text:"Tạo lúc "+dateTime(order.createdAt)})),
+      el("div",{class:"detail-meta"},el("div",{class:"status-cell-wrap"},badge(labels[order.status],order.status),slaBadgeNode(order)),el("span",{class:"muted",text:"Tạo lúc "+dateTime(order.createdAt)})),
       el("div",{class:"detail-grid"},detailSection("Khách hàng",[order.customer?.fullName,order.customer?.phone,order.customer?.email]),
         detailSection("Thông tin nhận hàng",[[address.addressLine,address.ward,address.province].filter(Boolean).join(", "),"Ngày mong muốn: "+(delivery.requestedDate||"Chưa chọn"),slots[delivery.requestedSlot]||"Khung giờ chờ xác nhận"])),
       detailItems(order.items),
@@ -318,6 +511,58 @@
     event.preventDefault();$("#confirm-error").textContent="";
     await withButton($("#confirm-action"),async()=>{try {await pendingAction();} catch(error){$("#confirm-error").textContent=error.message;}});
   };
+  if ($("#btn-toggle-settings")) {
+    $("#btn-toggle-settings").addEventListener("click", () => {
+      const form = $("#automation-settings-form");
+      if (form) form.hidden = !form.hidden;
+    });
+  }
+  if ($("#btn-scan-sla")) {
+    $("#btn-scan-sla").addEventListener("click", () => {
+      run(() => withButton($("#btn-scan-sla"), async () => {
+        const res = await api("/automation/scan", {
+          method: "POST",
+          body: JSON.stringify({ test_alert: true })
+        });
+        updateAutomationState(res);
+        renderAutomationCenter();
+        toast("Đã quét SLA & phát thông báo kiểm thử thành công.");
+      }));
+    });
+  }
+  if ($("#automation-settings-form")) {
+    $("#automation-settings-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const msgEl = $("#cfg-save-msg");
+      if (msgEl) msgEl.textContent = "Đang lưu cấu hình…";
+      run(() => withButton($("#save-automation"), async () => {
+        const payload = {
+          sla_minutes: Number($("#cfg-sla-minutes").value) || 15,
+          low_stock_threshold: Number($("#cfg-low-stock").value) || 20,
+          enable_telegram: Boolean($("#cfg-enable-tg").checked),
+          telegram_bot_token: $("#cfg-tg-token").value.trim(),
+          telegram_chat_id: $("#cfg-tg-chat").value.trim(),
+          enable_webhook: Boolean($("#cfg-enable-webhook").checked),
+          webhook_url: $("#cfg-webhook-url").value.trim(),
+          notify_on_new_order: Boolean($("#cfg-notify-order").checked),
+          notify_on_status_change: Boolean($("#cfg-notify-status").checked),
+          notify_on_sla_breach: Boolean($("#cfg-notify-sla").checked),
+          notify_on_low_stock: Boolean($("#cfg-notify-stock").checked),
+          notify_on_chatbot_lead: Boolean($("#cfg-notify-lead").checked),
+        };
+        const res = await api("/automation/settings", {
+          method: "PUT",
+          body: JSON.stringify(payload)
+        });
+        updateAutomationState(res);
+        const fresh = await api("/automation");
+        updateAutomationState(fresh);
+        renderAutomationCenter();
+        if (msgEl) msgEl.textContent = "✓ Đã lưu cấu hình và quét lại SLA!";
+        toast("Đã lưu cấu hình Thông báo Đa kênh & SLA.");
+      }));
+    });
+  }
   // Khôi phục phiên cookie; HTTP 401 lúc mở trang chỉ đưa về màn hình đăng nhập.
   updateStatusTabs();
   api("/session").then(async()=>{$("#login-screen").hidden=true;$("#workspace").hidden=false;await showPage("overview");}).catch(error=>{if(error.status!==401) showError(error);});

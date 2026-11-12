@@ -6,8 +6,8 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light">
   <title>Quản trị · Sweet Bakery</title>
-  <link rel="stylesheet" href="/admin.css?v=20261104">
-  <script defer src="/admin.js?v=20261104"></script>
+  <link rel="stylesheet" href="/admin.css?v=20261112">
+  <script defer src="/admin.js?v=20261112"></script>
 </head>
 <body>
   <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -15,6 +15,7 @@
     <symbol id="i-order" viewBox="0 0 24 24"><path d="M7 3h10l3 4v14l-4-2-4 2-4-2-4 2V7zM8 8h8M8 12h8M8 16h4"/></symbol>
     <symbol id="i-cake" viewBox="0 0 24 24"><path d="M3 12h18v9H3zM3 16q3 4 6 0 3 4 6 0 3 4 6 0M7 12V7h10v5M12 7V3"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v13H9l-5 4zM8 9h8M8 13h5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8A8 8 0 1 0 20 17M20 3v5h-5"/></symbol>
@@ -22,7 +23,7 @@
   <section id="login-screen" class="login-screen">
     <div class="login-story">
       <a class="brand" href="/"><span class="brand-mark">S<span>·</span>B</span><span>Sweet Bakery<small>BAKED WITH LOVE</small></span></a>
-      <div><p class="eyebrow">MỖI NGÀY, MỘT CHÚT NGỌT NGÀO</p><h1>Chăm chút cửa hàng.<br>Trọn vẹn từng đơn.</h1><p>Một góc làm việc để bạn theo dõi đơn hàng,<br>chăm sóc danh mục và ghi nhận lời nhắn từ khách.</p></div>
+      <div><p class="eyebrow">MỖI NGÀY, MỘT CHÚT NGỌT NGÀO</p><h1>Chăm chút cửa hàng.<br>Trọn vẹn từng đơn.</h1><p>Một góc làm việc để bạn theo dõi đơn hàng,<br>chăm sóc danh mục, giám sát SLA và ghi nhận lời nhắn từ khách.</p></div>
       <div class="login-images"><img src="/images/SP0001.webp" alt="Mousse Hawaii"><img src="/images/SP0014.webp" alt="Bánh cuộn trà xanh"><img src="/images/SP0023.webp" alt="Cà phê muối"></div>
       <a class="story-back" href="/">← Ghé thăm cửa hàng</a>
     </div>
@@ -48,6 +49,7 @@
         <button class="nav-item" data-page="orders"><svg><use href="#i-order"/></svg>Đơn hàng<span id="nav-pending" class="nav-count" hidden></span></button>
         <button class="nav-item" data-page="products"><svg><use href="#i-cake"/></svg>Sản phẩm</button>
         <button class="nav-item" data-page="requests"><svg><use href="#i-chat"/></svg>Tư vấn & hỗ trợ</button>
+        <button class="nav-item" data-page="automation"><svg><use href="#i-bell"/></svg>Thông báo & SLA<span id="nav-sla" class="nav-count danger-count" hidden></span></button>
       </nav>
       <div class="sidebar-bottom"><a href="/" target="_blank" rel="noopener">Mở cửa hàng <span>↗</span></a><button id="logout" type="button">Đăng xuất <span>→</span></button><div class="sidebar-note"><span class="status-dot"></span> Phiên quản trị riêng tư</div></div>
     </aside>
@@ -69,6 +71,7 @@
             <article class="panel"><div class="panel-heading"><div><h2>Nhịp đơn hàng</h2><p>Số đơn được tạo trong 7 ngày gần nhất</p></div><span class="tag neutral">7 ngày</span></div><div id="order-chart" class="order-chart" role="img"></div></article>
             <article class="panel"><div class="panel-heading"><div><h2>Cần bạn chú ý</h2><p>Một chút sắp xếp cho cửa hàng</p></div><span class="attention-dot"></span></div><div id="attention-list" class="attention-list"></div></article>
           </div>
+          <article class="panel" style="margin-bottom:23px"><div class="panel-heading"><div><h2>⚡ Giám sát Vận hành & Cảnh báo Tự động (SLA)</h2><p>Tự động theo dõi thời gian phản hồi đơn hàng, tồn kho và phiếu tư vấn</p></div><button class="text-link" data-go="automation">Mở Trung tâm Thông báo & SLA →</button></div><div id="auto-insights" class="auto-insights-grid"></div></article>
           <article class="panel"><div class="panel-heading"><div><h2>Đơn hàng gần đây</h2><p>Đơn mới nhất từ website và chatbot</p></div><button class="text-link" data-go="orders">Xem tất cả →</button></div><div id="recent-orders" class="table-wrap"></div></article>
           <div class="overview-footer"><span id="last-updated">—</span><span>Đơn từ website và chatbot được xử lý trong cùng một danh sách.</span></div>
         </section>
@@ -98,8 +101,60 @@
           <div class="info-banner"><svg><use href="#i-chat"/></svg><p>Đơn mới từ chatbot nằm trong mục Đơn hàng. Tại đây là phiếu hỗ trợ và yêu cầu tư vấn cũ; không tự chuyển lịch sử thành đơn mới.</p></div>
           <article class="panel"><div class="toolbar"><label class="search-field"><svg><use href="#i-search"/></svg><input id="request-search" type="search" placeholder="Tìm tên, số điện thoại, mã hoặc nội dung" aria-label="Tìm yêu cầu"></label><select id="request-type" aria-label="Loại yêu cầu"><option value="">Tất cả loại</option><option value="consultation">Yêu cầu tư vấn</option><option value="ticket">Phiếu hỗ trợ</option></select></div><div class="list-meta"><span id="request-count" aria-live="polite"></span><span>Tối đa 100 bản ghi mới nhất mỗi loại</span></div><div id="requests-table" class="table-wrap"></div></article>
         </section>
+
+        <section id="page-automation" class="page-section" aria-label="Thông báo đa kênh và cảnh báo SLA" hidden>
+          <article id="automation-center" class="panel event-alert-center">
+            <div class="panel-heading event-center-top">
+              <div>
+                <div class="event-center-title">
+                  <h2>🔔 Hệ thống Thông báo Đa kênh & Cảnh báo SLA (Event-Driven Alert)</h2>
+                  <span id="sla-summary-pill" class="sla-live-pill">SLA: 15 phút</span>
+                  <span id="event-total-pill" class="tag neutral">0 thông báo tự động</span>
+                </div>
+                <p>Tự động phát thông báo khi có đơn mới, đổi trạng thái, tồn kho thấp, phiếu Chatbot hoặc đơn chờ xác nhận vượt ngưỡng SLA.</p>
+              </div>
+              <div class="event-center-actions">
+                <button id="btn-scan-sla" class="button primary compact" type="button">⚡ Quét SLA & Gửi thử thông báo</button>
+                <button id="btn-toggle-settings" class="button secondary compact" type="button">⚙ Ẩn / Hiện Cấu hình SLA & Kênh</button>
+              </div>
+            </div>
+
+            <form id="automation-settings-form" class="settings-drawer">
+              <h3>Cấu hình Tham số SLA & Kênh Gửi Thông báo Tự động</h3>
+              <p class="muted" style="margin-top:4px">Mẹo báo cáo đồ án: Bạn có thể chỉnh <strong>Thời gian cam kết SLA</strong> xuống <strong>1 phút</strong> rồi bấm <em>Lưu cấu hình</em> để thấy hệ thống tự động phát cảnh báo đỏ ngay cho các đơn đang chờ xác nhận.</p>
+              <div class="settings-grid">
+                <label><span>Thời gian cam kết SLA (phút)</span><input id="cfg-sla-minutes" type="number" min="1" max="1440" value="15" required></label>
+                <label><span>Ngưỡng báo tồn kho thấp (bánh)</span><input id="cfg-low-stock" type="number" min="1" max="500" value="20" required></label>
+                <label><span>Telegram Bot Token (tùy chọn)</span><input id="cfg-tg-token" type="password" placeholder="Để trống nếu chạy mô phỏng Local"></label>
+                <label><span>Telegram Chat ID nhận tin</span><input id="cfg-tg-chat" type="text" placeholder="VD: -100123456789"></label>
+                <label><span>Webhook URL (Discord / Slack)</span><input id="cfg-webhook-url" type="text" placeholder="https://..."></label>
+              </div>
+              <div class="settings-checkboxes">
+                <label class="check-label"><input id="cfg-enable-tg" type="checkbox">Bật gửi Telegram thật</label>
+                <label class="check-label"><input id="cfg-enable-webhook" type="checkbox">Bật gửi Webhook thật</label>
+                <label class="check-label"><input id="cfg-notify-order" type="checkbox" checked>Báo khi có đơn mới</label>
+                <label class="check-label"><input id="cfg-notify-status" type="checkbox" checked>Báo khi đổi trạng thái đơn</label>
+                <label class="check-label"><input id="cfg-notify-sla" type="checkbox" checked>Cảnh báo khi quá hạn SLA</label>
+                <label class="check-label"><input id="cfg-notify-stock" type="checkbox" checked>Cảnh báo khi tồn kho thấp</label>
+                <label class="check-label"><input id="cfg-notify-lead" type="checkbox" checked>Báo khi có phiếu Chatbot</label>
+              </div>
+              <div class="settings-actions">
+                <button id="save-automation" type="submit" class="button primary compact">💾 Lưu cấu hình SLA & Kênh</button>
+                <span id="cfg-save-msg" class="muted"></span>
+              </div>
+            </form>
+
+            <div class="event-log-wrap">
+              <div class="event-log-header">
+                <h3>📬 Nhật ký Sự kiện & Hộp thư Thông báo Tự động</h3>
+                <span class="muted">Bấm vào từng sự kiện để xem chi tiết nội dung tin nhắn Telegram / Webhook / Email tự động</span>
+              </div>
+              <div id="automation-events" class="event-log-list"></div>
+            </div>
+          </article>
+        </section>
       </main>
-      <footer class="main-footer"><span>Sweet Bakery · Nhóm 6</span><span>Chưa tích hợp thanh toán, email hoặc giao hàng thật.</span></footer>
+      <footer class="main-footer"><span>Sweet Bakery · Nhóm 6</span><span>Tích hợp Quản trị đơn hàng, Chatbot AI & Hệ thống Cảnh báo Tự động Đa kênh (SLA).</span></footer>
     </div>
   </div>
 
