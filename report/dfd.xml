@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0" version="22.0.0" type="device">
+  <diagram id="sweet_bakery_dfd_level1" name="Data Flow Diagram - General">
+    <mxGraphModel dx="1480" dy="1030" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1480" pageHeight="1030" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ==================== EXTERNAL ENTITIES ==================== -->
+        <mxCell id="ee_customer" value="Khách hàng" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="215" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ee_admin" value="Quản trị viên&lt;br&gt;(Admin)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="690" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ee_channels" value="Kênh Thông báo Ngoài&lt;br&gt;(Telegram / Webhook / Email)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="835" width="190" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== PROCESSES ==================== -->
+        <mxCell id="p1" value="1.0&lt;br&gt;Xử lý Mua sắm, Giỏ hàng&lt;br&gt;&amp;amp; Đặt hàng Website" style="rounded=1;whiteSpace=wrap;html=1;arcSize=16;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="75" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p2" value="2.0&lt;br&gt;Xử lý Chatbot Tư vấn,&lt;br&gt;Đặt bánh &amp;amp; Hủy đơn" style="rounded=1;whiteSpace=wrap;html=1;arcSize=16;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="325" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p3" value="3.0&lt;br&gt;Quản trị Đơn hàng,&lt;br&gt;Sản phẩm &amp;amp; Hỗ trợ" style="rounded=1;whiteSpace=wrap;html=1;arcSize=16;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="580" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p4" value="4.0&lt;br&gt;Giám sát SLA &amp;amp;&lt;br&gt;Thông báo Đa kênh" style="rounded=1;whiteSpace=wrap;html=1;arcSize=16;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="825" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== DATA STORES ==================== -->
+        <mxCell id="d1" value="D1 | PRODUCTS (Sản phẩm &amp;amp; Tồn kho)" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=10;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="90" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d2" value="D2 | ORDERS &amp;amp; ORDER_ITEMS (Đơn hàng)" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=10;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="340" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d3" value="D3 | CHATBOT_REQUESTS (Tư vấn &amp;amp; Hỗ trợ)" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=10;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="595" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d4" value="D4 | AUTOMATION_DATA (SLA &amp;amp; Nhật ký)" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;align=left;spacingLeft=10;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="840" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== DATA FLOWS: EXTERNAL ENTITIES <-> PROCESSES ==================== -->
+
+        <!-- 1. Customer -> P1 -->
+        <mxCell id="df_01" value="Yêu cầu xem SP, giỏ hàng, đặt đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.35;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="ee_customer" target="p1">
+          <mxGeometry x="0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="93" y="95" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 2. P1 -> Customer -->
+        <mxCell id="df_02" value="Danh mục SP, xác nhận đơn (orderId)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="p1" target="ee_customer">
+          <mxGeometry x="-0.15" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="145" y="140" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. Customer -> P2 -->
+        <mxCell id="df_03" value="Tin nhắn hỏi đáp, đặt/hủy đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="ee_customer" target="p2">
+          <mxGeometry x="0.15" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="145" y="345" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 4. P2 -> Customer -->
+        <mxCell id="df_04" value="Tư vấn bánh, tiến độ đơn, mã phiếu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=0.35;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="p2" target="ee_customer">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="93" y="390" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 5. Admin -> P3 -->
+        <mxCell id="df_05" value="Đăng nhập, cập nhật đơn &amp;amp; SP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.35;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="ee_admin" target="p3">
+          <mxGeometry x="0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="93" y="600" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 6. P3 -> Admin -->
+        <mxCell id="df_06" value="KPI tổng quan, DS đơn, SP, phiếu hỗ trợ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="p3" target="ee_admin">
+          <mxGeometry x="-0.15" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="145" y="645" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 7. Admin -> P4 -->
+        <mxCell id="df_07" value="Cấu hình SLA/kênh, lệnh quét SLA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="ee_admin" target="p4">
+          <mxGeometry x="0.15" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="145" y="845" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 8. P4 -> Admin -->
+        <mxCell id="df_08" value="Cảnh báo quá hạn SLA, nhật ký gửi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=0.35;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="p4" target="ee_admin">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="93" y="890" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ==================== DATA FLOWS: PROCESSES <-> DATA STORES ==================== -->
+
+        <!-- 9. P1 -> D1 -->
+        <mxCell id="df_09" value="Trừ tồn kho khi đặt đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.125;entryDx=0;entryDy=0;" edge="1" parent="1" source="p1" target="d1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 10. D1 -> P1 -->
+        <mxCell id="df_10" value="Danh mục sản phẩm, giá, tồn kho" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="d1" target="p1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11. P1 -> D2 -->
+        <mxCell id="df_11" value="Lưu đơn hàng website mới" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.13;entryDx=0;entryDy=0;" edge="1" parent="1" source="p1" target="d2">
+          <mxGeometry x="0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="147" />
+              <mxPoint x="640" y="348" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 12. D1 -> P2 -->
+        <mxCell id="df_12" value="Thông tin SP gợi ý tư vấn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.36;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="d1" target="p2">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="859" y="235" />
+              <mxPoint x="439" y="235" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 13. P2 -> D1 -->
+        <mxCell id="df_13" value="Hoàn tồn kho (hủy đơn chờ)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.64;exitY=0;exitDx=0;exitDy=0;entryX=0.35;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="p2" target="d1">
+          <mxGeometry x="0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="501" y="275" />
+              <mxPoint x="911" y="275" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 14. P2 -> D2 -->
+        <mxCell id="df_14" value="Tạo đơn chatbot / Hủy đơn chờ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.45;exitDx=0;exitDy=0;entryX=0;entryY=0.425;entryDx=0;entryDy=0;" edge="1" parent="1" source="p2" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 15. D2 -> P2 -->
+        <mxCell id="df_15" value="Dữ liệu tra cứu đơn hàng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.67;entryDx=0;entryDy=0;" edge="1" parent="1" source="d2" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 16. P2 -> D3 -->
+        <mxCell id="df_16" value="Tạo phiếu hỗ trợ / tư vấn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.88;exitDx=0;exitDy=0;entryX=0;entryY=0.22;entryDx=0;entryDy=0;" edge="1" parent="1" source="p2" target="d3">
+          <mxGeometry x="0.1" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="404" />
+              <mxPoint x="640" y="608" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 17. P3 <-> D1 -->
+        <mxCell id="df_17" value="Đọc &amp;amp; cập nhật giá, tồn kho, trạng thái" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.18;exitDx=0;exitDy=0;entryX=0;entryY=0.83;entryDx=0;entryDy=0;" edge="1" parent="1" source="p3" target="d1">
+          <mxGeometry x="-0.25" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="596" />
+              <mxPoint x="760" y="140" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 18. P3 <-> D2 -->
+        <mxCell id="df_18" value="Đọc &amp;amp; cập nhật trạng thái đơn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.35;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="p3" target="d2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="495" />
+              <mxPoint x="911" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 19. D3 -> P3 -->
+        <mxCell id="df_19" value="Danh sách phiếu hỗ trợ &amp;amp; tư vấn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.67;exitDx=0;exitDy=0;entryX=1;entryY=0.61;entryDx=0;entryDy=0;" edge="1" parent="1" source="d3" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 20. D1 -> P4 (Right Bus X=1145) -->
+        <mxCell id="df_20" value="Dữ liệu tồn kho thấp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="d1" target="p4">
+          <mxGeometry x="-0.55" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1145" y="120" />
+              <mxPoint x="1145" y="945" />
+              <mxPoint x="514" y="945" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 21. D2 -> P4 (Joins Right Bus X=1145) -->
+        <mxCell id="df_21" value="Đơn mới, đổi trạng thái, quá hạn SLA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="d2" target="p4">
+          <mxGeometry x="-0.6" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1145" y="370" />
+              <mxPoint x="1145" y="945" />
+              <mxPoint x="514" y="945" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 22. D3 -> P4 (Joins Right Bus X=1145) -->
+        <mxCell id="df_22" value="Phiếu tư vấn / hỗ trợ mới" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="d3" target="p4">
+          <mxGeometry x="-0.65" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1145" y="625" />
+              <mxPoint x="1145" y="945" />
+              <mxPoint x="514" y="945" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 23. P4 -> D4 -->
+        <mxCell id="df_23" value="Lưu cấu hình SLA &amp;amp; nhật ký sự kiện" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" edge="1" parent="1" source="p4" target="d4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 24. D4 -> P4 -->
+        <mxCell id="df_24" value="Đọc cấu hình kênh &amp;amp; ngưỡng SLA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.67;entryDx=0;entryDy=0;" edge="1" parent="1" source="d4" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== DATA FLOWS: PROCESS 4 <-> EXTERNAL CHANNELS ==================== -->
+
+        <!-- 25. P4 -> External Channels -->
+        <mxCell id="df_25" value="Gửi thông báo đa kênh &amp;amp; cảnh báo SLA tự động" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.45;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="p4" target="ee_channels">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="459" y="995" />
+              <mxPoint x="1345" y="995" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 26. External Channels -> P4 -->
+        <mxCell id="df_26" value="Trạng thái phát tin (sent / failed)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.58;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="ee_channels" target="p4">
+          <mxGeometry x="-0.25" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1190" y="870" />
+              <mxPoint x="1190" y="968" />
+              <mxPoint x="488" y="968" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

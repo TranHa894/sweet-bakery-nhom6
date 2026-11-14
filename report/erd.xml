@@ -1,0 +1,273 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="sweet_bakery_erd" name="Sweet Bakery ERD">
+    <mxGraphModel dx="860" dy="549" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1380" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ORDERS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="ORDERS (Đơn hàng)" vertex="1">
+          <mxGeometry height="430" width="320" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_1" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | order_id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_2" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="order_source : VARCHAR (website | chatbot)" vertex="1">
+          <mxGeometry height="22" width="320" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_3" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="status : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_4" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="customer_name : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_5" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="customer_phone : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_6" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="customer_email : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_7" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="shipping_address : TEXT (province, ward, line)" vertex="1">
+          <mxGeometry height="22" width="320" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_8" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="latitude, longitude : FLOAT" vertex="1">
+          <mxGeometry height="22" width="320" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_9" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="requested_date : DATE" vertex="1">
+          <mxGeometry height="22" width="320" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_10" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="requested_slot : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_11" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="expected_arrival : DATETIME" vertex="1">
+          <mxGeometry height="22" width="320" y="248" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_12" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="cake_message : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_13" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="note : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="292" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_14" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="payment_method : VARCHAR (cod)" vertex="1">
+          <mxGeometry height="22" width="320" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_15" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="subtotal : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="336" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_16" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="shipping_fee : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_17" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="total : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="ord_18" parent="ORDERS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="created_at : DATETIME" vertex="1">
+          <mxGeometry height="22" width="320" y="402" as="geometry" />
+        </mxCell>
+        <mxCell id="ORDER_ITEMS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="ORDER_ITEMS (Chi tiết đơn hàng)" vertex="1">
+          <mxGeometry height="190" width="320" x="520" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_1" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | id : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_2" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=2;fontColor=#000000;" value="FK | order_id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_3" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=2;fontColor=#000000;" value="FK | product_id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_4" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="product_name : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_5" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="unit_price_vnd : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_6" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="quantity : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="oi_7" parent="ORDER_ITEMS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="line_total_vnd : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="PRODUCTS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="PRODUCTS (Sản phẩm)" vertex="1">
+          <mxGeometry height="210" width="340" x="980" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_1" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_2" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="name : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_3" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="category : VARCHAR (cake | mini | drink)" vertex="1">
+          <mxGeometry height="22" width="340" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_4" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="price : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_5" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="stock : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_6" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="image : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_7" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="active : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="prd_8" parent="PRODUCTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="revision : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="CHATBOT_REQUESTS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="CHATBOT_REQUESTS (Tư vấn &amp;amp; Hỗ trợ)" vertex="1">
+          <mxGeometry height="300" width="320" x="40" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="req_1" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="req_2" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=2;fontColor=#000000;" value="FK | order_code : VARCHAR (nullable)" vertex="1">
+          <mxGeometry height="22" width="320" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="req_3" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="record_type : VARCHAR (ticket | consultation)" vertex="1">
+          <mxGeometry height="22" width="320" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="req_4" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="kind : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="req_5" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="reason : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="req_6" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="priority : VARCHAR (high | normal)" vertex="1">
+          <mxGeometry height="22" width="320" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="req_7" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="customer_name : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="req_8" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="customer_phone : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="req_9" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="summary : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="req_10" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="note : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="req_11" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="items_json : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="248" as="geometry" />
+        </mxCell>
+        <mxCell id="req_12" parent="CHATBOT_REQUESTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="created_at : DATETIME" vertex="1">
+          <mxGeometry height="22" width="320" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="AUTOMATION_EVENTS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="AUTOMATION_EVENTS (Nhật ký thông báo)" vertex="1">
+          <mxGeometry height="255" width="320" x="520" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_1" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | id : INTEGER" vertex="1">
+          <mxGeometry height="22" width="320" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_2" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=2;fontColor=#000000;" value="FK | reference_id : VARCHAR (order/product/req)" vertex="1">
+          <mxGeometry height="22" width="320" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_3" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="event_type : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_4" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="channel : VARCHAR (telegram | webhook | email)" vertex="1">
+          <mxGeometry height="22" width="320" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_5" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="severity : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_6" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="title : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_7" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="message : TEXT" vertex="1">
+          <mxGeometry height="22" width="320" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_8" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="recipient : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="320" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_9" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="delivery_status : VARCHAR (sent | failed | local)" vertex="1">
+          <mxGeometry height="22" width="320" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="ev_10" parent="AUTOMATION_EVENTS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="created_at : DATETIME" vertex="1">
+          <mxGeometry height="22" width="320" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="AUTOMATION_SETTINGS" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="AUTOMATION_SETTINGS (Cấu hình SLA)" vertex="1">
+          <mxGeometry height="320" width="340" x="980" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_1" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontStyle=1;fontColor=#000000;" value="PK | id : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_2" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="sla_minutes : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_3" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="low_stock_threshold : INTEGER" vertex="1">
+          <mxGeometry height="22" width="340" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_4" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="enable_telegram : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_5" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="telegram_bot_token : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_6" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="telegram_chat_id : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_7" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="enable_webhook : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_8" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="webhook_url : VARCHAR" vertex="1">
+          <mxGeometry height="22" width="340" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_9" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="notify_on_new_order : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_10" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="notify_on_status_change : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_11" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="notify_on_sla_breach : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="248" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_12" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="notify_on_low_stock : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="cfg_13" parent="AUTOMATION_SETTINGS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" value="notify_on_chatbot_lead : BOOLEAN" vertex="1">
+          <mxGeometry height="22" width="340" y="292" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_ord_items" edge="1" parent="1" source="ORDERS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERmandOne;startFill=0;endArrow=ERoneToMany;endFill=0;exitX=1;exitY=0.2326;exitDx=0;exitDy=0;entryX=0;entryY=0.5263;entryDx=0;entryDy=0;" target="ORDER_ITEMS" value="1 : N (bao gồm)">
+          <mxGeometry relative="1" y="10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_prd_items" edge="1" parent="1" source="PRODUCTS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=0;exitY=0.4762;exitDx=0;exitDy=0;entryX=1;entryY=0.5263;entryDx=0;entryDy=0;" target="ORDER_ITEMS" value="1 : N (thuộc về)">
+          <mxGeometry relative="1" y="-10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_ord_req" edge="1" parent="1" source="ORDERS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERzeroToOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="CHATBOT_REQUESTS" value="0..1 : N (tham chiếu)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_ord_ev" edge="1" parent="1" source="ORDERS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERzeroToOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=1;exitY=0.7907;exitDx=0;exitDy=0;entryX=0;entryY=0.3137;entryDx=0;entryDy=0;" target="AUTOMATION_EVENTS" value="0..1 : N (phát sự kiện)">
+          <mxGeometry relative="1" x="-0.15" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="440" y="380" />
+              <mxPoint x="440" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_prd_ev" edge="1" parent="1" source="PRODUCTS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERzeroToOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="AUTOMATION_EVENTS" value="0..1 : N (cảnh báo tồn kho)">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1048" y="380" />
+              <mxPoint x="680" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_req_ev" edge="1" parent="1" source="CHATBOT_REQUESTS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERzeroToOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=1;exitY=0.4000;exitDx=0;exitDy=0;entryX=0;entryY=0.7843;entryDx=0;entryDy=0;" target="AUTOMATION_EVENTS" value="0..1 : N (báo lead mới)">
+          <mxGeometry relative="1" y="10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_cfg_ev" edge="1" parent="1" source="AUTOMATION_SETTINGS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;html=1;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;exitX=0;exitY=0.4844;exitDx=0;exitDy=0;entryX=1;entryY=0.6078;entryDx=0;entryDy=0;" target="AUTOMATION_EVENTS" value="1 : N (cấu hình kích hoạt)">
+          <mxGeometry relative="1" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

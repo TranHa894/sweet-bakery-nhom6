@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="UC15_Seq" name="Sequence Diagram UC-15">
+    <mxGraphModel dx="717" dy="458" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1260" pageHeight="1010" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ll_admin" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Quản trị viên&lt;br&gt;(Admin)" vertex="1">
+          <mxGeometry height="950" width="150" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_admin" parent="ll_admin" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="860" width="10" x="70" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ui" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Giao diện Quản trị&lt;br&gt;(admin_2.js)" vertex="1">
+          <mxGeometry height="950" width="180" x="440" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="860" width="10" x="85" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_s1" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_s2" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_api" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Hệ thống Backend&lt;br&gt;(API &amp;amp; CSDL)" vertex="1">
+          <mxGeometry height="950" width="180" x="880" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_api" parent="ll_api" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="720" width="10" x="85" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="act_api_s1" parent="ll_api" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="frag_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=50;height=24;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="alt" vertex="1">
+          <mxGeometry height="465" width="1170" x="40" y="485" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_err" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Thông số cấu hình không hợp lệ (422) / Lỗi kết nối]" vertex="1">
+          <mxGeometry height="22" width="380" x="120" y="-2" as="geometry" />
+        </mxCell>
+        <mxCell id="divider_alt" parent="frag_alt" style="line;strokeWidth=1;fillColor=none;dashed=1;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="4" width="1170" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_ok" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Lưu cấu hình thành công (200 OK)]" vertex="1">
+          <mxGeometry height="22" width="280" x="140" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="msg1" edge="1" parent="1" source="act_admin" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0291;exitDx=0;exitDy=0;entryX=0;entryY=0.0291;entryDx=0;entryDy=0;" target="act_ui" value="1. Mở trang Thông báo &amp;amp; SLA (showPage(&quot;automation&quot;))">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0756;exitDx=0;exitDy=0;entryX=0;entryY=0.0208;entryDx=0;entryDy=0;" target="act_api" value="2. GET /api/admin/automation">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.0903;exitDx=0;exitDy=0;entryX=1;entryY=0.1337;entryDx=0;entryDy=0;" target="act_ui" value="3. Trả về settings, slaSummary &amp;amp; nhật ký events">
+          <mxGeometry relative="1" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" edge="1" parent="1" source="act_ui" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.1628;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_ui_s1" value="4. updateAutomationState() &amp;amp; nạp dữ liệu&lt;br&gt;vào biểu mẫu (renderAutomationCenter)">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="615" y="250" />
+              <mxPoint x="615" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.2558;exitDx=0;exitDy=0;entryX=1;entryY=0.2558;entryDx=0;entryDy=0;" target="act_admin" value="5. Hiển thị cấu hình SLA/kênh hiện tại &amp;amp; nhật ký thông báo">
+          <mxGeometry relative="1" x="0.013" y="-20" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" edge="1" parent="1" source="act_admin" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3256;exitDx=0;exitDy=0;entryX=0;entryY=0.3256;entryDx=0;entryDy=0;" target="act_ui" value="6. Mở form (#btn-toggle-settings), nhập thông số SLA, Telegram/Webhook &amp;amp; lưu">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3895;exitDx=0;exitDy=0;entryX=0;entryY=0.3958;entryDx=0;entryDy=0;" target="act_api" value="7. PUT /api/admin/automation/settings (sla_minutes, low_stock, channels, triggers)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8a" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5278;exitDx=0;exitDy=0;entryX=1;entryY=0.5000;entryDx=0;entryDy=0;" target="act_ui" value="8a. Trả về lỗi HTTP 422 / Thông báo thất bại">
+          <mxGeometry relative="1" x="0.0465" y="-10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9a" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5581;exitDx=0;exitDy=0;entryX=1;entryY=0.5581;entryDx=0;entryDy=0;" target="act_admin" value="9a. Hiển thị thông báo lỗi (#page-error)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8b" edge="1" parent="1" source="act_api" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6944;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_api_s1" value="8b. Lưu cấu hình kênh &amp;amp; ngưỡng SLA&lt;br&gt;vào CSDL, quét lại trạng thái SLA">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1045" y="660" />
+              <mxPoint x="1045" y="695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9b" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.7986;exitDx=0;exitDy=0;entryX=1;entryY=0.7267;entryDx=0;entryDy=0;" target="act_ui" value="9b. Trả về cấu hình mới &amp;amp; slaSummary (200 OK)">
+          <mxGeometry relative="1" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg10b" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7791;exitDx=0;exitDy=0;entryX=0;entryY=0.8611;entryDx=0;entryDy=0;" target="act_api" value="10b. GET /api/admin/automation (Đồng bộ lại nhật ký sự kiện)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg11b" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.9236;exitDx=0;exitDy=0;entryX=1;entryY=0.8314;entryDx=0;entryDy=0;" target="act_ui" value="11b. Trả về danh sách sự kiện &amp;amp; số liệu SLA cập nhật">
+          <mxGeometry relative="1" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg12b" edge="1" parent="1" source="act_ui" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.8605;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_ui_s2" value="12b. updateAutomationState() &amp;amp; vẽ lại&lt;br&gt;giao diện (renderAutomationCenter)">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="615" y="850" />
+              <mxPoint x="615" y="885" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg13b" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.9477;exitDx=0;exitDy=0;entryX=1;entryY=0.9477;entryDx=0;entryDy=0;" target="act_admin" value="13b. Hiển thị xác nhận (#cfg-save-msg) &amp;amp; toast lưu cấu hình thành công">
+          <mxGeometry relative="1" x="0.013" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

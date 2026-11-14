@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0" version="22.0.0" type="device">
+  <diagram id="UC01_Seq" name="Sequence Diagram UC-01">
+    <mxGraphModel dx="1200" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Lifelines -->
+        <mxCell id="ll_customer" value="Khách hàng" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="40" width="140" height="770" as="geometry" />
+        </mxCell>
+        <mxCell id="act_customer" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="ll_customer">
+          <mxGeometry x="65" y="70" width="10" height="660" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ll_ui" value="Giao diện Web&lt;br&gt;(script.js)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="160" height="770" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="ll_ui">
+          <mxGeometry x="75" y="70" width="10" height="660" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_self1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="ll_ui">
+          <mxGeometry x="85" y="340" width="10" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_self2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="ll_ui">
+          <mxGeometry x="85" y="555" width="10" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ll_api" value="Hệ thống Backend&lt;br&gt;(API)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="820" y="40" width="160" height="770" as="geometry" />
+        </mxCell>
+        <mxCell id="act_api" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="ll_api">
+          <mxGeometry x="75" y="120" width="10" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- Combined Fragment: alt (Kết quả tải danh mục) -->
+        <mxCell id="frag_alt" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=50;height=24;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="205" width="920" height="315" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_err" value="[Lỗi kết nối / Dữ liệu rỗng]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" vertex="1" parent="frag_alt">
+          <mxGeometry x="60" y="4" width="220" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="divider_alt" value="" style="line;strokeWidth=1;fillColor=none;dashed=1;strokeColor=#000000;html=1;" vertex="1" parent="frag_alt">
+          <mxGeometry y="125" width="920" height="4" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_ok" value="[Tải thành công (200 OK)]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" vertex="1" parent="frag_alt">
+          <mxGeometry x="15" y="132" width="220" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Combined Fragment: opt (Tìm kiếm, sắp xếp, phân trang) -->
+        <mxCell id="frag_opt" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=50;height=24;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="540" width="820" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_opt" value="[Khách hàng tìm kiếm, sắp xếp hoặc chuyển trang]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" vertex="1" parent="frag_opt">
+          <mxGeometry x="60" y="4" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Messages -->
+        <!-- Msg 1: Customer to UI (Y=135) -->
+        <mxCell id="msg1" value="1. Truy cập trang danh mục / tìm kiếm (DOMContentLoaded)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0379;exitDx=0;exitDy=0;entryX=0;entryY=0.0379;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_customer" target="act_ui">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 2: UI to API (Y=175) -->
+        <mxCell id="msg2" value="2. GET /api/products (cache: no-store)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0985;exitDx=0;exitDy=0;entryX=0;entryY=0.0652;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_api">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 3a: API to UI (Error, Y=255) -->
+        <mxCell id="msg3a" value="3a. Trả về lỗi HTTP / Mảng rỗng" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.413;exitDx=0;exitDy=0;entryX=1;entryY=0.2197;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_api" target="act_ui">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 4a: UI to Customer (Error notice, Y=305) -->
+        <mxCell id="msg4a" value="4a. Hiển thị thông báo lỗi &amp;amp; nút &quot;Thử lại&quot;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.2955;exitDx=0;exitDy=0;entryX=1;entryY=0.2955;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_customer">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 3b: API to UI (Success, Y=375) -->
+        <mxCell id="msg3b" value="3b. Trả về danh sách JSON products" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.9348;exitDx=0;exitDy=0;entryX=1;entryY=0.4015;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_api" target="act_ui">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 4b: UI Self-call (Y=385 -> Y=420) -->
+        <mxCell id="msg4b" value="4b. Lưu Map byId, lọc danh mục&lt;br&gt;&amp;amp; chia trang (renderCatalog)" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.4167;exitDx=0;exitDy=0;entryX=1;entryY=0.8889;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_ui_self1">
+          <mxGeometry x="0.05" y="10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="575" y="385" />
+              <mxPoint x="575" y="420" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 5b: UI to Customer (Render cards, Y=485) -->
+        <mxCell id="msg5b" value="5b. Hiển thị lưới sản phẩm (card) &amp;amp; thanh phân trang" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5682;exitDx=0;exitDy=0;entryX=1;entryY=0.5682;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_customer">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 6: Customer to UI (Search/Sort/Page, Y=585) -->
+        <mxCell id="msg6" value="6. Nhập từ khóa (?q=), chọn sắp xếp (#sort) / trang" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7197;exitDx=0;exitDy=0;entryX=0;entryY=0.7197;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_customer" target="act_ui">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 7: UI Self-call (Y=600 -> Y=635) -->
+        <mxCell id="msg7" value="7. Chuẩn hóa chuỗi fold(), sắp xếp&lt;br&gt;&amp;amp; cập nhật DOM (renderCatalog)" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7424;exitDx=0;exitDy=0;entryX=1;entryY=0.8889;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_ui_self2">
+          <mxGeometry x="0.05" y="10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="575" y="600" />
+              <mxPoint x="575" y="635" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Msg 8: UI to Customer (Update results, Y=700) -->
+        <mxCell id="msg8" value="8. Cập nhật danh sách sản phẩm &amp;amp; số kết quả (#result-count)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8939;exitDx=0;exitDy=0;entryX=1;entryY=0.8939;entryDx=0;entryDy=0;" edge="1" parent="1" source="act_ui" target="act_customer">
+          <mxGeometry y="8" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

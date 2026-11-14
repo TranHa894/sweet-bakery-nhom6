@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="UC08_Seq" name="Sequence Diagram UC-08">
+    <mxGraphModel dx="593" dy="379" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1260" pageHeight="940" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ll_customer" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Khách hàng" vertex="1">
+          <mxGeometry height="870" width="130" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_customer" parent="ll_customer" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="780" width="10" x="60" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_chat_ui" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Khung Chat UI&lt;br&gt;(Chat Widget)" vertex="1">
+          <mxGeometry height="870" width="150" x="330" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_chat_ui" parent="ll_chat_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="780" width="10" x="70" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="msg1" edge="1" parent="ll_chat_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0385;exitDx=0;exitDy=0;entryX=0;entryY=0.0385;entryDx=0;entryDy=0;" value="1. Nhập yêu cầu đặt bánh, số lượng &amp;amp; thông tin giao nhận">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="-200" y="110.0000000000019" as="sourcePoint" />
+            <mxPoint x="70" y="110.00000000000463" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ll_bot" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Trợ lý Chatbot AI&lt;br&gt;(NLP &amp;amp; Order Builder)" vertex="1">
+          <mxGeometry height="870" width="180" x="640" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_bot" parent="ll_bot" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="710" width="10" x="85" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="act_bot_s1" parent="ll_bot" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_backend" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Hệ thống Backend&lt;br&gt;(API &amp;amp; CSDL)" vertex="1">
+          <mxGeometry height="870" width="180" x="990" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_backend" parent="ll_backend" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="170" width="10" x="85" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="act_backend_s1" parent="ll_backend" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="frag_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=50;height=24;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="alt" vertex="1">
+          <mxGeometry height="595" width="1180" x="40" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_missing" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Thiếu thông tin đặt hàng&amp;nbsp;&lt;br&gt;/ Giờ giao ngoài 08:00–18:00]" vertex="1">
+          <mxGeometry height="22" width="380" x="120" y="4" as="geometry" />
+        </mxCell>
+        <mxCell id="divider_alt" parent="frag_alt" style="line;strokeWidth=1;fillColor=none;dashed=1;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="4" width="1180" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_ok" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Đủ thông tin &amp;amp; Khách xác nhận đặt đơn]" vertex="1">
+          <mxGeometry height="22" width="300" x="100" y="159" as="geometry" />
+        </mxCell>
+        <mxCell id="msg2" edge="1" parent="1" source="act_chat_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0897;exitDx=0;exitDy=0;entryX=0;entryY=0.0423;entryDx=0;entryDy=0;" target="act_bot" value="2. POST /api/chat (message, session_id)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" edge="1" parent="1" source="act_bot" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0775;exitDx=0;exitDy=0;entryX=1;entryY=0.8571;entryDx=0;entryDy=0;" target="act_bot_s1" value="3. Trích xuất thông tin đơn (Slots)&lt;br&gt;&amp;amp; kiểm tra khung giờ (08:00–18:00)">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="815" y="205" />
+              <mxPoint x="815" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4a" edge="1" parent="1" source="act_bot" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.2606;exitDx=0;exitDy=0;entryX=1;entryY=0.2885;entryDx=0;entryDy=0;" target="act_chat_ui" value="4a. Yêu cầu bổ sung thông tin thiếu / Form xác nhận">
+          <mxGeometry relative="1" x="-0.0159" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5a" edge="1" parent="1" source="act_chat_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3526;exitDx=0;exitDy=0;entryX=1;entryY=0.3526;entryDx=0;entryDy=0;" target="act_customer" value="5a. Hiển thị câu hỏi bổ sung hoặc biểu mẫu đặt nhanh">
+          <mxGeometry relative="1" x="0.037" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4b" edge="1" parent="1" source="act_bot" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5000;exitDx=0;exitDy=0;entryX=0;entryY=0.0882;entryDx=0;entryDy=0;" target="act_backend" value="4b. Khởi tạo đơn hàng tự động (orderSource: &quot;chatbot&quot;)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5b" edge="1" parent="1" source="act_backend" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.1765;exitDx=0;exitDy=0;entryX=1;entryY=0.8571;entryDx=0;entryDy=0;" target="act_backend_s1" value="5b. Kiểm tra tồn kho, lưu đơn vào DB&lt;br&gt;&amp;amp; kích hoạt thông báo tự động">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1165" y="520" />
+              <mxPoint x="1165" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6b" edge="1" parent="1" source="act_backend" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8529;exitDx=0;exitDy=0;entryX=1;entryY=0.6831;entryDx=0;entryDy=0;" target="act_bot" value="6b. Trả về mã đơn (orderId), tạm tính &amp;amp; pending_confirmation">
+          <mxGeometry relative="1" x="-0.0294" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7b" edge="1" parent="1" source="act_bot" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8028;exitDx=0;exitDy=0;entryX=1;entryY=0.7821;entryDx=0;entryDy=0;" target="act_chat_ui" value="7b. Trả về phản hồi xác nhận đặt bánh &amp;amp; tóm tắt đơn">
+          <mxGeometry relative="1" x="-0.0159" y="-10" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8b" edge="1" parent="1" source="act_chat_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8782;exitDx=0;exitDy=0;entryX=1;entryY=0.8782;entryDx=0;entryDy=0;" target="act_customer" value="8b. Hiển thị thẻ xác nhận đơn hàng &amp;amp; mã đơn tra cứu">
+          <mxGeometry relative="1" x="-0.037" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

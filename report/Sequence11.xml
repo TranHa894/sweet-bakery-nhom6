@@ -1,0 +1,116 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="UC11_Seq" name="Sequence Diagram UC-11">
+    <mxGraphModel dx="717" dy="458" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="920" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ll_admin" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Quản trị viên&lt;br&gt;(Admin)" vertex="1">
+          <mxGeometry height="850" width="150" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_admin" parent="ll_admin" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="750" width="10" x="70" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ui" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Giao diện Quản trị&lt;br&gt;(admin_2.js)" vertex="1">
+          <mxGeometry height="850" width="180" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="750" width="10" x="85" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_s1" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="act_ui_s2" parent="ll_ui" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="45" width="10" x="95" y="645" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_api" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Hệ thống Backend&lt;br&gt;(API &amp;amp; CSDL)" vertex="1">
+          <mxGeometry height="850" width="180" x="840" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="act_api" parent="ll_api" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="520" width="10" x="85" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="act_api_s1" parent="ll_api" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffffff;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="35" width="10" x="95" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="frag_alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=50;height=24;fillColor=none;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="alt" vertex="1">
+          <mxGeometry height="630" width="1220" x="40" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_err" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Mật khẩu sai (401) / Đăng nhập sai quá nhiều lần (429)]" vertex="1">
+          <mxGeometry height="22" width="380" x="110" as="geometry" />
+        </mxCell>
+        <mxCell id="divider_alt" parent="frag_alt" style="line;strokeWidth=1;fillColor=none;dashed=1;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="4" width="1220" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="guard_alt_ok" parent="frag_alt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontStyle=1;fontColor=#000000;html=1;" value="[Xác thực thành công (200 OK - Thiết lập Cookie phiên)]" vertex="1">
+          <mxGeometry height="22" width="380" x="110" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="msg1" edge="1" parent="1" source="act_admin" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.0400;exitDx=0;exitDy=0;entryX=0;entryY=0.0400;entryDx=0;entryDy=0;" target="act_ui" value="1. Truy cập trang quản trị &amp;amp; gửi mật khẩu (#login)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.1067;exitDx=0;exitDy=0;entryX=0;entryY=0.0385;entryDx=0;entryDy=0;" target="act_api" value="2. POST /api/admin/login (password, credentials: same-origin)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3a" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.2212;exitDx=0;exitDy=0;entryX=1;entryY=0.2333;entryDx=0;entryDy=0;" target="act_ui" value="3a. Trả về lỗi HTTP 401 / 429 (invalid_password)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4a" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.3000;exitDx=0;exitDy=0;entryX=1;entryY=0.3000;entryDx=0;entryDy=0;" target="act_admin" value="4a. Hiển thị thông báo lỗi đăng nhập (#login-error)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3b" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.4904;exitDx=0;exitDy=0;entryX=1;entryY=0.4200;entryDx=0;entryDy=0;" target="act_ui" value="3b. Xác nhận đăng nhập hợp lệ &amp;amp; cấp Session Cookie">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4b" edge="1" parent="1" source="act_ui" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.4533;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_ui_s1" value="4b. Ẩn #login-screen, mở #workspace&lt;br&gt;&amp;amp; gọi showPage(&quot;overview&quot;)">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="595" y="450" />
+              <mxPoint x="595" y="485" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5b" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5667;exitDx=0;exitDy=0;entryX=0;entryY=0.7019;entryDx=0;entryDy=0;" target="act_api" value="5b. GET /api/admin/overview">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6b" edge="1" parent="1" source="act_api" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7500;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_api_s1" value="6b. Tổng hợp KPI đơn hàng, biểu đồ&lt;br&gt;7 ngày, tồn kho &amp;amp; cảnh báo SLA">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1005" y="560" />
+              <mxPoint x="1005" y="595" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7b" edge="1" parent="1" source="act_api" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.9135;exitDx=0;exitDy=0;entryX=1;entryY=0.7133;entryDx=0;entryDy=0;" target="act_ui" value="7b. Trả về JSON dữ liệu tổng quan, đơn gần đây &amp;amp; SLA">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8b" edge="1" parent="1" source="act_ui" style="html=1;align=left;verticalAlign=middle;endArrow=block;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7667;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="act_ui_s2" value="8b. renderOverview(): Vẽ thẻ KPI,&lt;br&gt;biểu đồ 7 ngày, cảnh báo SLA &amp;amp; đơn mới">
+          <mxGeometry relative="1" x="0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="595" y="685" />
+              <mxPoint x="595" y="730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9b" edge="1" parent="1" source="act_ui" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0;exitY=0.9400;exitDx=0;exitDy=0;entryX=1;entryY=0.9400;entryDx=0;entryDy=0;" target="act_admin" value="9b. Hiển thị Bảng điều khiển Tổng quan (Dashboard)">
+          <mxGeometry relative="1" y="8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

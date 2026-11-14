@@ -1,0 +1,288 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0">
+  <diagram id="sweet_bakery_general_usecase" name="General Use Case Diagram">
+    <mxGraphModel dx="717" dy="458" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1060" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sys_boundary" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;startSize=28;dashed=0;fontStyle=1;fontSize=13;" value="HỆ THỐNG SWEET BAKERY" vertex="1">
+          <mxGeometry height="1010" width="940" x="240" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_shopping" parent="sys_boundary" style="swimlane;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;startSize=24;dashed=1;fontStyle=1;" value="1. Nhóm Mua sắm, Giỏ hàng và Định vị giao hàng" vertex="1">
+          <mxGeometry height="210" width="900" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_chatbot" parent="sys_boundary" style="swimlane;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;startSize=24;dashed=1;fontStyle=1;" value="2. Nhóm Chatbot Tư vấn, Đặt bánh và Hủy đơn" vertex="1">
+          <mxGeometry height="240" width="900" x="20" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_admin" parent="sys_boundary" style="swimlane;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;startSize=24;dashed=1;fontStyle=1;" value="3. Nhóm Quản trị Đơn hàng, Sản phẩm và Hỗ trợ" vertex="1">
+          <mxGeometry height="220" width="900" x="20" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_automation" parent="sys_boundary" style="swimlane;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;startSize=24;dashed=1;fontStyle=1;" value="4. Nhóm Tự động Thông báo Đa kênh và Cảnh báo SLA" vertex="1">
+          <mxGeometry height="220" width="900" x="20" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_kh" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Khách hàng" vertex="1">
+          <mxGeometry height="60" width="30" x="40" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_bot" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Trợ lý Chatbot AI&lt;br&gt;(Subsystem)" vertex="1">
+          <mxGeometry height="60" width="30" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_ad" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Quản trị viên&lt;br&gt;(Admin)" vertex="1">
+          <mxGeometry height="60" width="30" x="1290" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_ext" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;" value="Kênh Thông báo Ngoài&lt;br&gt;(Telegram / Webhook / Email)" vertex="1">
+          <mxGeometry height="60" width="30" x="1290" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="uc01" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC01: Xem &amp;amp; Tìm kiếm&lt;br&gt;sản phẩm" vertex="1">
+          <mxGeometry height="50" width="180" x="300" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uc02" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC02: Xem chi tiết&lt;br&gt;sản phẩm" vertex="1">
+          <mxGeometry height="50" width="180" x="540" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uc03" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC03: Quản lý giỏ hàng" vertex="1">
+          <mxGeometry height="50" width="180" x="780" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uc04" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC04: Đặt hàng &amp;amp;&lt;br&gt;Thanh toán (COD)" vertex="1">
+          <mxGeometry height="50" width="180" x="410" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uc05" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC05: Định vị &amp;amp; Tính phí&lt;br&gt;giao hàng (Delivery Map)" vertex="1">
+          <mxGeometry height="50" width="200" x="730" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uc06" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC06: Hỏi đáp thông tin&lt;br&gt;&amp;amp; Chính sách (RAG)" vertex="1">
+          <mxGeometry height="50" width="190" x="300" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="uc07" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC07: Tư vấn bánh &amp;amp;&lt;br&gt;Gợi ý theo nhu cầu" vertex="1">
+          <mxGeometry height="50" width="190" x="550" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="uc10" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC10: Chuyển giao&lt;br&gt;nhân viên (Handoff)" vertex="1">
+          <mxGeometry height="50" width="200" x="900" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="uc08" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC08: Đặt bánh tự động&lt;br&gt;qua Chat" vertex="1">
+          <mxGeometry height="50" width="190" x="350" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="uc09" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC09: Tra cứu &amp;amp; Hủy&lt;br&gt;đơn hàng qua Chat" vertex="1">
+          <mxGeometry height="50" width="190" x="640" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="uc11" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC11: Đăng nhập &amp;amp;&lt;br&gt;Xem tổng quan (Dashboard)" vertex="1">
+          <mxGeometry height="50" width="210" x="560" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="uc12" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC12: Quản lý &amp;amp; Cập nhật&lt;br&gt;trạng thái đơn hàng" vertex="1">
+          <mxGeometry height="50" width="210" x="870" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="uc13" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC13: Quản lý danh mục&lt;br&gt;sản phẩm (CRUD)" vertex="1">
+          <mxGeometry height="50" width="210" x="560" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="uc14" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC14: Xử lý phiếu hỗ trợ&lt;br&gt;&amp;amp; Yêu cầu tư vấn" vertex="1">
+          <mxGeometry height="50" width="210" x="870" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="uc16" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC16: Giám sát &amp;amp; Cảnh báo&lt;br&gt;quá hạn SLA tự động" vertex="1">
+          <mxGeometry height="50" width="220" x="520" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="uc15" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC15: Cấu hình kênh thông báo&lt;br&gt;(Telegram/Webhook) &amp;amp; SLA" vertex="1">
+          <mxGeometry height="50" width="220" x="870" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="uc17" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;" value="UC17: Gửi thông báo đa kênh&lt;br&gt;tự động (Đơn/Tồn kho/Lead)" vertex="1">
+          <mxGeometry height="50" width="230" x="680" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="inc_04_05" edge="1" parent="1" source="uc04" style="endArrow=open;endSize=12;dashed=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;" target="uc05" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inc_08_04" edge="1" parent="1" source="uc08" style="endArrow=open;endSize=12;dashed=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.8;exitY=0;entryX=0.6;entryY=1;" target="uc04" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" x="-0.15" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="502" y="425" />
+              <mxPoint x="518" y="425" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="inc_16_17" edge="1" parent="1" source="uc16" style="endArrow=open;endSize=12;dashed=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;entryX=0;entryY=0.5;" target="uc17" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="575" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc01" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0;entryY=0.5;" target="uc01">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="125" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc02" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=0;" target="uc02">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="85" />
+              <mxPoint x="630" y="85" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc03" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=0;" target="uc03">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="85" />
+              <mxPoint x="870" y="85" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc04" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0;entryY=0.5;" target="uc04">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc06" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0;entryY=0.3;" target="uc06">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="345" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc07" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=0;" target="uc07">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="315" />
+              <mxPoint x="645" y="315" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc08" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0;entryY=0.3;" target="uc08">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kh_uc09" edge="1" parent="1" source="actor_kh" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=0;" target="uc09">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="250" />
+              <mxPoint x="130" y="410" />
+              <mxPoint x="735" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot_uc06" edge="1" parent="1" source="actor_bot" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=1;" target="uc06">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="180" y="395" />
+              <mxPoint x="395" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot_uc07" edge="1" parent="1" source="actor_bot" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=1;" target="uc07">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="180" y="395" />
+              <mxPoint x="645" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot_uc08" edge="1" parent="1" source="actor_bot" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0;entryY=0.7;" target="uc08">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="180" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot_uc09" edge="1" parent="1" source="actor_bot" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=1;" target="uc09">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="180" y="510" />
+              <mxPoint x="735" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot_uc10" edge="1" parent="1" source="actor_bot" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=1;" target="uc10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="180" y="510" />
+              <mxPoint x="865" y="510" />
+              <mxPoint x="865" y="395" />
+              <mxPoint x="1000" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc10" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=1;entryY=0.5;" target="uc10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="355" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc11" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=0;" target="uc11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="575" />
+              <mxPoint x="665" y="575" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc12" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=1;entryY=0.5;" target="uc12">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="615" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc13" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.5;entryY=1;" target="uc13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="755" />
+              <mxPoint x="665" y="755" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc14" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=1;entryY=0.5;" target="uc14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="715" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ad_uc15" edge="1" parent="1" source="actor_ad" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=1;entryY=0.5;" target="uc15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="670" />
+              <mxPoint x="1230" y="855" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ext_uc16" edge="1" parent="1" source="actor_ext" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=0.55;entryY=1;" target="uc16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1205" y="930" />
+              <mxPoint x="1205" y="900" />
+              <mxPoint x="641" y="900" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ext_uc17" edge="1" parent="1" source="actor_ext" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;entryX=1;entryY=0.5;" target="uc17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1205" y="930" />
+              <mxPoint x="1205" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

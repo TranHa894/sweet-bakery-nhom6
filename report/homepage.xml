@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0" version="22.0.0" type="device">
+  <diagram id="scriptjs_class_diagram" name="Script JS Class Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Module Bootstrap / DOMContentLoaded -->
+        <mxCell id="MainApp" value="MainApp (DOMContentLoaded)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="380" y="20" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="MainApp_Attr" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="MainApp">
+          <mxGeometry y="26" width="300" height="0" as="geometry" />
+        </mxCell>
+        <mxCell id="MainApp_Meth" value="+ loadProducts(): Promise&#xa;- attachEventListeners(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="MainApp">
+          <mxGeometry y="26" width="300" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- Lớp AppConfig & State -->
+        <mxCell id="State" value="State &amp; Config (Variables)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="380" y="160" width="300" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="State_Attr" value="+ config: Object&#xa;+ KEY: String = &quot;sweetBakeryCart&quot;&#xa;+ products: Array&lt;Object&gt;&#xa;+ byId: Map&#xa;+ cart: Array&lt;Object&gt;&#xa;+ busy: Boolean&#xa;+ resultOrder: Object&#xa;+ retryKey: String&#xa;+ retryBody: String&#xa;- toastTimer: Timer" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="State">
+          <mxGeometry y="26" width="300" height="164" as="geometry" />
+        </mxCell>
+
+        <!-- Lớp Utils -->
+        <mxCell id="DOMUtils" value="Utils / Helpers" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="160" width="280" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="DOMUtils_Attr" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="DOMUtils">
+          <mxGeometry y="26" width="280" height="0" as="geometry" />
+        </mxCell>
+        <mxCell id="DOMUtils_Meth" value="+ $(selector: String): Node&#xa;+ esc(s: String): String&#xa;+ money(n: Number): String&#xa;+ fold(s: String): String&#xa;+ quantity(n: Number): Boolean&#xa;+ toast(message: String): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="DOMUtils">
+          <mxGeometry y="26" width="280" height="144" as="geometry" />
+        </mxCell>
+
+        <!-- Lớp CartManager -->
+        <mxCell id="CartManager" value="CartManager" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="750" y="20" width="300" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="CartManager_Attr" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="CartManager">
+          <mxGeometry y="26" width="300" height="0" as="geometry" />
+        </mxCell>
+        <mxCell id="CartManager_Meth" value="+ readCart(): Array&#xa;+ saveCart(next: Array): Boolean&#xa;+ subtotal(): Number&#xa;+ add(id: String, qty: Integer): Boolean&#xa;+ renderCart(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="CartManager">
+          <mxGeometry y="26" width="300" height="124" as="geometry" />
+        </mxCell>
+
+        <!-- Lớp ProductManager -->
+        <mxCell id="ProductManager" value="CatalogManager (UI Render)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="750" y="220" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ProductManager_Attr" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="ProductManager">
+          <mxGeometry y="26" width="300" height="0" as="geometry" />
+        </mxCell>
+        <mxCell id="ProductManager_Meth" value="+ detailURL(id: String): String&#xa;+ card(p: Object): String (HTML)&#xa;+ renderCatalog(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="ProductManager">
+          <mxGeometry y="26" width="300" height="84" as="geometry" />
+        </mxCell>
+
+        <!-- Lớp CheckoutManager -->
+        <mxCell id="CheckoutManager" value="CheckoutManager" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="750" y="380" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="CheckoutManager_Attr" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="CheckoutManager">
+          <mxGeometry y="26" width="300" height="0" as="geometry" />
+        </mxCell>
+        <mxCell id="CheckoutManager_Meth" value="+ validateField(el: Node): void&#xa;- handleSubmitOrder(e: Event): Promise&#xa;- handleDownloadOrder(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#000000;" vertex="1" parent="CheckoutManager">
+          <mxGeometry y="26" width="300" height="84" as="geometry" />
+        </mxCell>
+
+        <!-- Relations -->
+
+        <!-- MainApp -> State -->
+        <mxCell id="rel1" edge="1" parent="1" source="MainApp" target="State" style="endArrow=block;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- MainApp -> Utils (Uses) -->
+        <mxCell id="rel2" edge="1" parent="1" source="MainApp" target="DOMUtils" style="endArrow=block;endFill=0;dashed=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;exitX=0;exitY=0.5;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="170" y="65" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label2" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#ffffff;fontColor=#000000;" vertex="1" connectable="0" parent="rel2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- MainApp -> Managers -->
+        <mxCell id="rel3" edge="1" parent="1" source="MainApp" target="CartManager" style="endArrow=diamond;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;exitX=1;exitY=0.3;entryX=0;entryY=0.3;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="710" y="47" /><mxPoint x="710" y="71" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel4" edge="1" parent="1" source="MainApp" target="ProductManager" style="endArrow=diamond;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;exitX=1;exitY=0.7;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="710" y="83" /><mxPoint x="710" y="280" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel5" edge="1" parent="1" source="MainApp" target="CheckoutManager" style="endArrow=diamond;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;exitX=1;exitY=0.8;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="690" y="92" /><mxPoint x="690" y="440" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
